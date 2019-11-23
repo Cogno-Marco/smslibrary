@@ -17,7 +17,7 @@ public interface  Message<D, P extends Peer> extends Serializable {
 
     /**
      * Retrieves the sender or the destination
-     * @return the peer this message is for or is from
+     * @return Peer associated with this message
      */
     P getPeer();
 

@@ -10,12 +10,16 @@ import java.io.Serializable;
  */
 public interface Peer<A> extends Serializable {
 
+    /**
+     * Retrieves the peer's address
+     * @return peer's address
+     */
     A getAddress();
 
+    /**
+     * Sets or updates the peer's address
+     * @param address new address for the peer
+     */
     void setAddress(A address);
-
-    @NonNull
-    @Override
-    String toString();
 
 }
