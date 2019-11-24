@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import com.eis.communication.Peer;
 
 /**
+ * Implementation of {@link Peer} for SMS communication channel
+ *
  * @author Luca Crema, Marco Mariotto
  */
 public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
@@ -25,7 +27,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
      * Checks if the given phone number is valid.
      *
      * @param telephoneNumber the phone number to check.
-     * @return The state of the telephone number after the tests.
+     * @return The {@link TelephoneNumberState} of the telephone number after the tests.
      */
     public static TelephoneNumberState checkPhoneNumber(String telephoneNumber) {
         //Check if the number is shorter than the MAX.
@@ -52,7 +54,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     /**
      * Checks if the current phone number is valid.
      *
-     * @return The state of the telephone number after the tests.
+     * @return The {@link TelephoneNumberState} of the telephone number after the tests.
      */
     public TelephoneNumberState checkPhoneNumber() {
         return checkPhoneNumber(this.getAddress());
@@ -60,9 +62,8 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
     /**
      * Compares this object with the specified object for order.
-     * @param o the object to be compared.
-     *
-     * @return a negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+     * @param o The object to be compared.
+     * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
      */
     @Override
     public int compareTo(SMSPeer o) {
@@ -71,7 +72,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
     /**
      * Retrieves the peer's address
-     * @return peer's address
+     * @return Peer's address
      */
     @Override
     public String getAddress() {
@@ -80,7 +81,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
     /**
      * Sets or updates the peer's address
-     * @param telephoneNumber – new address for the pee
+     * @param telephoneNumber new address for the peer
      */
     @Override
     public void setAddress(String telephoneNumber) {
@@ -100,8 +101,8 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
     /**
      * Indicates whether some other object is "equal to" this one
-     * @param o the reference object with which to compare.
-     * @return true if this object is the same as the obj argument; false otherwise.
+     * @param o The reference object with which to compare.
+     * @return True if this object is the same as the obj argument; false otherwise.
      */
     @Override
     public boolean equals(Object o) {
@@ -112,7 +113,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     }
 
     /**
-     * @return a string representation of the peer
+     * @return A string representation of the peer
      */
     @NonNull
     public String toString(){
