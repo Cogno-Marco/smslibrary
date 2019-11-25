@@ -1,16 +1,29 @@
 package com.eis.communication;
 
+import com.eis.communication.listener.ReceivedMessageListener;
+
 /**
- * Handles communications in a channel
+ * CommunicationHandler abstract class
+ * @author Mattia Fanan
  *
- * @param <T> message class to be used for the channel
+ * Handles SMS communications
+ * @param <T> Message data-type
  */
-public interface CommunicationHandler<T extends Message> {
+public interface CommunicationHandler<T extends DataUnit> {
+    /**
+     * Sends a valid message to a peer
+     * @param dataUnit The message to send
+     */
+     boolean sendDataUnit(T dataUnit);
 
     /**
-     * Sends a single message in the channel, message content must be shorter than the maximum channel message size
-     * @param message message to be sent in the channel to a peer
+     * Adds a listener that gets called when a message is received
+     * @param listener The listener to wake up when a message is received
      */
-    void sendMessage(T message);
+    void addReceiveListener(ReceivedMessageListener<T> listener);
 
+    /**
+     * Removes the listener for received messages
+     */
+     void removeReceiveListener();
 }
