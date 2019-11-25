@@ -57,15 +57,6 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     }
 
     /**
-     * Checks if the current phone number is valid.
-     *
-     * @return The {@link TelephoneNumberState} of the telephone number after the tests.
-     */
-    public TelephoneNumberState checkPhoneNumber() {
-        return checkPhoneNumber(this.getAddress());
-    }
-
-    /**
      * Compares this object with the specified object for order.
      * @param o The object to be compared.
      * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
