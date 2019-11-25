@@ -7,7 +7,7 @@ import com.eis.communication.Peer;
 /**
  * Implementation of {@link Peer} for SMS communication channel.
  *
- * @author Luca Crema, Marco Mariotto.
+ * @author Luca Crema, Marco Mariotto. Reviewed by Marco Cognolato and Mattia Fanan
  */
 public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 

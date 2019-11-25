@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author Alberto Ursino & Luca Crema
+ * @author Alberto Ursino & Luca Crema. Reveiewed by Marco Cognolato
  */
 public class SMSPeerTest{
 
