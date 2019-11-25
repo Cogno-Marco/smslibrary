@@ -43,8 +43,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
         if (telephoneNumber.length() < MIN_TELEPHONE_NUMBER_LENGTH + 1) {
             return TelephoneNumberState.TELEPHONE_NUMBER_TOO_SHORT;
         }
-        //Check if it's actually a number and doesn't contain anything else
-        //First we have to remove the "+"
+        //Check if it's actually a number with a plus and doesn't contain anything else
         if (!telephoneNumber.matches("\\+?\\d{"+MIN_TELEPHONE_NUMBER_LENGTH+","+MAX_TELEPHONE_NUMBER_LENGTH+"}")) {
             return TelephoneNumberState.TELEPHONE_NUMBER_NOT_A_NUMBER;
         }

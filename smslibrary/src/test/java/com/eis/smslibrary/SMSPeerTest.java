@@ -70,34 +70,21 @@ public class SMSPeerTest{
         }
     }
 
-    @Test
+    @Test (expected = InvalidTelephoneNumberException.class)
     public void constructor_tooLongTelephoneNumber_trowsException() {
-        try{
             new SMSPeer(TOO_LONG_TELEPHONE_NUMBER);
             Assert.fail("Should have thrown an exception");
-        }catch (InvalidTelephoneNumberException e){
-            //It's  ok!
-        }
     }
 
-    @Test
+    @Test(expected = InvalidTelephoneNumberException.class)
     public void constructor_noCountryCodeTelephoneNumber_trowsException() {
-        try{
             new SMSPeer(NO_COUNTRY_CODE_TELEPHONE_NUMBER);
-            Assert.fail("Should have thrown an exception");
-        }catch (InvalidTelephoneNumberException e){
-            //It's  ok!
-        }
     }
 
-    @Test
+    @Test(expected = InvalidTelephoneNumberException.class)
     public void constructor_emptyTelephoneNumber_trowsException() {
-        try{
             new SMSPeer(EMPTY_TELEPHONE_NUMBER);
             Assert.fail("Should have thrown an exception");
-        }catch (InvalidTelephoneNumberException e){
-            //It's  ok!
-        }
     }
 
     @Test
