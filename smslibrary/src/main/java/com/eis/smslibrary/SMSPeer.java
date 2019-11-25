@@ -106,6 +106,8 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
      */
     @Override
     public boolean equals(Object o) {
+        if(o == null)
+            return false;
         if (!(o instanceof SMSPeer))
             return false;
         SMSPeer peer = (SMSPeer) o;
