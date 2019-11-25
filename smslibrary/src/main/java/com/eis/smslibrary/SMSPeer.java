@@ -5,9 +5,9 @@ import androidx.annotation.NonNull;
 import com.eis.communication.Peer;
 
 /**
- * Implementation of {@link Peer} for SMS communication channel
+ * Implementation of {@link Peer} for SMS communication channel.
  *
- * @author Luca Crema, Marco Mariotto
+ * @author Luca Crema, Marco Mariotto.
  */
 public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
@@ -17,9 +17,14 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     private String telephoneNumber;
 
     /**
-     * @param telephoneNumber a valid telephone number (checkTelephoneNumber state must be TELEPHONE_NUMBER_VALID)
+     * @param telephoneNumber Address for the peer.
+     * @throws InvalidTelephoneNumberException If telephoneNumber check is not {@link TelephoneNumberState#TELEPHONE_NUMBER_VALID}.
      */
-    public SMSPeer(String telephoneNumber) {
+    public SMSPeer(String telephoneNumber) throws InvalidTelephoneNumberException{
+        TelephoneNumberState telephoneNumberState = SMSPeer.checkPhoneNumber(telephoneNumber);
+        if(telephoneNumberState != TelephoneNumberState.TELEPHONE_NUMBER_VALID)
+            throw new InvalidTelephoneNumberException(telephoneNumberState);
+
         this.telephoneNumber = telephoneNumber;
     }
 
@@ -71,8 +76,8 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     }
 
     /**
-     * Retrieves the peer's address
-     * @return Peer's address
+     * Retrieves the peer's address.
+     * @return Peer's address.
      */
     @Override
     public String getAddress() {
@@ -80,8 +85,8 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     }
 
     /**
-     * Sets or updates the peer's address
-     * @param telephoneNumber new address for the peer
+     * Sets or updates the peer's address.
+     * @param telephoneNumber New address for the peer.
      */
     @Override
     public void setAddress(String telephoneNumber) {
@@ -122,4 +127,35 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
         return telephoneNumber;
     }
 
+}
+
+/**
+ * Exception usually thrown if a Peer has been instantiated without having the telephone number checked for validity
+ * @author Luca Crema, suggested by Marco Cognolato
+ */
+class InvalidTelephoneNumberException extends RuntimeException{
+
+    /**
+     * Invalid state of the telephone number
+     */
+    private SMSPeer.TelephoneNumberState telephoneNumberState;
+
+    /**
+     * @param state Invalid state of telephone number, cannot be {@link SMSPeer.TelephoneNumberState#TELEPHONE_NUMBER_VALID}
+     */
+    public InvalidTelephoneNumberException(SMSPeer.TelephoneNumberState state){
+        if(state == SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
+            throw new IllegalArgumentException("TelephoneNumberState cannot be TELEPHONE_NUMBER_VALID if InvalidTelephoneNumberException is thrown!");
+        this.telephoneNumberState = state;
+    }
+
+    /**
+     * @param state Invalid state of telephone number, cannot be {@link SMSPeer.TelephoneNumberState#TELEPHONE_NUMBER_VALID}
+     */
+    public InvalidTelephoneNumberException(String message, SMSPeer.TelephoneNumberState state) {
+        super(message);
+        if(state == SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
+            throw new IllegalArgumentException("TelephoneNumberState cannot be TELEPHONE_NUMBER_VALID if InvalidTelephoneNumberException is thrown!");
+        this.telephoneNumberState = state;
+    }
 }
