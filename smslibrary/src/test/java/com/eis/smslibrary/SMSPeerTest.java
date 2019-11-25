@@ -10,7 +10,7 @@ import org.junit.Test;
 public class SMSPeerTest{
 
     private static final String EMPTY_TELEPHONE_NUMBER = "";
-    private static final String TOO_SHORT_TELEPHONE_NUMBER = "+3";
+    private static final String TOO_SHORT_TELEPHONE_NUMBER = "+39";
     private static final String TOO_LONG_TELEPHONE_NUMBER = "+39111111111111111111";
     private static final String NO_COUNTRY_CODE_TELEPHONE_NUMBER = "1111111111";
     private static final String LETTERS_TELEPHONE_NUMBER = "+391111111ABC";
@@ -57,11 +57,7 @@ public class SMSPeerTest{
 
     @Test
     public void constructor_telephoneNumber_noException() {
-        try{
-            new SMSPeer(VALID_TELEPHONE_NUMBER);
-        }catch (InvalidTelephoneNumberException e){
-            Assert.fail("Should not have thrown an exception");
-        }
+        new SMSPeer(VALID_TELEPHONE_NUMBER);
     }
 
     @Test
@@ -130,12 +126,6 @@ public class SMSPeerTest{
     }
 
     @Test
-    public void setAddress_address_isSame() {
-        defaultPeer1.setAddress(VALID_TELEPHONE_NUMBER);
-        Assert.assertEquals(VALID_TELEPHONE_NUMBER, defaultPeer1.getAddress());
-    }
-
-    @Test
     public void equals_self_isTrue() {
         Assert.assertTrue(defaultPeer1.equals(defaultPeer1));
     }
@@ -144,13 +134,6 @@ public class SMSPeerTest{
     public void equals_different_isFalse() {
         Assert.assertFalse(defaultPeer1.equals(defaultPeer2));
     }
-
-    @Test
-    public void equals_same_isTrue() {
-        defaultPeer2.setAddress(VALID_TELEPHONE_NUMBER + "1");
-        Assert.assertTrue(defaultPeer1.equals(defaultPeer2));
-    }
-
     @Test
     public void equals_null_isFalse() {
         Assert.assertFalse(defaultPeer1.equals(null));

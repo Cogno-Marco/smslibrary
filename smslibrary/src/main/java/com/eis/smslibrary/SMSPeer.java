@@ -11,7 +11,7 @@ import com.eis.communication.Peer;
  */
 public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
-    public static final int MAX_TELEPHONE_NUMBER_LENGTH = 20;
+    public static final int MAX_TELEPHONE_NUMBER_LENGTH = 15;
     public static final int MIN_TELEPHONE_NUMBER_LENGTH = 3;
 
     private String telephoneNumber;
@@ -31,21 +31,21 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     /**
      * Checks if the given phone number is valid.
      *
-     * @param telephoneNumber the phone number to check.
+     * @param telephoneNumber the phone number to check. Must not be null
      * @return The {@link TelephoneNumberState} of the telephone number after the tests.
      */
     public static TelephoneNumberState checkPhoneNumber(String telephoneNumber) {
         //Check if the number is shorter than the MAX.
-        if (telephoneNumber.length() > MAX_TELEPHONE_NUMBER_LENGTH) {
+        if (telephoneNumber.length() > MAX_TELEPHONE_NUMBER_LENGTH + 1) {
             return TelephoneNumberState.TELEPHONE_NUMBER_TOO_LONG;
         }
         //Check if the number is longer than the MIN.
-        if (telephoneNumber.length() < MIN_TELEPHONE_NUMBER_LENGTH) {
+        if (telephoneNumber.length() < MIN_TELEPHONE_NUMBER_LENGTH + 1) {
             return TelephoneNumberState.TELEPHONE_NUMBER_TOO_SHORT;
         }
         //Check if it's actually a number and doesn't contain anything else
         //First we have to remove the "+"
-        if (!telephoneNumber.substring(1, telephoneNumber.length() - 1).matches("[0-9]+")) {
+        if (!telephoneNumber.matches("\\+?\\d{"+MIN_TELEPHONE_NUMBER_LENGTH+","+MAX_TELEPHONE_NUMBER_LENGTH+"}")) {
             return TelephoneNumberState.TELEPHONE_NUMBER_NOT_A_NUMBER;
         }
         //Check if there is a country code.
@@ -76,15 +76,6 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     }
 
     /**
-     * Sets or updates the peer's address.
-     * @param telephoneNumber New address for the peer.
-     */
-    @Override
-    public void setAddress(String telephoneNumber) {
-        this.telephoneNumber = telephoneNumber;
-    }
-
-    /**
      * Possible states of a telephone number after a validity check
      */
     public enum TelephoneNumberState {
@@ -104,6 +95,8 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     public boolean equals(Object o) {
         if(o == null)
             return false;
+        if(this == o)
+            return true;
         if (!(o instanceof SMSPeer))
             return false;
         SMSPeer peer = (SMSPeer) o;

@@ -16,10 +16,4 @@ public interface Peer<A> extends Serializable {
      */
     A getAddress();
 
-    /**
-     * Sets or updates the peer's address
-     * @param address new address for the peer
-     */
-    void setAddress(A address);
-
 }
