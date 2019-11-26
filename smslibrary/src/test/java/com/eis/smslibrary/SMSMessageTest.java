@@ -24,7 +24,7 @@ public class SMSMessageTest{
 
     @Before
     public void init() {
-        smsMessage = new SMSMessage(new SMSPeer(VALID_TELEPHONE_NUMBER), VALID_TEXT_MESSAGE);
+        new SMSMessage(new SMSPeer(VALID_TELEPHONE_NUMBER), VALID_TEXT_MESSAGE);
     }
 
     @Test(expected = InvalidSMSMessageException.class)
