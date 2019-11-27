@@ -24,12 +24,12 @@ public class SMSMessageTest{
 
     @Before
     public void init() {
-        new SMSMessage(new SMSPeer(VALID_TELEPHONE_NUMBER), VALID_TEXT_MESSAGE);
+        smsMessage = new SMSMessage(new SMSPeer(VALID_TELEPHONE_NUMBER), VALID_TEXT_MESSAGE);
     }
 
     @Test(expected = InvalidSMSMessageException.class)
     public void smsMessage_constructor_notValidTextMessage() {
-        smsMessage = new SMSMessage(new SMSPeer(VALID_TELEPHONE_NUMBER), TOO_LONG_TEXT_MESSAGE);
+        SMSMessage msg = new SMSMessage(new SMSPeer(VALID_TELEPHONE_NUMBER), TOO_LONG_TEXT_MESSAGE);
         Assert.fail("Should have thrown an InvalidSMSMessageException");
     }
 
