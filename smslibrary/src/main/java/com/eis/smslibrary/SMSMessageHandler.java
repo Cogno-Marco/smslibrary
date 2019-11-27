@@ -35,7 +35,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
 
     /**
      * Update the parse strategy to a custom one
-     * @param parseStrategy ?
+     * @param parseStrategy custom message parsing
      */
     public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String,SMSPeer,SMSMessage> parseStrategy){
         this.parseStrategy = parseStrategy;
