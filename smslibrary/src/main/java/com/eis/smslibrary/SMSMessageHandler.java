@@ -1,5 +1,8 @@
 package com.eis.smslibrary;
 
+import androidx.annotation.NonNull;
+
+import com.eis.communication.MessageHandler;
 import com.eis.communication.MessageParseStrategy;
 
 /**
@@ -34,7 +37,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
      * Update the parse strategy to a custom one
      * @param parseStrategy ?
      */
-    public void setMessageParseStrategy(MessageParseStrategy<String,SMSPeer,SMSMessage> parseStrategy){
+    public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String,SMSPeer,SMSMessage> parseStrategy){
         this.parseStrategy = parseStrategy;
     }
 
@@ -45,7 +48,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
      * @param messageData from the sms pdus
      * @return the message if the string has been parsed correctly, null otherwise
      */
-    public SMSMessage parseMessage(String peerData, String messageData){
+    public SMSMessage parseMessage(@NonNull final String peerData, @NonNull final String messageData){
         if(SMSPeer.checkPhoneNumber(peerData) != SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
             return null;
 
@@ -58,37 +61,39 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
      * @param message message to be translated/parsed
      * @return the string to send
      */
-    public String parseData(SMSMessage message){
+    public String parseData(@NonNull final SMSMessage message){
         return parseStrategy.parseData(message);
     }
 
-}
+    public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage>{
 
-class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage>{
+        protected static final String HIDDEN_CHARACTER = (char) 0x02 + "";
 
-    protected static final String HIDDEN_CHARACTER = (char) 0x02 + "";
+        /**
+         * Parses sms data into a SMSMessage if possible
+         * @param channelData read from the channel
+         * @return the parsed SMSMessage if the string was correct, null otherwise
+         */
+        @Override
+        public SMSMessage parseMessage(@NonNull final String channelData,@NonNull final SMSPeer channelPeer) {
+            //First character of the content must be the hidden char
+            if (!channelData.startsWith(HIDDEN_CHARACTER))
+                return null;
+            String actualMessageData = channelData.substring(1);
+            return new SMSMessage(channelPeer, actualMessageData);
+        }
 
-    /**
-     * Parses sms data into a SMSMessage if possible
-     * @param channelData read from the channel
-     * @return the parsed SMSMessage if the string was correct, null otherwise
-     */
-    @Override
-    public SMSMessage parseMessage(String channelData, SMSPeer channelPeer) {
-        //First character of the content must be the hidden char
-        if (!channelData.startsWith(HIDDEN_CHARACTER))
-            return null;
-
-        return new SMSMessage(channelPeer, channelData);
+        /**
+         * Parses SMSMessage into sms content data
+         * @param message from library
+         * @return the parsed sms content data ready to be sent
+         */
+        @Override
+        public String parseData(@NonNull final SMSMessage message) {
+            return HIDDEN_CHARACTER + message.getData();
+        }
     }
 
-    /**
-     * Parses SMSMessage into sms content data
-     * @param message from library
-     * @return the parsed sms content data ready to be sent
-     */
-    @Override
-    public String parseData(SMSMessage message) {
-        return HIDDEN_CHARACTER + message.getData();
-    }
 }
+
+
