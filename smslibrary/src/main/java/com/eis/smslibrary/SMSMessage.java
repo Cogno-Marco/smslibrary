@@ -1,5 +1,7 @@
 package com.eis.smslibrary;
 
+import androidx.annotation.NonNull;
+
 import com.eis.communication.Message;
 import com.eis.smslibrary.exceptions.InvalidSMSMessageException;
 
@@ -23,10 +25,10 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * Constructor for a sms text message.
      *
      * @param peer        a valid peer
-     * @param messageText the message content
+     * @param messageText the message content, can be empty but not null
      * @throws InvalidSMSMessageException if checkMessageText is different from MESSAGE_TEXT_VALID
      */
-    public SMSMessage(SMSPeer peer, String messageText) throws InvalidSMSMessageException {
+    public SMSMessage(@NonNull SMSPeer peer, @NonNull String messageText) throws InvalidSMSMessageException {
         //Checks on the message text
         ContentState contentState = checkMessageText(messageText);
         if (contentState != ContentState.MESSAGE_TEXT_VALID)
@@ -41,7 +43,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * @param messageText to be checked.
      * @return The state of the message after the validity tests.
      */
-    public static ContentState checkMessageText(String messageText) {
+    public static ContentState checkMessageText(@NonNull String messageText) {
         if (messageText.length() > SMSMessage.MAX_MSG_TEXT_LEN) {
             return ContentState.MESSAGE_TEXT_TOO_LONG;
         }
