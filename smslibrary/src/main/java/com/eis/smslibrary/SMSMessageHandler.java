@@ -58,7 +58,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
     /**
      * Translates a message into a string that can be sent via sms
      *
-     * @param message message to be translated/parsed
+     * @param message to be translated/parsed
      * @return the string to send
      */
     public String parseData(@NonNull final SMSMessage message){
@@ -72,6 +72,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
         /**
          * Parses sms data into a SMSMessage if possible
          * @param channelData read from the channel
+         * @param channelPeer that sent the data
          * @return the parsed SMSMessage if the string was correct, null otherwise
          */
         @Override
@@ -79,8 +80,8 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
             //First character of the content must be the hidden char
             if (!channelData.startsWith(HIDDEN_CHARACTER))
                 return null;
-            String actualMessageData = channelData.substring(1);
-            return new SMSMessage(channelPeer, actualMessageData);
+            String messageData = channelData.substring(1);
+            return new SMSMessage(channelPeer, messageData);
         }
 
         /**

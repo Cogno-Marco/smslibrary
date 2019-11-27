@@ -22,7 +22,7 @@ public interface MessageHandler<D,P,M extends Message> {
     /**
      * Translates a message into data that can be sent via communication channel
      *
-     * @param message message to be translated
+     * @param message to be translated
      * @return the data to send
      */
     D parseData (M message);

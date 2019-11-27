@@ -11,7 +11,7 @@ import org.junit.Test;
  */
 public class SMSMessageHandlerTest {
 
-    SMSMessageHandler defaultInstance;
+    private SMSMessageHandler defaultInstance;
     private static final MessageParseStrategy<String,SMSPeer,SMSMessage> DEFAULT_SMS_MESSAGE_PARSE_STRATEGY = SMSMessageHandler.getInstance().new DefaultSMSMessageParseStrategy();
     private static final SMSPeer DEFAULT_PEER = new SMSPeer("+393465433432");
     private static final String DEFAULT_MESSAGE_CONTENT = "Test content";
@@ -40,7 +40,6 @@ public class SMSMessageHandlerTest {
      */
     @Test
     public void parseMessage_wrongSMS_isNull(){
-
         Assert.assertNull(defaultInstance.parseMessage(DEFAULT_PEER.getAddress(),DEFAULT_MESSAGE_CONTENT));
     }
 }
