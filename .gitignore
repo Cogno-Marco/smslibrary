@@ -14,7 +14,7 @@ gen/
 out/
 
 # Gradle files
-.gradle/
+.gradle
 build/
 
 # Local configuration file (sdk path, etc)
@@ -65,3 +65,9 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
+
+# Mac OS specific files
+.DS_Store
+
+# Other files
+.cxx
