@@ -14,7 +14,7 @@ gen/
 out/
 
 # Gradle files
-.gradle/
+.gradle
 build/
 
 # Local configuration file (sdk path, etc)
@@ -38,6 +38,8 @@ captures/
 .idea/tasks.xml
 .idea/gradle.xml
 .idea/assetWizardSettings.xml
+.idea/modules.xml
+.idea/navEditor.xml
 .idea/dictionaries
 .idea/libraries
 .idea/caches
@@ -63,3 +65,9 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
+
+# Mac OS specific files
+.DS_Store
+
+# Other files
+.cxx
