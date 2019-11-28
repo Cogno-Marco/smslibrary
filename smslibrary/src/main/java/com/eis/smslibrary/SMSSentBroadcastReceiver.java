@@ -1,7 +1,6 @@
 package com.eis.smslibrary;
 
 import android.app.Activity;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -23,10 +22,10 @@ class SMSSentBroadcastReceiver extends BroadcastReceiver {
     /**
      * Constructor for the custom {@link BroadcastReceiver}.
      *
-     * @param message  message that will be sent.
-     * @param listener listener to be called when the operation is completed successfully or not.
+     * @param message  that will be sent.
+     * @param listener to be called when the operation is completed.
      */
-    SMSSentBroadcastReceiver(@NonNull final SMSMessage message,@NonNull final SMSSentListener listener) {
+    SMSSentBroadcastReceiver(@NonNull final SMSMessage message, @NonNull final SMSSentListener listener) {
         this.listener = listener;
         this.message = message;
     }
@@ -47,6 +46,8 @@ class SMSSentBroadcastReceiver extends BroadcastReceiver {
 
     /**
      * This method is subscribed to the intent of a message sent, and will be called whenever a message is sent using this library.
+     * It interprets the state of the message sending: {@link SMSMessage.SentState#MESSAGE_SENT} if it has been correctly sent,
+     * some other state otherwise; then calls the listener and unregisters itself.
      */
     @Override
     public void onReceive(Context context, Intent intent) {
