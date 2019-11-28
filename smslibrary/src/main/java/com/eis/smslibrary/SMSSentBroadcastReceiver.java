@@ -13,6 +13,8 @@ import com.eis.smslibrary.listeners.SMSSentListener;
 /**
  * Broadcast receiver for sent messages, called by Android Library.
  * Must be instantiated and set as receiver with context.registerReceiver(...)
+ *
+ * @author Luca Crema, Marco Mariotto
  */
 class SMSSentBroadcastReceiver extends BroadcastReceiver {
 
