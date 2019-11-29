@@ -3,6 +3,7 @@ package com.eis.smslibrary;
 import androidx.annotation.NonNull;
 
 import com.eis.communication.Peer;
+import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
 
 /**
  * Implementation of {@link Peer} for SMS communication channel.
@@ -20,7 +21,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
      * @param telephoneNumber Address for the peer.
      * @throws InvalidTelephoneNumberException If telephoneNumber check is not {@link TelephoneNumberState#TELEPHONE_NUMBER_VALID}.
      */
-    public SMSPeer(String telephoneNumber) throws InvalidTelephoneNumberException{
+    public SMSPeer(String telephoneNumber) throws InvalidTelephoneNumberException {
         TelephoneNumberState telephoneNumberState = SMSPeer.checkPhoneNumber(telephoneNumber);
         if(telephoneNumberState != TelephoneNumberState.TELEPHONE_NUMBER_VALID)
             throw new InvalidTelephoneNumberException(telephoneNumberState);
@@ -116,37 +117,5 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     @NonNull
     public String toString(){
         return telephoneNumber;
-    }
-
-}
-
-/**
- * Exception usually thrown if a Peer has been instantiated without having the telephone number checked for validity
- * @author Luca Crema, suggested by Marco Cognolato
- */
-class InvalidTelephoneNumberException extends RuntimeException{
-
-    /**
-     * Invalid state of the telephone number
-     */
-    private SMSPeer.TelephoneNumberState telephoneNumberState;
-
-    /**
-     * @param state Invalid state of telephone number, cannot be {@link SMSPeer.TelephoneNumberState#TELEPHONE_NUMBER_VALID}
-     */
-    public InvalidTelephoneNumberException(SMSPeer.TelephoneNumberState state){
-        if(state == SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
-            throw new IllegalArgumentException("TelephoneNumberState cannot be TELEPHONE_NUMBER_VALID if InvalidTelephoneNumberException is thrown!");
-        this.telephoneNumberState = state;
-    }
-
-    /**
-     * @param state Invalid state of telephone number, cannot be {@link SMSPeer.TelephoneNumberState#TELEPHONE_NUMBER_VALID}
-     */
-    public InvalidTelephoneNumberException(String message, SMSPeer.TelephoneNumberState state) {
-        super(message);
-        if(state == SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
-            throw new IllegalArgumentException("TelephoneNumberState cannot be TELEPHONE_NUMBER_VALID if InvalidTelephoneNumberException is thrown!");
-        this.telephoneNumberState = state;
     }
 }
