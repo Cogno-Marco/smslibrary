@@ -15,14 +15,14 @@ import com.eis.smslibrary.SMSReceivedBroadcastReceiver;
  * @author Luca Crema, Alberto Ursino, Marco Tommasini, Alessandra Tonin
  * @since 29/11/2019
  */
-public abstract class SMSReceivedListener extends IntentService {
+public abstract class SMSReceivedServiceListener extends IntentService {
 
     /**
      * Creates an IntentService. Invoked by your subclass's constructor.
      *
      * @param name Used to name the worker thread, important only for debugging.
      */
-    protected SMSReceivedListener(@NonNull String name) {
+    protected SMSReceivedServiceListener(@NonNull String name) {
         super(name);
     }
 

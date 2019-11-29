@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
-import com.eis.smslibrary.listeners.SMSReceivedListener;
+import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 import com.gruppo_4.preferences.PreferencesManager;
 
@@ -19,7 +19,7 @@ import java.lang.ref.WeakReference;
  * Communication handler for SMSs. It's a Singleton, you should
  * access it with {@link #getInstance}, and before doing anything you
  * should call {@link #setup}.<br/>
- *<br/>
+ * <br/>
  * If you want messages to be received on app closed too, consider
  * using {@link com.eis.smslibrary.background.SMSBackgroundHandler}
  *
@@ -29,7 +29,7 @@ import java.lang.ref.WeakReference;
 public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
-    public static final int RANDOM_STARTING_COUNTER_VALUE_RANGE  = 100000;
+    public static final int RANDOM_STARTING_COUNTER_VALUE_RANGE = 100000;
 
     /**
      * Singleton instance
@@ -56,7 +56,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     private SMSHandler() {
         //Random because if we close and open the app the value probably differs
-        messageCounter = (int)(Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
+        messageCounter = (int) (Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
     }
 
     /**
@@ -101,14 +101,16 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
         String smsContent = SMSMessageHandler.getInstance().parseData(message);
         PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
 
-        SMSCore.sendMessage(smsContent, message.getPeer().getAddress(),sentPI,null);
+        SMSCore.sendMessage(smsContent, message.getPeer().getAddress(), sentPI, null);
     }
 
     /**
      * Saves in memory the service class name to wake up
+     *
      * @param receivedListenerClassName the listener called on message received
+     * @param <T>                       the class type that extends {@link SMSReceivedServiceListener} to be called
      */
-    public void setReceivedListener(Class<SMSReceivedListener> receivedListenerClassName) {
+    public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName) {
         PreferencesManager.setString(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
     }
 
@@ -116,7 +118,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * Creates a new {@link SMSSentBroadcastReceiver} and registers it to receive broadcasts
      * with action {@value SENT_MESSAGE_INTENT_ACTION}
      *
-     * @param message that will be sent
+     * @param message  that will be sent
      * @param listener to call on broadcast received
      * @return a {@link PendingIntent} to be passed to SMSCore
      */
@@ -132,10 +134,11 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
     /**
      * Checks if the handler has been setup
+     *
      * @throws IllegalStateException if the handler has not been setup
      */
-    private void checkSetup(){
-        if(context == null)
+    private void checkSetup() {
+        if (context == null)
             throw new IllegalStateException("You must call setup() first");
     }
 }
