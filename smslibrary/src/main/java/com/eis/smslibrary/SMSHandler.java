@@ -111,6 +111,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param <T>                       the class type that extends {@link SMSReceivedServiceListener} to be called
      */
     public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName) {
+        checkSetup();
         PreferencesManager.setString(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
     }
 
