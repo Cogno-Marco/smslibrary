@@ -1,4 +1,4 @@
-package com.gruppo_4.preferences;
+package it.lucacrema.preferences;
 
 import android.content.Context;
 

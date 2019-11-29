@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.eis.communication.CommunicationHandler;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
-import com.gruppo_4.preferences.PreferencesManager;
+import it.lucacrema.preferences.PreferencesManager;
 
 import java.lang.ref.WeakReference;
 
@@ -105,7 +105,8 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     }
 
     /**
-     * Saves in memory the service class name to wake up
+     * Saves in memory the service class name to wake up. It doesn't need an
+     * instance of the class, it just saves the name and instantiates it when needed.
      *
      * @param receivedListenerClassName the listener called on message received
      * @param <T>                       the class type that extends {@link SMSReceivedServiceListener} to be called
