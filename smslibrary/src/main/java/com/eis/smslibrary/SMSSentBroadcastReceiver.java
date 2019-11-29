@@ -12,7 +12,9 @@ import com.eis.smslibrary.listeners.SMSSentListener;
 
 /**
  * Broadcast receiver for sent messages, called by Android Library.
- * Must be instantiated and set as receiver with context.registerReceiver(...)
+ * Must be instantiated and set as receiver with context.registerReceiver(...).
+ * There has to be one different SentBroadcastReceiver per message sent,
+ * so every IntentFilter name has to be different
  *
  * @author Luca Crema, Marco Mariotto
  */
@@ -29,20 +31,6 @@ class SMSSentBroadcastReceiver extends BroadcastReceiver {
      */
     SMSSentBroadcastReceiver(@NonNull final SMSMessage message, @NonNull final SMSSentListener listener) {
         this.listener = listener;
-        this.message = message;
-    }
-
-    /**
-     * @param listener called when the message is sent.
-     */
-    void setListener(@NonNull final SMSSentListener listener) {
-        this.listener = listener;
-    }
-
-    /**
-     * @param message passed to the listener when it is sent.
-     */
-    void setMessage(@NonNull final SMSMessage message) {
         this.message = message;
     }
 

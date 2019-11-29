@@ -14,7 +14,7 @@ import java.util.ArrayList;
  *
  * @author Luca Crema
  */
-class SMSCore {
+final class SMSCore {
 
     /**
      * Calls the library method to send a single message
