@@ -16,6 +16,8 @@ import android.telephony.SmsMessage;
  */
 public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
 
+    public static final String INTENT_MESSAGE_TAG = "SMSMessage";
+
     /**
      * Parses message and calls listener
      */
