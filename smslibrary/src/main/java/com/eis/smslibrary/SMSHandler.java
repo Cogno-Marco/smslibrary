@@ -9,14 +9,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
-import com.eis.smslibrary.listeners.SMSSentListener;
-
-import java.lang.ref.WeakReference;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
-import it.lucacrema.preferences.PreferencesManager;
 
 import java.lang.ref.WeakReference;
+
+import it.lucacrema.preferences.PreferencesManager;
+
 
 /**
  * Communication handler for SMSs. It's a Singleton, you should
