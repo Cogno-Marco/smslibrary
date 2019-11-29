@@ -9,6 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
+import com.eis.smslibrary.listeners.SMSSentListener;
+
+import java.lang.ref.WeakReference;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 import it.lucacrema.preferences.PreferencesManager;
@@ -65,7 +68,6 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     public static SMSHandler getInstance() {
         if (instance == null)
             instance = new SMSHandler();
-
         return instance;
     }
 
@@ -105,18 +107,6 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     }
 
     /**
-     * Saves in memory the service class name to wake up. It doesn't need an
-     * instance of the class, it just saves the name and instantiates it when needed.
-     *
-     * @param receivedListenerClassName the listener called on message received
-     * @param <T>                       the class type that extends {@link SMSReceivedServiceListener} to be called
-     */
-    public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName) {
-        checkSetup();
-        PreferencesManager.setString(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
-    }
-
-    /**
      * Creates a new {@link SMSSentBroadcastReceiver} and registers it to receive broadcasts
      * with action {@value SENT_MESSAGE_INTENT_ACTION}
      *
@@ -143,4 +133,17 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
         if (context == null)
             throw new IllegalStateException("You must call setup() first");
     }
+
+    /**
+     * Saves in memory the service class name to wake up. It doesn't need an
+     * instance of the class, it just saves the name and instantiates it when needed.
+     *
+     * @param receivedListenerClassName the listener called on message received
+     * @param <T>                       the class type that extends {@link SMSReceivedServiceListener} to be called
+     */
+    public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName) {
+        checkSetup();
+        PreferencesManager.setString(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
+    }
+
 }
