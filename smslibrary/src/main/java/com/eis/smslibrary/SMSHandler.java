@@ -11,15 +11,20 @@ import androidx.annotation.Nullable;
 import com.eis.communication.CommunicationHandler;
 import com.eis.smslibrary.listeners.SMSReceivedListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
+import com.gruppo_4.preferences.PreferencesManager;
 
 import java.lang.ref.WeakReference;
 
 /**
  * Communication handler for SMSs. It's a Singleton, you should
  * access it with {@link #getInstance}, and before doing anything you
- * should call {@link #setup}.
+ * should call {@link #setup}.<br/>
+ *<br/>
+ * If you want messages to be received on app closed too, consider
+ * using {@link com.eis.smslibrary.background.SMSBackgroundHandler}
  *
  * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini
+ * @since 29/11/2019
  */
 public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
@@ -37,11 +42,6 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * context that is still running. Prevents memory leaks.
      */
     private WeakReference<Context> context;
-
-    /**
-     * Received listener reference
-     */
-    private SMSReceivedListener receivedListener;
 
     /**
      * This message counter is used so that we can have a different action name
@@ -105,20 +105,11 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     }
 
     /**
-     * @param receivedListener the listener called on message received
+     * Saves in memory the service class name to wake up
+     * @param receivedListenerClassName the listener called on message received
      */
-    public void setReceivedListener(SMSReceivedListener receivedListener){
-        this.receivedListener = receivedListener;
-    }
-
-    /**
-     * Method used by {@link SMSReceivedBroadcastReceiver} to call the listener
-     * for messages received
-     * @param receivedMessage the message that has been received
-     */
-    protected void callReceivedListener(SMSMessage receivedMessage){
-        if(receivedListener != null)
-            receivedListener.onMessageReceived(receivedMessage);
+    public void setReceivedListener(Class<SMSReceivedListener> receivedListenerClassName) {
+        PreferencesManager.setString(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
     }
 
     /**
