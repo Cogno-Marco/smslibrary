@@ -12,7 +12,6 @@ import android.telephony.SmsMessage;
  *
  * @author Luca Crema, Marco Mariotto
  * @since 29/11/2019
- *
  */
 public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
 
@@ -29,7 +28,7 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
         Object[] smsExtras = (Object[]) extras.get("pdus");
         String format = (String) extras.get("format");
 
-        if(smsExtras == null) //could be null
+        if (smsExtras == null) //could be null
             return;
 
         for (Object smsData : smsExtras) {
@@ -49,9 +48,10 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
 
     /**
      * Calls the appropriate method to create a message from its pdus
+     *
      * @param smsData message pdus
-     * @param format available only on build version >= 23
-     * @return
+     * @param format  available only on build version >= 23
+     * @return the created message
      */
     private SmsMessage createMessageFromPdu(Object smsData, String format) {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

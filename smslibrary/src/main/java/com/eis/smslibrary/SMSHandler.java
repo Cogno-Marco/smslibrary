@@ -24,7 +24,7 @@ import java.lang.ref.WeakReference;
 public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
-    public static final int RANDOM_STARTING_COUNTER_VALUE_RANGE  = 100000;
+    public static final int RANDOM_STARTING_COUNTER_VALUE_RANGE = 100000;
 
     /**
      * Singleton instance
@@ -56,7 +56,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     private SMSHandler() {
         //Random because if we close and open the app the value probably differs
-        messageCounter = (int)(Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
+        messageCounter = (int) (Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
     }
 
     /**
@@ -101,23 +101,24 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
         String smsContent = SMSMessageHandler.getInstance().parseData(message);
         PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
 
-        SMSCore.sendMessage(smsContent, message.getPeer().getAddress(),sentPI,null);
+        SMSCore.sendMessage(smsContent, message.getPeer().getAddress(), sentPI, null);
     }
 
     /**
      * @param receivedListener the listener called on message received
      */
-    public void setReceivedListener(SMSReceivedListener receivedListener){
+    public void setReceivedListener(SMSReceivedListener receivedListener) {
         this.receivedListener = receivedListener;
     }
 
     /**
      * Method used by {@link SMSReceivedBroadcastReceiver} to call the listener
      * for messages received
+     *
      * @param receivedMessage the message that has been received
      */
-    protected void callReceivedListener(SMSMessage receivedMessage){
-        if(receivedListener != null)
+    protected void callReceivedListener(SMSMessage receivedMessage) {
+        if (receivedListener != null)
             receivedListener.onMessageReceived(receivedMessage);
     }
 
@@ -125,7 +126,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * Creates a new {@link SMSSentBroadcastReceiver} and registers it to receive broadcasts
      * with action {@value SENT_MESSAGE_INTENT_ACTION}
      *
-     * @param message that will be sent
+     * @param message  that will be sent
      * @param listener to call on broadcast received
      * @return a {@link PendingIntent} to be passed to SMSCore
      */
@@ -141,10 +142,11 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
     /**
      * Checks if the handler has been setup
+     *
      * @throws IllegalStateException if the handler has not been setup
      */
-    private void checkSetup(){
-        if(context == null)
+    private void checkSetup() {
+        if (context == null)
             throw new IllegalStateException("You must call setup() first");
     }
 }
