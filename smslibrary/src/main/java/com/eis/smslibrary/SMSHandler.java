@@ -24,6 +24,7 @@ import java.lang.ref.WeakReference;
 public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
+    public static final int RANDOM_STARTING_COUNTER_VALUE_RANGE  = 100000;
 
     /**
      * Singleton instance
@@ -55,7 +56,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     private SMSHandler() {
         //Random because if we close and open the app the value probably differs
-        messageCounter = (int)(Math.random() * 100000);
+        messageCounter = (int)(Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
     }
 
     /**
