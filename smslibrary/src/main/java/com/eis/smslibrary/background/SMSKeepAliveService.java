@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.eis.smslibrary.SMSReceivedBroadcastReceiver;
 
@@ -13,7 +12,7 @@ import com.eis.smslibrary.SMSReceivedBroadcastReceiver;
  *
  * @author Marco Tommasini & Luca Crema
  */
-public class SMSKeepAliveService extends Service {
+public final class SMSKeepAliveService extends Service {
 
     private static SMSReceivedBroadcastReceiver broadcastReceiverInstance;
 
