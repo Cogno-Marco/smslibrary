@@ -43,9 +43,19 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     private SMSReceivedListener receivedListener;
 
     /**
+     * This message counter is used so that we can have a different action name
+     * for pending intent (that will call broadcastReceiver). If we were to use the
+     * same action name for every message we would have a conflict and we wouldn't
+     * know what message has been sent
+     */
+    private int messageCounter;
+
+    /**
      * Private constructor for Singleton
      */
     private SMSHandler() {
+        //Random because if we close and open the app the value probably differs
+        messageCounter = (int)(Math.random() * 100000);
     }
 
     /**
@@ -122,8 +132,9 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
             return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
 
         SMSSentBroadcastReceiver onSentReceiver = new SMSSentBroadcastReceiver(message, listener);
-        context.get().registerReceiver(onSentReceiver, new IntentFilter(SENT_MESSAGE_INTENT_ACTION));
-        return PendingIntent.getBroadcast(context.get(), 0, new Intent(SENT_MESSAGE_INTENT_ACTION), 0);
+        String actionName = SENT_MESSAGE_INTENT_ACTION + (messageCounter++);
+        context.get().registerReceiver(onSentReceiver, new IntentFilter(actionName));
+        return PendingIntent.getBroadcast(context.get(), 0, new Intent(actionName), 0);
     }
 
     /**
