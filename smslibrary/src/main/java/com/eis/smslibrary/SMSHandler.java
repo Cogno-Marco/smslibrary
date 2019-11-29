@@ -116,7 +116,8 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param receivedMessage the message that has been received
      */
     protected void callReceivedListener(SMSMessage receivedMessage){
-        receivedListener.onMessageReceived(receivedMessage);
+        if(receivedListener != null)
+            receivedListener.onMessageReceived(receivedMessage);
     }
 
     /**
