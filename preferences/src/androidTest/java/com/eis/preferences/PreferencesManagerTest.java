@@ -1,4 +1,4 @@
-package it.lucacrema.preferences;
+package com.eis.preferences;
 
 import android.content.Context;
 
@@ -10,6 +10,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+/**
+ * @author Luca Crema
+ */
 public class PreferencesManagerTest {
 
     private static final String DEFAULT_INT_KEY = "defaultIntKey";
