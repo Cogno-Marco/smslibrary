@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
+import com.eis.smslibrary.listeners.SMSReceivedListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
 import java.lang.ref.WeakReference;
@@ -24,6 +25,9 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
 
+    /**
+     * Singleton instance
+     */
     private static SMSHandler instance;
 
     /**
@@ -32,6 +36,11 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * context that is still running. Prevents memory leaks.
      */
     private WeakReference<Context> context;
+
+    /**
+     * Received listener reference
+     */
+    private SMSReceivedListener receivedListener;
 
     /**
      * Private constructor for Singleton
@@ -60,6 +69,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
     /**
      * Sends a message to a destination peer via SMS.
+     * Requires {@link android.Manifest.permission#SEND_SMS}
      *
      * @param message to be sent in the channel to a peer
      */
@@ -76,10 +86,27 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param sentListener called on message sent or on error, can be null
      */
     public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSSentListener sentListener) {
+        checkSetup();
         String smsContent = SMSMessageHandler.getInstance().parseData(message);
         PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
 
         SMSCore.sendMessage(smsContent, message.getPeer().getAddress(),sentPI,null);
+    }
+
+    /**
+     * @param receivedListener the listener called on message received
+     */
+    public void setReceivedListener(SMSReceivedListener receivedListener){
+        this.receivedListener = receivedListener;
+    }
+
+    /**
+     * Method used by {@link SMSReceivedBroadcastReceiver} to call the listener
+     * for messages received
+     * @param receivedMessage the message that has been received
+     */
+    protected void callReceivedListener(SMSMessage receivedMessage){
+        receivedListener.onMessageReceived(receivedMessage);
     }
 
     /**
@@ -97,5 +124,14 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
         SMSSentBroadcastReceiver onSentReceiver = new SMSSentBroadcastReceiver(message, listener);
         context.get().registerReceiver(onSentReceiver, new IntentFilter(SENT_MESSAGE_INTENT_ACTION));
         return PendingIntent.getBroadcast(context.get(), 0, new Intent(SENT_MESSAGE_INTENT_ACTION), 0);
+    }
+
+    /**
+     * Checks if the handler has been setup
+     * @throws IllegalStateException if the handler has not been setup
+     */
+    private void checkSetup(){
+        if(context == null)
+            throw new IllegalStateException("You must call setup() first");
     }
 }
