@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
+import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import com.eis.smslibrary.listeners.SMSReceivedListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
@@ -24,6 +25,7 @@ import java.lang.ref.WeakReference;
 public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
+    public static final String DELIVERED_MESSAGE_INTENT_ACTION = "SMS_DELIVERED";
     public static final int RANDOM_STARTING_COUNTER_VALUE_RANGE = 100000;
 
     /**
@@ -86,7 +88,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     @Override
     public void sendMessage(final @NonNull SMSMessage message) {
-        sendMessage(message, null);
+        sendMessage(message, null, null);
     }
 
     /**
@@ -97,6 +99,39 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param sentListener called on message sent or on error, can be null
      */
     public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSSentListener sentListener) {
+        checkSetup();
+        String smsContent = SMSMessageHandler.getInstance().parseData(message);
+        PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
+
+        SMSCore.sendMessage(smsContent, message.getPeer().getAddress(), sentPI, null);
+    }
+
+    /**
+     * Sends a message to a destination peer via SMS then
+     * calls the listener.
+     *
+     * @param message      to be sent in the channel to a peer
+     * @param deliveredListener called on message delivered or on error, can be null
+     */
+    public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener deliveredListener) {
+        checkSetup();
+        String smsContent = SMSMessageHandler.getInstance().parseData(message);
+        PendingIntent sentPI = setupNewDeliverReceiver(message, deliveredListener);
+
+        SMSCore.sendMessage(smsContent, message.getPeer().getAddress(), sentPI, null);
+    }
+
+    /**
+     * Sends a message to a destination peer via SMS then
+     * calls the listener.
+     *
+     * @param message      to be sent in the channel to a peer
+     * @param sentListener called on message sent or on error, can be null
+     * @param deliveredListener called on message delivered or on error, can be null
+     */
+    public void sendMessage(final @NonNull SMSMessage message,
+                            final @Nullable SMSSentListener sentListener,
+                            final @Nullable SMSDeliveredListener deliveredListener) {
         checkSetup();
         String smsContent = SMSMessageHandler.getInstance().parseData(message);
         PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
@@ -137,6 +172,24 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
         SMSSentBroadcastReceiver onSentReceiver = new SMSSentBroadcastReceiver(message, listener);
         String actionName = SENT_MESSAGE_INTENT_ACTION + (messageCounter++);
         context.get().registerReceiver(onSentReceiver, new IntentFilter(actionName));
+        return PendingIntent.getBroadcast(context.get(), 0, new Intent(actionName), 0);
+    }
+
+    /**
+     * Creates a new {@link SMSDeliveredBroadcastReceiver} and registers it to receive broadcasts
+     * with action {@value DELIVERED_MESSAGE_INTENT_ACTION}
+     *
+     * @param message  that will be sent
+     * @param listener to call on broadcast received
+     * @return a {@link PendingIntent} to be passed to SMSCore
+     */
+    private PendingIntent setupNewDeliverReceiver(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener listener) {
+        if (listener == null)
+            return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
+
+        SMSDeliveredBroadcastReceiver onDeliveredReceiver = new SMSDeliveredBroadcastReceiver(message, listener);
+        String actionName = SENT_MESSAGE_INTENT_ACTION + (messageCounter++);
+        context.get().registerReceiver(onDeliveredReceiver, new IntentFilter(actionName));
         return PendingIntent.getBroadcast(context.get(), 0, new Intent(actionName), 0);
     }
 

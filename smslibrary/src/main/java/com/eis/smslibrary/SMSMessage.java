@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.eis.communication.Message;
 import com.eis.smslibrary.exceptions.InvalidSMSMessageException;
+import com.eis.smslibrary.listeners.SMSSentListener;
 
 /**
  * Representation of a single sms message
@@ -87,7 +88,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * so that one can see all the possible values without having to
      * look at the official Android documentation
      * <p>
-     * These are used in {@link SMSMessageSentListener}
+     * These are used in {@link SMSSentBroadcastReceiver}
      */
     public enum SentState {
         MESSAGE_SENT,
@@ -96,6 +97,20 @@ public class SMSMessage implements Message<String, SMSPeer> {
         ERROR_NULL_PDU,
         ERROR_NO_SERVICE,
         ERROR_LIMIT_EXCEEDED
+    }
+
+    /**
+     * Possible states of a message after it has been delivered,
+     * These are given by Android library as an int, they have been put in an enum so
+     * that one can see al the possible values without having to look
+     * at the official Android documentation
+     *
+     * These are used in {@link SMSDeliveredBroadcastReceiver}
+     */
+    public enum DeliveredState {
+        MESSAGE_DELIVERED,
+        DELIVERY_ERROR,
+        ERROR_GENERIC_FAILURE
     }
 }
 
