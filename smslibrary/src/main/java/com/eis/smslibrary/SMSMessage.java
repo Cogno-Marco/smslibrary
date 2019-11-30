@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.eis.communication.Message;
 import com.eis.smslibrary.exceptions.InvalidSMSMessageException;
-import com.eis.smslibrary.listeners.SMSSentListener;
 
 /**
  * Representation of a single sms message

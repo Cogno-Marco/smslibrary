@@ -100,10 +100,8 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSSentListener sentListener) {
         checkSetup();
-        String smsContent = SMSMessageHandler.getInstance().parseData(message);
         PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
-
-        SMSCore.sendMessage(smsContent, message.getPeer().getAddress(), sentPI, null);
+        SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), sentPI, null);
     }
 
     /**
@@ -115,10 +113,8 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener deliveredListener) {
         checkSetup();
-        String smsContent = SMSMessageHandler.getInstance().parseData(message);
-        PendingIntent sentPI = setupNewDeliverReceiver(message, deliveredListener);
-
-        SMSCore.sendMessage(smsContent, message.getPeer().getAddress(), sentPI, null);
+        PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener);
+        SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), null, deliveredPI);
     }
 
     /**
@@ -133,10 +129,9 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
                             final @Nullable SMSSentListener sentListener,
                             final @Nullable SMSDeliveredListener deliveredListener) {
         checkSetup();
-        String smsContent = SMSMessageHandler.getInstance().parseData(message);
         PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
-
-        SMSCore.sendMessage(smsContent, message.getPeer().getAddress(), sentPI, null);
+        PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener);
+        SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), sentPI, deliveredPI);
     }
 
     /**
@@ -188,7 +183,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
             return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
 
         SMSDeliveredBroadcastReceiver onDeliveredReceiver = new SMSDeliveredBroadcastReceiver(message, listener);
-        String actionName = SENT_MESSAGE_INTENT_ACTION + (messageCounter++);
+        String actionName = DELIVERED_MESSAGE_INTENT_ACTION + (messageCounter++);
         context.get().registerReceiver(onDeliveredReceiver, new IntentFilter(actionName));
         return PendingIntent.getBroadcast(context.get(), 0, new Intent(actionName), 0);
     }
@@ -201,5 +196,14 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     private void checkSetup() {
         if (context == null)
             throw new IllegalStateException("You must call setup() first");
+    }
+
+    /**
+     * Helper function that gets the message content by using the pre-setup parser in {@link SMSMessageHandler}
+     * @param message to get the data from
+     * @return the data parsed from the message
+     */
+    private String getSMSContent(SMSMessage message){
+        return SMSMessageHandler.getInstance().parseData(message);
     }
 }
