@@ -2,16 +2,8 @@ package com.eis.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Base64;
 
 import androidx.preference.PreferenceManager;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 
 /**
  * Service that writes and reads configurations/preferences in Android memory
@@ -79,27 +71,6 @@ public class PreferencesManager {
     }
 
     /**
-     * @param ctx context of an Activity or Service
-     * @param key key for the resource
-     * @param <O> class for the serialized object
-     * @return the object de-serialized if present, null otherwise
-     */
-    public static <O> O getObject(Context ctx, String key) {
-        String memoryObjectString = getSharedPreferences(ctx).getString(key, null);
-        if (memoryObjectString == null)
-            return null;
-
-        try {
-            byte[] b = memoryObjectString.getBytes();
-            ByteArrayInputStream bi = new ByteArrayInputStream(b);
-            ObjectInputStream si = new ObjectInputStream(bi);
-            return (O) (si.readObject());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
      * @param ctx   context of an Activity or Service
      * @param key   key for the resource
      * @param value value to be put or override
@@ -133,24 +104,6 @@ public class PreferencesManager {
         SharedPreferences.Editor editor = getEditor(ctx);
         editor.putBoolean(key, value);
         return editor.commit();
-    }
-
-    /**
-     * Saves a whole object state
-     *
-     * @param ctx    context of an Activity or Service
-     * @param key    key for the resource
-     * @param object value to be put or override
-     * @param <O>    type of the class to write
-     * @return if the value has been set correctly
-     * @throws IOException Any exception thrown by the underlying OutputStream.
-     */
-    public static <O extends Serializable> boolean setObject(Context ctx, String key, O object) throws IOException {
-        ByteArrayOutputStream bo = new ByteArrayOutputStream();
-        ObjectOutputStream so = new ObjectOutputStream(bo);
-        so.writeObject(object);
-        so.flush();
-        return setString(ctx, key, new String(Base64.encode(bo.toByteArray(), Base64.DEFAULT)));
     }
 
     /**

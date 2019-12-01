@@ -9,12 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
+import com.eis.preferences.PreferencesManager;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
 import java.lang.ref.WeakReference;
-
-import it.lucacrema.preferences.PreferencesManager;
 
 
 /**

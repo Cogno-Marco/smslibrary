@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
-import it.lucacrema.preferences.PreferencesManager;
+import com.eis.preferences.PreferencesManager;
 
 /**
  * Broadcast receiver for received messages, called by Android.
@@ -80,13 +80,12 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
         } catch (ClassNotFoundException e) {
             Log.e("SMSReceiver", "Service class to wake up could not be found");
         }
-        if (listener != null) {
-            Intent serviceIntent = new Intent(context, listener);
-            serviceIntent.putExtra(INTENT_MESSAGE_TAG, message);
-            context.startService(serviceIntent);
+        if (listener == null)
+            return;
 
-        } else {
-            //Listener null, nothing to perform
-        }
+        Intent serviceIntent = new Intent(context, listener);
+        serviceIntent.putExtra(INTENT_MESSAGE_TAG, message);
+        context.startService(serviceIntent);
+
     }
 }
