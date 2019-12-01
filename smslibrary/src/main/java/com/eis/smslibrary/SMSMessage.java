@@ -87,7 +87,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * so that one can see all the possible values without having to
      * look at the official Android documentation
      * <p>
-     * These are used in {@link SMSSentBroadcastReceiver}
+     * These are used in {@link com.eis.smslibrary.listeners.SMSSentListener}
      */
     public enum SentState {
         MESSAGE_SENT,
@@ -104,7 +104,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * that one can see al the possible values without having to look
      * at the official Android documentation
      *
-     * These are used in {@link SMSDeliveredBroadcastReceiver}
+     * These are used in {@link com.eis.smslibrary.listeners.SMSDeliveredListener}
      */
     public enum DeliveredState {
         MESSAGE_DELIVERED,

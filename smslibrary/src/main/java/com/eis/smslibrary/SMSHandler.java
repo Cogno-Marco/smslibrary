@@ -99,9 +99,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param sentListener called on message sent or on error, can be null
      */
     public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSSentListener sentListener) {
-        checkSetup();
-        PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
-        SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), sentPI, null);
+        sendMessage(message, sentListener, null);
     }
 
     /**
@@ -112,9 +110,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param deliveredListener called on message delivered or on error, can be null
      */
     public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener deliveredListener) {
-        checkSetup();
-        PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener);
-        SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), null, deliveredPI);
+        sendMessage(message, null, deliveredListener);
     }
 
     /**
