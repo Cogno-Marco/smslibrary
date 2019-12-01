@@ -7,8 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
-
-import com.eis.preferences.PreferencesManager;
+import it.lucacrema.preferences.PreferencesManager;
 
 /**
  * Broadcast receiver for received messages, called by Android.
