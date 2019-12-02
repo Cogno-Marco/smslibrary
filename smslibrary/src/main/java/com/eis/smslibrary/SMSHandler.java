@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
-
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
@@ -22,9 +21,6 @@ import it.lucacrema.preferences.PreferencesManager;
  * Communication handler for SMSs. It's a Singleton, you should
  * access it with {@link #getInstance}, and before doing anything you
  * should call {@link #setup}.<br/>
- * <br/>
- * If you want messages to be received on app closed too, consider
- * using {@link com.eis.smslibrary.background.SMSBackgroundHandler}
  *
  * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini
  * @since 29/11/2019
@@ -144,6 +140,14 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName) {
         checkSetup();
         PreferencesManager.setString(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
+    }
+
+    /**
+     * Unsubscribe the current {@link SMSReceivedServiceListener} from being called on message arrival
+     */
+    public void removeReceivedListener(){
+        checkSetup();
+        PreferencesManager.removeValue(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY);
     }
 
 }
