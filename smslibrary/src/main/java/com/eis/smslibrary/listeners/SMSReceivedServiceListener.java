@@ -1,10 +1,9 @@
 package com.eis.smslibrary.listeners;
 
-import android.app.IntentService;
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.JobIntentService;
 
 import com.eis.smslibrary.SMSMessage;
 import com.eis.smslibrary.SMSReceivedBroadcastReceiver;
@@ -15,16 +14,7 @@ import com.eis.smslibrary.SMSReceivedBroadcastReceiver;
  * @author Luca Crema, Alberto Ursino, Marco Tommasini, Alessandra Tonin
  * @since 29/11/2019
  */
-public abstract class SMSReceivedServiceListener extends IntentService {
-
-    /**
-     * Creates an IntentService. Invoked by your subclass's constructor.
-     *
-     * @param name Used to name the worker thread, important only for debugging.
-     */
-    protected SMSReceivedServiceListener(@NonNull String name) {
-        super(name);
-    }
+public abstract class SMSReceivedServiceListener extends JobIntentService {
 
     /**
      * Callback for when a sms message sent from this library is received
@@ -39,9 +29,10 @@ public abstract class SMSReceivedServiceListener extends IntentService {
      * @param intent intent passed from the broadcastReceiver
      */
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleWork(@Nullable Intent intent) {
         SMSMessage message = (SMSMessage) intent.getSerializableExtra(SMSReceivedBroadcastReceiver.INTENT_MESSAGE_TAG);
         onMessageReceived(message);
     }
+
 
 }
