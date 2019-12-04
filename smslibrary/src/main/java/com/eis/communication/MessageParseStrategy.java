@@ -14,11 +14,11 @@ public interface MessageParseStrategy<D, P extends Peer, M extends Message> {
     /**
      * Parse channel data into a library message
      *
-     * @param channelData read from the channel
      * @param channelPeer the sender of the channel message
+     * @param channelData read from the channel
      * @return library message
      */
-    M parseMessage(D channelData, P channelPeer);
+    M parseMessage(P channelPeer, D channelData);
 
     /**
      * Parse library message into channel data

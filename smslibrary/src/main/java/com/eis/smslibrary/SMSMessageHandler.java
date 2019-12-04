@@ -20,39 +20,40 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
     /**
      * Private constructor
      */
-    private SMSMessageHandler(){
+    private SMSMessageHandler() {
         parseStrategy = new DefaultSMSMessageParseStrategy();
     }
 
     /**
      * @return Singleton instance of this class
      */
-    public static SMSMessageHandler getInstance(){
-        if(instance == null)
+    public static SMSMessageHandler getInstance() {
+        if (instance == null)
             instance = new SMSMessageHandler();
         return instance;
     }
 
     /**
      * Update the parse strategy to a custom one
+     *
      * @param parseStrategy custom message parsing
      */
-    public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String,SMSPeer,SMSMessage> parseStrategy){
+    public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String, SMSPeer, SMSMessage> parseStrategy) {
         this.parseStrategy = parseStrategy;
     }
 
     /**
      * Interprets a string arrived via the communication channel and parses it to a library {@link SMSMessage}
      *
-     * @param peerData from the sms pdus
+     * @param peerData    from the sms pdus
      * @param messageData from the sms pdus
      * @return the message if the string has been parsed correctly, null otherwise
      */
-    public SMSMessage parseMessage(@NonNull final String peerData, @NonNull final String messageData){
-        if(SMSPeer.checkPhoneNumber(peerData) != SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
+    public SMSMessage parseMessage(@NonNull final String peerData, @NonNull final String messageData) {
+        if (SMSPeer.checkPhoneNumber(peerData) != SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
             return null;
 
-        return parseStrategy.parseMessage(messageData,new SMSPeer(peerData));
+        return parseStrategy.parseMessage(new SMSPeer(peerData), messageData);
     }
 
     /**
@@ -61,22 +62,23 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
      * @param message to be translated/parsed
      * @return the string to send
      */
-    public String parseData(@NonNull final SMSMessage message){
+    public String parseData(@NonNull final SMSMessage message) {
         return parseStrategy.parseData(message);
     }
 
-    public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage>{
+    public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage> {
 
         protected static final String HIDDEN_CHARACTER = (char) 0x02 + "";
 
         /**
          * Parses sms data into a SMSMessage if possible
-         * @param channelData read from the channel
+         *
          * @param channelPeer that sent the data
+         * @param channelData read from the channel
          * @return the parsed SMSMessage if the string was correct, null otherwise
          */
         @Override
-        public SMSMessage parseMessage(@NonNull final String channelData,@NonNull final SMSPeer channelPeer) {
+        public SMSMessage parseMessage(@NonNull final SMSPeer channelPeer, @NonNull final String channelData) {
             //First character of the content must be the hidden char
             if (!channelData.startsWith(HIDDEN_CHARACTER))
                 return null;
@@ -86,6 +88,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
 
         /**
          * Parses SMSMessage into sms content data
+         *
          * @param message from library
          * @return the parsed sms content data ready to be sent
          */
