@@ -74,10 +74,24 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     /**
      * Setup for the handler.
      *
-     * @param context current context.
+     * @param context current context. Must not be null
+     * @throws NullPointerException If the given context is null
      */
     public void setup(Context context) {
+        /*
+        null pointer exception is thrown because if the
+        context is null, this.context isn't, it's a WeakReference to a null object,
+        which later on causes problems
+         */
+        if(context == null) throw new NullPointerException("The given context must not be null!");
         this.context = new WeakReference<>(context);
+    }
+
+    /**
+     * Clears the current context. Function used by tests
+     */
+    public void clearSetup(){
+        this.context = null;
     }
 
     /**
