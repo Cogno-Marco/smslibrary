@@ -200,6 +200,6 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @return the data parsed from the message
      */
     private String getSMSContent(SMSMessage message){
-        return SMSMessageHandler.getInstance().parseData(message);
+        return new SMSMessageHandler().parseData(message);
     }
 }

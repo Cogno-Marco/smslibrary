@@ -20,17 +20,8 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
     /**
      * Private constructor
      */
-    private SMSMessageHandler() {
+    public SMSMessageHandler() {
         parseStrategy = new DefaultSMSMessageParseStrategy();
-    }
-
-    /**
-     * @return Singleton instance of this class
-     */
-    public static SMSMessageHandler getInstance() {
-        if (instance == null)
-            instance = new SMSMessageHandler();
-        return instance;
     }
 
     /**

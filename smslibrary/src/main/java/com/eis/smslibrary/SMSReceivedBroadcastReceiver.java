@@ -39,7 +39,7 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
             if (phoneNumber == null) //could be null
                 return;
 
-            SMSMessage parsedMessage = SMSMessageHandler.getInstance().parseMessage(phoneNumber, smsContent);
+            SMSMessage parsedMessage = new SMSMessageHandler().parseMessage(phoneNumber, smsContent);
             if (parsedMessage != null) {
                 SMSHandler.getInstance().callReceivedListener(parsedMessage);
             }
