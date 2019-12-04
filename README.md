@@ -26,7 +26,7 @@ dependencies {
 In order to send and receive SMSs you need to be granted two permissions. From Android 6.0 you have to use
 `requestPermissions`, and this is the way you do it.
 ```java
-requestPermissions(new String[]{Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS},SMS_PERMISSION_CUSTOM_CODE);
+requestPermissions(new String[]{Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS}, SMS_PERMISSIONS_CUSTOM_CODE);
 ```
 
 ### Setup
@@ -40,9 +40,11 @@ When you want to send a message you should create it first to make sure it's val
 ```java
 String telehponeNumber = "+3934693437234";
 String messageContent = "Message content";
+
 if(!SMSPeer.checkPhoneNumber(telephoneNumber))
     return;
 SMSPeer destinationPeer = new SMSPeer(telehponeNumber);
+
 if(!SMSMessage.checkMessageText(messageContent))
     return;
 SMSMessage msg = new SMSMessage(destinationPeer, "Content of the message");
@@ -76,7 +78,7 @@ SMSHandler.getInstance().sendMessage(msg, new SMSSentListener() {
 });
 ```
 
-If you planning to use SMS delivery reports, you can have a callback for those too
+If you are planning to use SMS delivery reports, you can have a callback for those too
 ```java
 SMSHandler.getInstance().sendMessage(msg, new SMSDeliveredListener() {
     @Override
