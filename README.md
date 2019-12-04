@@ -47,9 +47,9 @@ SMSPeer destinationPeer = new SMSPeer(telehponeNumber);
 
 if(!SMSMessage.checkMessageText(messageContent))
     return;
-SMSMessage msg = new SMSMessage(destinationPeer, "Content of the message");
+SMSMessage msg = new SMSMessage(destinationPeer, messageContent);
 ```
-Or, if you're a `try-catch` fan, and not a fan of `if`s
+Or, if you're not an `if`s fan, you can use `try-catch`
 ```java
 try{
     SMSPeer destinationPeer = new SMSPeer(telehponeNumber);
