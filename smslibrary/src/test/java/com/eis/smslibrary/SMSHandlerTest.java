@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,9 +30,6 @@ public class SMSHandlerTest {
     private final SMSPeer VALID_PEER = new SMSPeer(PEER_TEXT);
     private final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, MESSAGE_TEXT);
     private SMSHandler instance;
-
-    //"exception" class thrown when a message is correctly sent, used with mocks
-    private class MessageCorrectlySent extends RuntimeException{ }
 
     @Before
     public void setup(){
@@ -54,14 +52,12 @@ public class SMSHandlerTest {
         instance.setup(null);
     }
 
-    @Test(expected = MessageCorrectlySent.class)
+    @Test()
     public void validMessage_isSent(){
-        Mockito.doThrow(new MessageCorrectlySent())
-                .when(managerMock)
-                .sendTextMessage(PEER_TEXT, null, SENT_TEXT, null, null);
         SMSCore.setManager(managerMock);
         instance.setup(contextMock);
         instance.sendMessage(VALID_MESSAGE);
+        verify(managerMock).sendTextMessage(PEER_TEXT, null, SENT_TEXT, null, null);
     }
 
     @Test(expected = NullPointerException.class)
