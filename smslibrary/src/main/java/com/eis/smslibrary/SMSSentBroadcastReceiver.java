@@ -18,7 +18,7 @@ import com.eis.smslibrary.listeners.SMSSentListener;
  *
  * @author Luca Crema, Marco Mariotto
  */
-class SMSSentBroadcastReceiver extends BroadcastReceiver {
+public class SMSSentBroadcastReceiver extends BroadcastReceiver {
 
     private SMSSentListener listener;
     private SMSMessage message;
