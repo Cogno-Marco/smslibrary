@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.telephony.SmsManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,13 +15,14 @@ import com.eis.smslibrary.listeners.SMSReceivedListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 /**
  * Communication handler for SMSs. It's a Singleton, you should
  * access it with {@link #getInstance}, and before doing anything you
  * should call {@link #setup}.
  *
- * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini
+ * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini, Giovanni Velludo
  */
 public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
@@ -125,12 +127,17 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
                             final @Nullable SMSSentListener sentListener,
                             final @Nullable SMSDeliveredListener deliveredListener) {
         if (sentListener != null || deliveredListener != null) {
-            // a context is needed only when at least one non-null listener is passed
+            // a setup with a context is needed only when at least one non-null listener is passed
             checkSetup();
         }
+        ArrayList<String> messages = SmsManager.getDefault().divideMessage(getSMSContent(message));
+        if (messages.size() == 1) {
             PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
             PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener);
             SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), sentPI, deliveredPI);
+        } else {
+            SMSCore.sendMessages(messages, message.getPeer().getAddress(), null, null);
+        }
     }
 
     /**
