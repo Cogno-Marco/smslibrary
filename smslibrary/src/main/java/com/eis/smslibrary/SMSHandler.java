@@ -124,10 +124,13 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSSentListener sentListener,
                             final @Nullable SMSDeliveredListener deliveredListener) {
-        checkSetup();
-        PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
-        PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener);
-        SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), sentPI, deliveredPI);
+        if (sentListener != null || deliveredListener != null) {
+            // a context is needed only when at least one non-null listener is passed
+            checkSetup();
+        }
+            PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
+            PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener);
+            SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), sentPI, deliveredPI);
     }
 
     /**
