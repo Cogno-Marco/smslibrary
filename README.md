@@ -23,10 +23,10 @@ dependencies {
 # Usage
 
 ### Permissions
-In order to send and receive SMSs you need to be granted two permissions to the user runtime
+In order to send and receive SMSs you need to be granted two permissions. From Android 6.0 you have to use
+`requestPermissions`, and this is the way you do it.
 ```java
-Manifest.permission.SEND_SMS
-Manifest.permission.RECEIVE_SMS
+requestPermissions(new String[]{Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS},SMS_PERMISSION_CUSTOM_CODE);
 ```
 
 ### Setup
