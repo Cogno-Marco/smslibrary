@@ -27,7 +27,7 @@ final class SMSCore {
     }
 
     /**
-     * Returns the pre-set up manager if not null, else returns the default manager
+     * @return Returns the pre-set up manager if not null, else returns the default manager
      */
     private static SmsManager getManager(){
         return manager == null ? SmsManager.getDefault() : manager;

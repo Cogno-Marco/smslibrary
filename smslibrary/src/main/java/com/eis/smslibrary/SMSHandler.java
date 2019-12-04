@@ -78,6 +78,12 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @throws NullPointerException If the given context is null
      */
     public void setup(@NonNull Context context) {
+        /*
+        null pointer exception is thrown because if the
+        context is null, this.context isn't, it's a WeakReference to a null object,
+        which later on causes problems
+         */
+        if(context == null) throw new NullPointerException("The given context must not be null!");
         this.context = new WeakReference<>(context);
     }
 
