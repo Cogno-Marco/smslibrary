@@ -1,5 +1,7 @@
 package com.eis.smslibrary;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 
 import com.eis.communication.MessageHandler;
@@ -12,15 +14,26 @@ import com.eis.communication.MessageParseStrategy;
  *
  * @author Luca Crema, Alberto Ursino, Marco Mariotto
  */
-public class SMSMessageHandler implements MessageHandler<String, String, SMSMessage> {
+public class SMSMessageParser implements MessageHandler<String, String, SMSMessage> {
 
     private MessageParseStrategy<String, SMSPeer, SMSMessage> parseStrategy;
+    private static SMSMessageParser instance;
 
     /**
-     * Public constructor
+     * Private constructor
      */
-    public SMSMessageHandler() {
+    private SMSMessageParser() {
         parseStrategy = new DefaultSMSMessageParseStrategy();
+    }
+
+    /**
+     * Method to get the only instance of this class
+     * @return {@link SMSMessageParser#instance} the only active instance of this class
+     */
+    public static SMSMessageParser getInstance(){
+        if(instance == null)
+            return new SMSMessageParser();
+        return instance;
     }
 
     /**

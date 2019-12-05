@@ -9,24 +9,24 @@ import org.junit.Test;
 /**
  * @author Luca Crema
  */
-public class SMSMessageHandlerTest {
+public class SMSMessageParserTest {
 
-    private SMSMessageHandler defaultInstance;
-    private static final MessageParseStrategy<String,SMSPeer,SMSMessage> DEFAULT_SMS_MESSAGE_PARSE_STRATEGY = SMSMessageHandler.getInstance().new DefaultSMSMessageParseStrategy();
+    private SMSMessageParser defaultInstance;
+    private static final MessageParseStrategy<String,SMSPeer,SMSMessage> DEFAULT_SMS_MESSAGE_PARSE_STRATEGY = SMSMessageParser.getInstance().new DefaultSMSMessageParseStrategy();
     private static final SMSPeer DEFAULT_PEER = new SMSPeer("+393465433432");
     private static final String DEFAULT_MESSAGE_CONTENT = "Test content";
     private static final SMSMessage DEFAULT_MESSAGE = new SMSMessage(DEFAULT_PEER,DEFAULT_MESSAGE_CONTENT);
 
     @Before
     public void init(){
-        defaultInstance = SMSMessageHandler.getInstance();
+        defaultInstance = SMSMessageParser.getInstance();
 
         defaultInstance.setMessageParseStrategy(DEFAULT_SMS_MESSAGE_PARSE_STRATEGY);
     }
 
     @Test
     public void getInstance_isNotNull() {
-        Assert.assertNotNull(SMSMessageHandler.getInstance());
+        Assert.assertNotNull(SMSMessageParser.getInstance());
     }
 
 

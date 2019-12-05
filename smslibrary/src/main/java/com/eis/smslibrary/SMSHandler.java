@@ -195,11 +195,11 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     }
 
     /**
-     * Helper function that gets the message content by using the pre-setup parser in {@link SMSMessageHandler}
+     * Helper function that gets the message content by using the pre-setup parser in {@link SMSMessageParser}
      * @param message to get the data from
      * @return the data parsed from the message
      */
     private String getSMSContent(SMSMessage message){
-        return new SMSMessageHandler().parseData(message);
+        return SMSMessageParser.getInstance().parseData(message);
     }
 }
