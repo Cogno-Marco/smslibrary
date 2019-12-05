@@ -29,7 +29,6 @@ public class SMSMessageParserTest {
         Assert.assertNotNull(SMSMessageParser.getInstance());
     }
 
-
     @Test
     public void parseMessage_message_isCorrect() {
         Assert.assertEquals(DEFAULT_MESSAGE.getData(),defaultInstance.parseMessage(DEFAULT_PEER.getAddress(), defaultInstance.parseData(DEFAULT_MESSAGE)).getData());
