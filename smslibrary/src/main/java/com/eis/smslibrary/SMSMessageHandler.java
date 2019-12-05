@@ -15,10 +15,9 @@ import com.eis.communication.MessageParseStrategy;
 public class SMSMessageHandler implements MessageHandler<String, String, SMSMessage> {
 
     private MessageParseStrategy<String, SMSPeer, SMSMessage> parseStrategy;
-    private static SMSMessageHandler instance;
 
     /**
-     * Private constructor
+     * Public constructor
      */
     public SMSMessageHandler() {
         parseStrategy = new DefaultSMSMessageParseStrategy();
