@@ -9,12 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
-
-import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
-
 import com.eis.smslibrary.listeners.SMSDeliveredListener;
-import com.eis.smslibrary.listeners.SMSReceivedListener;
-
+import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
 import java.lang.ref.WeakReference;
@@ -27,9 +23,10 @@ import it.lucacrema.preferences.PreferencesManager;
  * access it with {@link #getInstance}, and before doing anything you
  * should call {@link #setup}.<br/>
  *
- * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini
+ * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini, Marco Cognolato
  * @since 29/11/2019
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
@@ -108,7 +105,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * Sends a message to a destination peer via SMS then
      * calls the listener.
      *
-     * @param message      to be sent in the channel to a peer
+     * @param message           to be sent in the channel to a peer
      * @param deliveredListener called on message delivered or on error, can be null
      */
     public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener deliveredListener) {
@@ -119,8 +116,8 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * Sends a message to a destination peer via SMS then
      * calls the listener.
      *
-     * @param message      to be sent in the channel to a peer
-     * @param sentListener called on message sent or on error, can be null
+     * @param message           to be sent in the channel to a peer
+     * @param sentListener      called on message sent or on error, can be null
      * @param deliveredListener called on message delivered or on error, can be null
      */
     public void sendMessage(final @NonNull SMSMessage message,
@@ -193,16 +190,18 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     /**
      * Unsubscribe the current {@link SMSReceivedServiceListener} from being called on message arrival
      */
-    public void removeReceivedListener(){
+    public void removeReceivedListener() {
         checkSetup();
         PreferencesManager.removeValue(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY);
     }
 
+    /**
      * Helper function that gets the message content by using the pre-setup parser in {@link SMSMessageHandler}
+     *
      * @param message to get the data from
      * @return the data parsed from the message
      */
-    private String getSMSContent(SMSMessage message){
+    private String getSMSContent(SMSMessage message) {
         return SMSMessageHandler.getInstance().parseData(message);
     }
 }
