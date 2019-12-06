@@ -83,8 +83,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
             String intentAction = intent.getAction();
             for (SMSPart part : messageParts) {
                 if (part.getIntentAction().equals(intentAction)) {
-                    part.setReceived();
-                    part.setState(sentState);
+                    part.setReceived(sentState);
                 }
             }
             for (SMSPart part : messageParts) {

@@ -48,25 +48,17 @@ class SMSPart {
 
     /**
      * Method to be called when the Intent associated to this part is received.
+     * @param sentState result state of the message sending operation.
      */
-    void setReceived() {
+    void setReceived(SMSMessage.SentState sentState) {
         received = true;
+        this.sentState = sentState;
     }
 
     /**
      * @return result code of this part.
      */
-    public SMSMessage.SentState getState() {
+    SMSMessage.SentState getState() {
         return sentState;
     }
-
-    /**
-     * Sets the result state of this part.
-     * @param sentState the result state.
-     */
-    public void setState(SMSMessage.SentState sentState) {
-        this.sentState = sentState;
-    }
-
-
 }
