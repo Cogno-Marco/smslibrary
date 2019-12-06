@@ -4,8 +4,6 @@ import android.content.Context;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import com.eis.communication.MessageParseStrategy;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +17,6 @@ import org.robolectric.RobolectricTestRunner;
 public class SMSMessageParserTest {
 
     private Context context;
-
     private SMSMessageParser defaultInstance;
     private static final SMSParseStrategy DEFAULT_SMS_MESSAGE_PARSE_STRATEGY = new DefaultSMSParseStrategy();
     private static final SMSPeer DEFAULT_PEER = new SMSPeer("+393465433432");
@@ -28,9 +25,8 @@ public class SMSMessageParserTest {
 
     @Before
     public void init(){
-        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        context = InstrumentationRegistry.getInstrumentation().getContext();
         defaultInstance = SMSMessageParser.getInstance(context);
-        defaultInstance.setMessageParseStrategy(context, DEFAULT_SMS_MESSAGE_PARSE_STRATEGY);
     }
 
     @Test
@@ -54,7 +50,7 @@ public class SMSMessageParserTest {
     @Test
     public void setStrategy_canSet(){
         defaultInstance.setMessageParseStrategy(context, new TestSMSParseStrategy());
-        Assert.assertNotNull(defaultInstance.getMessageParseStrategy(context));
+        Assert.assertNotNull(defaultInstance.getSavedMessageParseStrategy(context));
     }
 
     /**
@@ -62,7 +58,7 @@ public class SMSMessageParserTest {
      */
     @Test
     public void setStrategy_wontPersistInOtherTests(){
-        Assert.assertNull(defaultInstance.getMessageParseStrategy(context));
+        Assert.assertNull(defaultInstance.getSavedMessageParseStrategy(context));
     }
 
     @Test

@@ -1,5 +1,8 @@
 package com.eis.smslibrary;
 
+/**
+ * @author Riccardo De Zen
+ */
 class TestSMSParseStrategy implements SMSParseStrategy {
 
     static final String KEY = "If violence is not the answer, the question itself is wrong.";
@@ -12,8 +15,10 @@ class TestSMSParseStrategy implements SMSParseStrategy {
      */
     @Override
     public SMSMessage parseMessage(SMSPeer channelPeer, String channelData) {
-        String body = KEY + channelData;
-        return new SMSMessage(channelPeer, body);
+        if (!channelData.startsWith(KEY))
+            return null;
+        String messageData = channelData.substring(KEY.length());
+        return new SMSMessage(channelPeer, messageData);
     }
 
     /**
@@ -24,8 +29,6 @@ class TestSMSParseStrategy implements SMSParseStrategy {
      */
     @Override
     public String parseData(SMSMessage message) {
-        String body = message.getData();
-        if(body.startsWith(KEY)) return body.substring(KEY.length());
-        return null;
+        return KEY+message.getData();
     }
 }

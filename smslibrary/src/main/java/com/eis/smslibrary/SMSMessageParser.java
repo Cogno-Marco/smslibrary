@@ -1,18 +1,10 @@
 package com.eis.smslibrary;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
 import com.eis.communication.MessageHandler;
-import com.eis.communication.MessageParseStrategy;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
 
 import it.lucacrema.preferences.PreferencesManager;
 
@@ -35,7 +27,7 @@ public class SMSMessageParser implements MessageHandler<String, String, SMSMessa
      * @param context The calling context
      */
     private SMSMessageParser(Context context) {
-        SMSParseStrategy savedStrategy = getMessageParseStrategy(context);
+        SMSParseStrategy savedStrategy = getSavedMessageParseStrategy(context);
         if(savedStrategy == null) parseStrategy = new DefaultSMSParseStrategy();
         else parseStrategy = savedStrategy;
     }
@@ -69,7 +61,7 @@ public class SMSMessageParser implements MessageHandler<String, String, SMSMessa
      * @param context the calling Context.
      * @return The built SMSParseStrategy object, null if no valid class or constructor is found.
      */
-    public SMSParseStrategy getMessageParseStrategy(Context context){
+    public SMSParseStrategy getSavedMessageParseStrategy(Context context){
         String savedStrategyName = PreferencesManager.getString(context, PREFERENCE_DEFAULT_STRATEGY);
         if(savedStrategyName == null || savedStrategyName.isEmpty()) return null;
         try{

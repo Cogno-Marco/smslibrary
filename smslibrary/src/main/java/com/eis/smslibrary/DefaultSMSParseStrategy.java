@@ -18,7 +18,7 @@ public class DefaultSMSParseStrategy implements SMSParseStrategy {
         //First character of the content must be the hidden char
         if (!channelData.startsWith(HIDDEN_CHARACTER))
             return null;
-        String messageData = channelData.substring(1);
+        String messageData = channelData.substring(HIDDEN_CHARACTER.length());
         return new SMSMessage(channelPeer, messageData);
     }
 
