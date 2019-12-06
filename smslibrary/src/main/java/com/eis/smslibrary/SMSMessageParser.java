@@ -1,11 +1,20 @@
 package com.eis.smslibrary;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 
 import com.eis.communication.MessageHandler;
 import com.eis.communication.MessageParseStrategy;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Arrays;
+
+import it.lucacrema.preferences.PreferencesManager;
 
 /**
  * Singleton class used to parse String to SMSMessage and back
@@ -16,33 +25,82 @@ import com.eis.communication.MessageParseStrategy;
  */
 public class SMSMessageParser implements MessageHandler<String, String, SMSMessage> {
 
-    private MessageParseStrategy<String, SMSPeer, SMSMessage> parseStrategy;
+    private static final String PREFERENCE_DEFAULT_STRATEGY = "";
+
+    private SMSParseStrategy parseStrategy;
     private static SMSMessageParser instance;
 
     /**
      * Private constructor
+     * @param context The calling context
      */
-    private SMSMessageParser() {
+    private SMSMessageParser(Context context) {
         parseStrategy = new DefaultSMSMessageParseStrategy();
+        //TODO
     }
 
     /**
      * Method to get the only instance of this class
+     * @param context The calling context
      * @return {@link SMSMessageParser#instance} the only active instance of this class
      */
-    public static SMSMessageParser getInstance(){
+    public static SMSMessageParser getInstance(Context context){
         if(instance == null)
-            return new SMSMessageParser();
+            return new SMSMessageParser(context);
         return instance;
     }
 
     /**
-     * Update the parse strategy to a custom one
+     * Method to update the parse strategy to a custom one. Needs to be called runtime from a valid Context.
      *
+     * @param context the calling Context
      * @param parseStrategy custom message parsing
      */
-    public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String, SMSPeer, SMSMessage> parseStrategy) {
+    public void setMessageParseStrategy(Context context, @NonNull final SMSParseStrategy parseStrategy) {
         this.parseStrategy = parseStrategy;
+        String strategyName = parseStrategy.getClass().getCanonicalName();
+        PreferencesManager.setString(context, PREFERENCE_DEFAULT_STRATEGY, strategyName);
+    }
+
+    /**
+     * Method to get the SMSParseStrategy from the class saved in the Preferences.
+     *
+     * @param context the calling Context.
+     * @return The built SMSParseStrategy object, null if no valid class or constructor is found.
+     */
+    public SMSParseStrategy getMessageParseStrategy(Context context){
+        String savedStrategyName = PreferencesManager.getString(context, PREFERENCE_DEFAULT_STRATEGY);
+        if(savedStrategyName == null || savedStrategyName.isEmpty()) return null;
+        try{
+            Class savedStrategyClass = Class.forName(savedStrategyName);
+            return (SMSParseStrategy) savedStrategyClass.newInstance();
+        }
+        catch (ClassNotFoundException e){
+            e.printStackTrace();
+            return null;
+        }
+        catch (InstantiationException e){
+            e.printStackTrace();
+            return null;
+        }
+        catch (IllegalAccessException e){
+            e.printStackTrace();
+            return null;
+        }
+        catch (ClassCastException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Method to reset the parse strategy to the default value.
+     *
+     * @param context the calling context
+     */
+    public void resetMessageParseStrategy(Context context){
+        this.parseStrategy = new DefaultSMSMessageParseStrategy();
+        PreferencesManager.removeValue(context, PREFERENCE_DEFAULT_STRATEGY);
     }
 
     /**
@@ -69,7 +127,7 @@ public class SMSMessageParser implements MessageHandler<String, String, SMSMessa
         return parseStrategy.parseData(message);
     }
 
-    public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage> {
+    public class DefaultSMSMessageParseStrategy implements SMSParseStrategy {
 
         protected static final String HIDDEN_CHARACTER = (char) 0x02 + "";
 

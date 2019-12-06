@@ -1,32 +1,41 @@
 package com.eis.smslibrary;
 
+import android.content.Context;
+
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import com.eis.communication.MessageParseStrategy;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
 
 /**
- * @author Luca Crema
+ * @author Luca Crema, Riccardo De Zen
  */
+@RunWith(RobolectricTestRunner.class)
 public class SMSMessageParserTest {
 
+    private Context context;
+
     private SMSMessageParser defaultInstance;
-    private static final MessageParseStrategy<String,SMSPeer,SMSMessage> DEFAULT_SMS_MESSAGE_PARSE_STRATEGY = SMSMessageParser.getInstance().new DefaultSMSMessageParseStrategy();
+    private static final SMSParseStrategy DEFAULT_SMS_MESSAGE_PARSE_STRATEGY = SMSMessageParser.getInstance().new DefaultSMSMessageParseStrategy();
     private static final SMSPeer DEFAULT_PEER = new SMSPeer("+393465433432");
     private static final String DEFAULT_MESSAGE_CONTENT = "Test content";
     private static final SMSMessage DEFAULT_MESSAGE = new SMSMessage(DEFAULT_PEER,DEFAULT_MESSAGE_CONTENT);
 
     @Before
     public void init(){
-        defaultInstance = SMSMessageParser.getInstance();
-
-        defaultInstance.setMessageParseStrategy(DEFAULT_SMS_MESSAGE_PARSE_STRATEGY);
+        Context context = InstrumentationRegistry.getInstrumentation().getContext();
+        defaultInstance = SMSMessageParser.getInstance(context);
+        defaultInstance.setMessageParseStrategy(context, DEFAULT_SMS_MESSAGE_PARSE_STRATEGY);
     }
 
     @Test
     public void getInstance_isNotNull() {
-        Assert.assertNotNull(SMSMessageParser.getInstance());
+        Assert.assertNotNull(SMSMessageParser.getInstance(context));
     }
 
     @Test
