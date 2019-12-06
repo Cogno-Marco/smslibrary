@@ -50,4 +50,24 @@ public class SMSMessageParserTest {
     public void parseMessage_wrongSMS_isNull(){
         Assert.assertNull(defaultInstance.parseMessage(DEFAULT_PEER.getAddress(),DEFAULT_MESSAGE_CONTENT));
     }
+
+    @Test
+    public void setStrategy_canSet(){
+        defaultInstance.setMessageParseStrategy(context, new TestSMSParseStrategy());
+        Assert.assertNotNull(defaultInstance.getMessageParseStrategy(context));
+    }
+
+    /**
+     * A test to check whether, in tests the SharedPreferences won't persist (expected behaviour)
+     */
+    @Test
+    public void setStrategy_wontPersistInOtherTests(){
+        Assert.assertNull(defaultInstance.getMessageParseStrategy(context));
+    }
+
+    @Test
+    public void parseMessage_anotherStrategy(){
+        defaultInstance.setMessageParseStrategy(context, new TestSMSParseStrategy());
+        Assert.assertEquals(DEFAULT_MESSAGE.getData(),defaultInstance.parseMessage(DEFAULT_PEER.getAddress(), defaultInstance.parseData(DEFAULT_MESSAGE)).getData());
+    }
 }
