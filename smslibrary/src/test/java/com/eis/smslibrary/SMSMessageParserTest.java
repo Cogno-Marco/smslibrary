@@ -21,7 +21,7 @@ public class SMSMessageParserTest {
     private Context context;
 
     private SMSMessageParser defaultInstance;
-    private static final SMSParseStrategy DEFAULT_SMS_MESSAGE_PARSE_STRATEGY = SMSMessageParser.getInstance().new DefaultSMSMessageParseStrategy();
+    private static final SMSParseStrategy DEFAULT_SMS_MESSAGE_PARSE_STRATEGY = new DefaultSMSParseStrategy();
     private static final SMSPeer DEFAULT_PEER = new SMSPeer("+393465433432");
     private static final String DEFAULT_MESSAGE_CONTENT = "Test content";
     private static final SMSMessage DEFAULT_MESSAGE = new SMSMessage(DEFAULT_PEER,DEFAULT_MESSAGE_CONTENT);
