@@ -88,9 +88,6 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 }
             }
             for (SMSPart part : messageParts) {
-                if (!part.wasReceived()) return;
-            }
-            for (SMSPart part : messageParts) {
                 // if we're still waiting to receive intents for some parts, exit
                 if (!part.wasReceived()) return;
             }
