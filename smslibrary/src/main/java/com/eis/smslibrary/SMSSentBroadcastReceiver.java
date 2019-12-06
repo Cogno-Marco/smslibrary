@@ -78,7 +78,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
-        if (this.message == null && listener != null) {
+        if (this.message == null) {
             // if SMS sent had multiple parts
             String intentAction = intent.getAction();
             for (SMSPart part : messageParts) {
@@ -109,7 +109,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
             context.unregisterReceiver(this);
 
 
-        } else if (listener != null) { //extra check, even though listener should never be null
+        } else {
             // if SMS sent was a single message
             listener.onSMSSent(message, sentState);
             context.unregisterReceiver(this);
