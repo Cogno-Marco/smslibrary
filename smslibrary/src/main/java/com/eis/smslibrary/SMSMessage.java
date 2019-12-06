@@ -9,15 +9,16 @@ import com.eis.smslibrary.exceptions.InvalidSMSMessageException;
  * Representation of a single sms message
  * This class does NOT parse SMSMessages into sms-ready strings and back!
  *
- * @author Luca Crema, Marco Mariotto, Alberto Ursino
+ * @author Luca Crema, Marco Mariotto, Alberto Ursino, Giovanni Velludo
  */
 public class SMSMessage implements Message<String, SMSPeer> {
 
     /**
-     * Kind of a magic number, should be around 160 but doesn't work all the times.
-     * (suggestions accepted)
+     * Maximum number of concatenated messages in which an SMS can be split is 255, each containing
+     * no more than 153 7-bit GSM characters.
+     * https://en.wikipedia.org/wiki/Concatenated_SMS
      */
-    public static final int MAX_MSG_TEXT_LEN = 155;
+    public static final int MAX_MSG_TEXT_LEN = 39015;
     private String messageContent;
     private SMSPeer peer;
 

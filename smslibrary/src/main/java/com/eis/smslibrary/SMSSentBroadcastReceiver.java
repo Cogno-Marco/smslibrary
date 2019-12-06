@@ -10,28 +10,45 @@ import androidx.annotation.NonNull;
 
 import com.eis.smslibrary.listeners.SMSSentListener;
 
+import java.util.ArrayList;
+
 /**
  * Broadcast receiver for sent messages, called by Android Library.
  * Must be instantiated and set as receiver with context.registerReceiver(...).
  * There has to be one different SentBroadcastReceiver per message sent,
  * so every IntentFilter name has to be different
  *
- * @author Luca Crema, Marco Mariotto
+ * @author Luca Crema, Marco Mariotto, Giovanni Velludo
  */
 public class SMSSentBroadcastReceiver extends BroadcastReceiver {
 
     private SMSSentListener listener;
     private SMSMessage message;
+    // TODO: consider replacing with HashMap, because it's searched on intentAction
+    private ArrayList<SMSPart> messageParts;
+    private SMSPeer peer;
 
     /**
-     * Constructor for the custom {@link BroadcastReceiver}.
+     * Constructor for the custom {@link BroadcastReceiver}, used when a single message is sent.
      *
-     * @param message  that will be sent.
-     * @param listener to be called when the operation is completed.
+     * @param message  the message that will be sent.
+     * @param listener listener to be called when the operation is completed.
      */
     SMSSentBroadcastReceiver(@NonNull final SMSMessage message, @NonNull final SMSSentListener listener) {
         this.listener = listener;
         this.message = message;
+    }
+
+    /**
+     * Constructor for the custom {@link BroadcastReceiver}, used when multiple messages are sent.
+     *
+     * @param parts     parts that will be sent.
+     * @param listener  listener to be called when the operation is completed.
+     */
+    SMSSentBroadcastReceiver(@NonNull final ArrayList<SMSPart> parts, @NonNull final SMSSentListener listener, @NonNull final SMSPeer peer) {
+        this.listener = listener;
+        this.messageParts = parts;
+        this.peer = peer;
     }
 
     /**
@@ -61,9 +78,46 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
-        if (listener != null) //extra check, even though listener should never be null
+        if (this.message == null && listener != null) {
+            // if SMS sent had multiple parts
+            String intentAction = intent.getAction();
+            for (SMSPart part : messageParts) {
+                if (part.getIntentAction().equals(intentAction)) {
+                    part.setReceived();
+                    part.setState(sentState);
+                }
+            }
+            for (SMSPart part : messageParts) {
+                if (!part.wasReceived()) return;
+            }
+            for (SMSPart part : messageParts) {
+                // if we're still waiting to receive intents for some parts, exit
+                if (!part.wasReceived()) return;
+            }
+            for (SMSPart part : messageParts) {
+                if (part.getState() != SMSMessage.SentState.MESSAGE_SENT) {
+                    // TODO: give to the listener the state with most occurrences? Except if it is
+                    //  MESSAGE_SENT, because if we're in this code block the message wasn't sent.
+                    listener.onSMSSent(message, SMSMessage.SentState.ERROR_GENERIC_FAILURE);
+                    context.unregisterReceiver(this);
+                    return;
+                }
+            }
+            // build the message from parts
+            StringBuilder text = new StringBuilder();
+            for (SMSPart part : messageParts) {
+                text.append(part.getMessage());
+            }
+            message = new SMSMessage(peer, text.toString());
             listener.onSMSSent(message, sentState);
+            context.unregisterReceiver(this);
 
-        context.unregisterReceiver(this);
+
+        } else if (listener != null) { //extra check, even though listener should never be null
+            // if SMS sent was a single message
+            listener.onSMSSent(message, sentState);
+            context.unregisterReceiver(this);
+        }
     }
 }
+
