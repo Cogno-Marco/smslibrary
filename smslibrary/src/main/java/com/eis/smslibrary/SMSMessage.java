@@ -18,7 +18,9 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * no more than 153 7-bit GSM characters.
      * https://en.wikipedia.org/wiki/Concatenated_SMS
      */
-    public static final int MAX_MSG_TEXT_LEN = 39015;
+    static final int MAX_MSG_TEXT_LEN = 39015;
+    //TODO: check if only characters from GSM character set are used, otherwise MAX_MSG_TEXT_LEN
+    // should be lower to account for use of Unicode characters and special GSM characters
     private String messageContent;
     private SMSPeer peer;
 

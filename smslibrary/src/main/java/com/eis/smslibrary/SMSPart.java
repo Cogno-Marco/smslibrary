@@ -1,11 +1,11 @@
 package com.eis.smslibrary;
 
 /**
- * Data structure associating to each part of a multi-part SMS text message:
+ * Object associating to each part of a multi-part SMS text message:
  * - the corresponding Intent's action to be received by SMSDeliveredBroadcastReceiver or
  *   SMSSentBroadcastReceiver;
  * - whether the Intent was received;
- * - the result state of the message part, given by its corresponding Intent.
+ * - the result state of the "send" operation for this part.
  * @author Giovanni Velludo
  */
 class SMSPart {
