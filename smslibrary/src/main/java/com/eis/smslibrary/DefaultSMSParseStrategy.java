@@ -2,6 +2,12 @@ package com.eis.smslibrary;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Default SMS parsing strategy used in {@link SMSMessageParser}.
+ * {@link DefaultSMSParseStrategy#HIDDEN_CHARACTER} is added as an header to sent messages and is
+ * removed from incoming messages.
+ * @author Luca Crema
+ */
 public class DefaultSMSParseStrategy implements SMSParseStrategy {
 
     protected static final String HIDDEN_CHARACTER = (char) 0x02 + "";

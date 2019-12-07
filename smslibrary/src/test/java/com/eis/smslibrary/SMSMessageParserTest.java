@@ -50,7 +50,7 @@ public class SMSMessageParserTest {
     @Test
     public void setStrategy_canSet(){
         defaultInstance.setMessageParseStrategy(context, new TestSMSParseStrategy());
-        Assert.assertNotNull(defaultInstance.getSavedMessageParseStrategy(context));
+        Assert.assertNotNull(defaultInstance.getMessageParseStrategy(context));
     }
 
     /**
@@ -58,7 +58,7 @@ public class SMSMessageParserTest {
      */
     @Test
     public void setStrategy_wontPersistInOtherTests(){
-        Assert.assertNull(defaultInstance.getSavedMessageParseStrategy(context));
+        Assert.assertNull(defaultInstance.getMessageParseStrategy(context));
     }
 
     @Test
