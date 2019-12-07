@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Broadcast receiver for sent messages, called by Android Library.
@@ -89,11 +90,32 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 // if we're still waiting to receive intents for some parts, exit
                 if (!part.wasReceived()) return;
             }
+            /* finds SentState with most occurrences, except for MESSAGE_SENT. This could be needed
+             * later to inform the listener of what went wrong.
+             */
+            HashMap<SMSMessage.SentState, Integer> occurrences = new HashMap<>();
+            for (SMSPart part : messageParts) {
+                SMSMessage.SentState state = part.getState();
+                if (state == SMSMessage.SentState.MESSAGE_SENT) {
+                    continue;
+                }
+                Integer value = occurrences.get(state);
+                if (value == null) {
+                    occurrences.put(state, 1);
+                } else {
+                    occurrences.put(state, ++value);
+                }
+            }
+            SMSMessage.SentState maxEntry = SMSMessage.SentState.ERROR_GENERIC_FAILURE;
+            for (SMSMessage.SentState entry : occurrences.keySet()) {
+                if (occurrences.get(maxEntry) == null || occurrences.get(entry) >= occurrences.get(maxEntry)) {
+                    maxEntry = entry;
+                }
+            }
             for (SMSPart part : messageParts) {
                 if (part.getState() != SMSMessage.SentState.MESSAGE_SENT) {
-                    // TODO: give to the listener the state with most occurrences? Except if it is
-                    //  MESSAGE_SENT, because if we're in this code block the message wasn't sent.
-                    listener.onSMSSent(message, SMSMessage.SentState.ERROR_GENERIC_FAILURE);
+                    // gives to the listener the state that had the most occurrences
+                    listener.onSMSSent(message, maxEntry);
                     context.unregisterReceiver(this);
                     return;
                 }

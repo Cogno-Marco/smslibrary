@@ -23,6 +23,9 @@ public class SMSMessage implements Message<String, SMSPeer> {
     // should be lower to account for use of Unicode characters and special GSM characters
     private String messageContent;
     private SMSPeer peer;
+    //TODO: add timestamp to distinguish identical messages sent to the same Peer, needed by
+    // SMSSentListener and SMSDeliveredListener when comparing messages. The timestamp should be
+    // compared in method equals()
 
     /**
      * Constructor for a sms text message.
