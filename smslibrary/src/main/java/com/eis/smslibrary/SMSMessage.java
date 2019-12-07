@@ -19,12 +19,12 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * https://en.wikipedia.org/wiki/Concatenated_SMS
      */
     static final int MAX_MSG_TEXT_LEN = 39015;
-    //TODO: check if only characters from GSM character set are used, otherwise MAX_MSG_TEXT_LEN
+    //TODO: check if only characters from GSM character set are used? Otherwise MAX_MSG_TEXT_LEN
     // should be lower to account for use of Unicode characters and special GSM characters
     private String messageContent;
     private SMSPeer peer;
     //TODO: add timestamp to distinguish identical messages sent to the same Peer, needed by
-    // SMSSentListener and SMSDeliveredListener when comparing messages. The timestamp should be
+    // SMSSentListener and SMSDeliveredListener when comparing messages? The timestamp should be
     // compared in method equals()
 
     /**

@@ -10,7 +10,7 @@ import com.eis.communication.MessageParseStrategy;
  * Uses a strategy to parse messages, so that any user can update it to its preferred parser
  * By defaults it uses a default strategy, defined by the library
  *
- * @author Luca Crema, Alberto Ursino, Marco Mariotto
+ * @author Luca Crema, Alberto Ursino, Marco Mariotto, Giovanni Velludo
  */
 public class SMSMessageHandler implements MessageHandler<String, String, SMSMessage> {
 
