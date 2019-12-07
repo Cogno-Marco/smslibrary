@@ -101,8 +101,13 @@ In order to register the application to be called on message reception you have
 ### Using your own message format
 The default library format uses an hidden character to differentiate SMSs
 sent from library and SMSs sent from another source. You can override this
-format by passing a custom `MessageParseStrategy<String, SMSPeer, SMSMessage>`
+format by passing a custom `SMSParseStrategy`
 to the `SMSMessageHandler` class
 ```java
-SMSMessageHandler.getInstance().setMessageParseStrategy(customStrategy);
+SMSMessageHandler.getInstance(context).setMessageParseStrategy(customStrategy);
+```
+This new format is stored on disk and retrieved when needed.
+To reset the strategy to its default value use
+```java
+SMSMessageHandler.getInstance(context).resetMessageParseStrategy();
 ```
