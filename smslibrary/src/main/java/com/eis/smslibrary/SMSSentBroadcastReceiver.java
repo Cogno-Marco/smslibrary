@@ -82,7 +82,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
         // if SMS sent had multiple parts
         if (this.message == null) {
             // TODO: use HasMap with Intent.action as key instead of searching on an array?
-            //  This would complicate building the message from parts later.
+            //  This would complicate building the SMSMessage in method reconstructMessage().
             for (SMSPart part : messageParts) {
                 if (part.getIntentAction().equals(intent.getAction())) {
                     part.setReceived(sentState);
@@ -121,18 +121,13 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 if (part.getState() != SMSMessage.SentState.MESSAGE_SENT) {
                     // if message sending failed, gives to the listener the state that had the most
                     // occurrences
-                    // TODO: reconstruct message, maybe using a separate method
+                    reconstructMessage();
                     listener.onSMSSent(message, maxEntry);
                     context.unregisterReceiver(this);
                     return;
                 }
             }
-            // builds the message from parts
-            StringBuilder text = new StringBuilder();
-            for (SMSPart part : messageParts) {
-                text.append(part.getMessage());
-            }
-            message = new SMSMessage(peer, text.toString());
+            reconstructMessage();
             listener.onSMSSent(message, sentState);
             context.unregisterReceiver(this);
 
@@ -140,6 +135,17 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
             listener.onSMSSent(message, sentState);
             context.unregisterReceiver(this);
         }
+    }
+
+    /**
+     * Reconstructs SMSMessage to pass to listeners, using the messageParts in which it was split.
+     */
+    private void reconstructMessage() {
+        StringBuilder text = new StringBuilder();
+        for (SMSPart part : messageParts) {
+            text.append(part.getMessage());
+        }
+        message = new SMSMessage(peer, text.toString());
     }
 }
 
