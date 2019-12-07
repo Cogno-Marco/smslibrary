@@ -80,9 +80,8 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
 
         if (this.message == null) {
             // if SMS sent had multiple parts
-            String intentAction = intent.getAction();
             for (SMSPart part : messageParts) {
-                if (part.getIntentAction().equals(intentAction)) {
+                if (part.getIntentAction().equals(intent.getAction())) {
                     part.setReceived(sentState);
                 }
             }
