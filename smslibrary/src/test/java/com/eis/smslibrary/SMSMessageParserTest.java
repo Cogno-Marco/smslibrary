@@ -49,8 +49,8 @@ public class SMSMessageParserTest {
 
     @Test
     public void setStrategy_canSet(){
-        defaultInstance.setMessageParseStrategy(context, new TestSMSParseStrategy());
-        Assert.assertNotNull(defaultInstance.getMessageParseStrategy(context));
+        defaultInstance.setMessageParseStrategy(new TestSMSParseStrategy());
+        Assert.assertNotNull(defaultInstance.getMessageParseStrategy());
     }
 
     /**
@@ -58,12 +58,12 @@ public class SMSMessageParserTest {
      */
     @Test
     public void setStrategy_wontPersistInOtherTests(){
-        Assert.assertNull(defaultInstance.getMessageParseStrategy(context));
+        Assert.assertNull(defaultInstance.getMessageParseStrategy());
     }
 
     @Test
     public void parseMessage_anotherStrategy(){
-        defaultInstance.setMessageParseStrategy(context, new TestSMSParseStrategy());
+        defaultInstance.setMessageParseStrategy(new TestSMSParseStrategy());
         Assert.assertEquals(DEFAULT_MESSAGE.getData(),defaultInstance.parseMessage(DEFAULT_PEER.getAddress(), defaultInstance.parseData(DEFAULT_MESSAGE)).getData());
     }
 }
