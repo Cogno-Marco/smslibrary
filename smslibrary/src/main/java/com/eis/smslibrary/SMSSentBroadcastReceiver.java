@@ -46,7 +46,8 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
      * @param parts     parts that will be sent.
      * @param listener  listener to be called when the operation is completed.
      */
-    SMSSentBroadcastReceiver(@NonNull final ArrayList<SMSPart> parts, @NonNull final SMSSentListener listener, @NonNull final SMSPeer peer) {
+    SMSSentBroadcastReceiver(@NonNull final ArrayList<SMSPart> parts,
+                             @NonNull final SMSSentListener listener, @NonNull final SMSPeer peer) {
         this.listener = listener;
         this.messageParts = parts;
         this.peer = peer;
@@ -79,8 +80,9 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
+        // if SMS sent had multiple parts
         if (this.message == null) {
-            // if SMS sent had multiple parts
+            // TODO: use HasMap with Intent.action as key instead of searching on an array?
             for (SMSPart part : messageParts) {
                 if (part.getIntentAction().equals(intent.getAction())) {
                     part.setReceived(sentState);
@@ -90,8 +92,8 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 // if we're still waiting to receive intents for some parts, exit
                 if (!part.wasReceived()) return;
             }
-            /* finds SentState with most occurrences, except for MESSAGE_SENT. This could be needed
-             * later to inform the listener of what went wrong.
+            /* registers number of occurrences of each SentState in messageParts. We don't care
+             * about MESSAGE_SENT, because we only need SentStates indicating an error.
              */
             HashMap<SMSMessage.SentState, Integer> occurrences = new HashMap<>();
             for (SMSPart part : messageParts) {
@@ -106,12 +108,15 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                     occurrences.put(state, ++value);
                 }
             }
+            /* finds SentState with most occurrences, except for MESSAGE_SENT. This could be needed
+             * later to inform the listener of what went wrong.
+             */
             SMSMessage.SentState maxEntry = SMSMessage.SentState.ERROR_GENERIC_FAILURE;
-            for (SMSMessage.SentState entry : occurrences.keySet()) {
-                if (occurrences.get(maxEntry) == null || occurrences.get(entry) >= occurrences.get(maxEntry)) {
+            for (SMSMessage.SentState entry : occurrences.keySet())
+                if (occurrences.get(maxEntry) == null ||
+                        occurrences.get(entry) >= occurrences.get(maxEntry)) {
                     maxEntry = entry;
                 }
-            }
             for (SMSPart part : messageParts) {
                 if (part.getState() != SMSMessage.SentState.MESSAGE_SENT) {
                     // gives to the listener the state that had the most occurrences
@@ -120,7 +125,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                     return;
                 }
             }
-            // build the message from parts
+            // builds the message from parts
             StringBuilder text = new StringBuilder();
             for (SMSPart part : messageParts) {
                 text.append(part.getMessage());
@@ -129,9 +134,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
             listener.onSMSSent(message, sentState);
             context.unregisterReceiver(this);
 
-
-        } else {
-            // if SMS sent was a single message
+        } else { // if SMS sent was a single message
             listener.onSMSSent(message, sentState);
             context.unregisterReceiver(this);
         }
