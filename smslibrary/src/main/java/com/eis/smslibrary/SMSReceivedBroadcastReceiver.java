@@ -7,6 +7,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
+
+import com.eis.smslibrary.SMSMessageParser;
+import com.eis.smslibrary.core.APIParser;
+import com.eis.smslibrary.core.APIMessage;
+import com.eis.smslibrary.message.SMSMessageReceived;
+
 import it.lucacrema.preferences.PreferencesManager;
 
 /**
@@ -18,7 +24,7 @@ import it.lucacrema.preferences.PreferencesManager;
  */
 public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
 
-    public static final String INTENT_MESSAGE_TAG = "SMSMessage";
+    public static final String INTENT_MESSAGE_TAG = "SMSMessageReceived";
     public static final String SERVICE_CLASS_PREFERENCES_KEY = "ApplicationServiceClass";
 
     /**
@@ -45,7 +51,11 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
             if (phoneNumber == null) //could be null
                 return;
 
-            SMSMessage parsedMessage = SMSMessageHandler.getInstance().parseMessage(phoneNumber, smsContent);
+            //build APIMessage from Android message data
+            APIMessage apiMessage= new APIMessage(phoneNumber,smsContent);
+
+            //apiMessage->APIParser->SMSMessageParser
+            SMSMessageReceived parsedMessage = SMSMessageParser.getInstance().parseMessage(APIParser.parseToUpperLayerData(apiMessage));
             if (parsedMessage != null) {
                 callApplicationService(context, parsedMessage);
             }
@@ -72,7 +82,7 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
      * @param context broadcast current context
      * @param message received message
      */
-    private void callApplicationService(Context context, SMSMessage message) {
+    private void callApplicationService(Context context, SMSMessageReceived message) {
         Class<?> listener = null;
         try {
             listener = Class.forName(PreferencesManager.getString(context, SERVICE_CLASS_PREFERENCES_KEY));

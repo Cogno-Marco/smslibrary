@@ -1,20 +1,25 @@
 package com.eis.smslibrary;
 
+import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author Alberto Ursino & Luca Crema. Reveiewed by Marco Cognolato
+ * @author Alberto Ursino
+ * @author Luca Crema.
+ * Reveiewed by Marco Cognolato
  */
 public class SMSPeerTest{
 
-    private static final String EMPTY_TELEPHONE_NUMBER = "";
-    private static final String TOO_SHORT_TELEPHONE_NUMBER = "+39";
-    private static final String TOO_LONG_TELEPHONE_NUMBER = "+39111111111111111111";
-    private static final String NO_COUNTRY_CODE_TELEPHONE_NUMBER = "1111111111";
-    private static final String LETTERS_TELEPHONE_NUMBER = "+391111111ABC";
-    private static final String VALID_TELEPHONE_NUMBER = "+391111111111";
+    public static final String EMPTY_TELEPHONE_NUMBER = "";
+    public static final String TOO_SHORT_TELEPHONE_NUMBER = "+39";
+    public static final String TOO_LONG_TELEPHONE_NUMBER = "+39111111111111111111";
+    public static final String NO_COUNTRY_CODE_TELEPHONE_NUMBER = "1111111111";
+    public static final String LETTERS_TELEPHONE_NUMBER = "+391111111ABC";
+    public static final String VALID_TELEPHONE_NUMBER = "+391111111111";
+    public static final String ANOTHER_VALID_TELEPHONE_NUMBER = "+39111551111";
 
     private SMSPeer defaultPeer1;
     private SMSPeer defaultPeer2;

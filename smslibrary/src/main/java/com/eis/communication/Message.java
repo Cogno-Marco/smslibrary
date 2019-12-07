@@ -1,24 +1,28 @@
 package com.eis.communication;
 
+import com.eis.communication.header.Header;
+
 import java.io.Serializable;
 
 /**
  * Encapsulation of a message in the network
- * @param <D> Data to be transmitted
- * @param <P> Peer type of users of the network
+ * @param <H> {@link Header} containing all message's service information
+ * @param <D> data to be transmitted
+ *
+ * @see Serializable
  */
-public interface  Message<D, P extends Peer> extends Serializable {
+public interface  Message<H extends Header<D>, D extends Serializable> extends Serializable {
 
     /**
-     * Retrieves the data sent or to be sent in the network
+     * Gets the data contained in this message
      * @return data contained in this message
      */
     D getData();
 
     /**
-     * Retrieves the sender or the destination
-     * @return Peer associated with this message
+     * Gets the header contained in this message
+     * @return the header contained in this message
      */
-    P getPeer();
+    H getHeader();
 
 }

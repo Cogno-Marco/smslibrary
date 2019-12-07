@@ -7,6 +7,8 @@ import java.io.Serializable;
 /**
  * Represents a user in the network
  * @param <A> The type of address used by the network
+ *
+ * @see Serializable
  */
 public interface Peer<A> extends Serializable {
 

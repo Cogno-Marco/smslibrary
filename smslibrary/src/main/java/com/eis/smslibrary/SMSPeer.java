@@ -23,6 +23,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
      */
     public SMSPeer(String telephoneNumber) throws InvalidTelephoneNumberException {
         TelephoneNumberState telephoneNumberState = SMSPeer.checkPhoneNumber(telephoneNumber);
+
         if(telephoneNumberState != TelephoneNumberState.TELEPHONE_NUMBER_VALID)
             throw new InvalidTelephoneNumberException(telephoneNumberState);
 
@@ -45,7 +46,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
             return TelephoneNumberState.TELEPHONE_NUMBER_TOO_SHORT;
         }
         //Check if it's actually a number with a plus and doesn't contain anything else
-        if (!telephoneNumber.matches("\\+?\\d{"+MIN_TELEPHONE_NUMBER_LENGTH+","+MAX_TELEPHONE_NUMBER_LENGTH+"}")) {
+        if (!telephoneNumber.matches("\\+?\\d{" + MIN_TELEPHONE_NUMBER_LENGTH + "," + MAX_TELEPHONE_NUMBER_LENGTH + "}")) {
             return TelephoneNumberState.TELEPHONE_NUMBER_NOT_A_NUMBER;
         }
         //Check if there is a country code.
@@ -89,17 +90,18 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     /**
      * Indicates whether some other object is "equal to" this one
      * @param o The reference object with which to compare.
-     * @return True if this object is the same as the obj argument; false otherwise.
+     * @return <code>true</code> if this object is the same as the obj argument; <code>false</code>otherwise.
      */
     @Override
     public boolean equals(Object o) {
-        if(o == null)
-            return false;
         if(this == o)
             return true;
+
         if (!(o instanceof SMSPeer))
             return false;
-        SMSPeer peer = (SMSPeer) o;
+
+        SMSPeer peer = (SMSPeer)o;
+
         return telephoneNumber.equals(peer.telephoneNumber);
     }
 
@@ -108,7 +110,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
      */
     @Override
     public int hashCode(){
-        return 31 * telephoneNumber.hashCode();
+        return 31 * 7 * telephoneNumber.hashCode();
     }
 
     /**

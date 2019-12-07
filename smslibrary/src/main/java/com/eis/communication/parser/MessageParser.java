@@ -1,23 +1,26 @@
-package com.eis.communication;
+package com.eis.communication.parser;
+
+import com.eis.communication.Message;
 
 /**
  * Class used to switch from actual communication data to Message and back
- * Should use a <a href='https://en.wikipedia.org/wiki/Singleton_pattern'>Singleton pattern</a>
+ * use a <a href='https://en.wikipedia.org/wiki/Singleton_pattern'>Singleton pattern</a>
  *
- * @param <D> The data type used by the channel
- * @param <P> The peer type used by the channel
- * @param <M> The type of message to parse and output
+ * @param <D> the data type used by the channel
+ * @param <P> the type of Message to parse
+ * @param <O> the type of Message to output
+ *
+ * @see Message
  */
-public interface MessageHandler<D,P,M extends Message> {
+public interface MessageParser<D,P extends Message,O extends Message> {
 
     /**
      * Interprets data arrived via the communication channel and parses it to a message
      *
-     * @param peerData from the communication channel
      * @param data from the communication channel
      * @return the message if the data has been parsed correctly, null otherwise
      */
-    M parseMessage(P peerData, D data);
+    O parseMessage(D data);
 
     /**
      * Translates a message into data that can be sent via communication channel
@@ -25,5 +28,5 @@ public interface MessageHandler<D,P,M extends Message> {
      * @param message to be translated
      * @return the data to send
      */
-    D parseData (M message);
+    D parseData (P message);
 }

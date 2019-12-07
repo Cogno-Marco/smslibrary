@@ -9,9 +9,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
+import com.eis.smslibrary.core.APIParser;
+import com.eis.smslibrary.core.APIMessage;
 import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
+import com.eis.smslibrary.message.SMSMessageToSend;
 
 import java.lang.ref.WeakReference;
 
@@ -27,7 +30,7 @@ import it.lucacrema.preferences.PreferencesManager;
  * @since 29/11/2019
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class SMSHandler implements CommunicationHandler<SMSMessage> {
+public class SMSHandler implements CommunicationHandler<SMSMessageToSend> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
     public static final String DELIVERED_MESSAGE_INTENT_ACTION = "SMS_DELIVERED";
@@ -86,7 +89,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param message to be sent in the channel to a peer
      */
     @Override
-    public void sendMessage(final @NonNull SMSMessage message) {
+    public void sendMessage(final @NonNull SMSMessageToSend message) {
         sendMessage(message, null, null);
     }
 
@@ -97,7 +100,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param message      to be sent in the channel to a peer
      * @param sentListener called on message sent or on error, can be null
      */
-    public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSSentListener sentListener) {
+    public void sendMessage(final @NonNull SMSMessageToSend message, final @Nullable SMSSentListener sentListener) {
         sendMessage(message, sentListener, null);
     }
 
@@ -108,7 +111,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param message           to be sent in the channel to a peer
      * @param deliveredListener called on message delivered or on error, can be null
      */
-    public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener deliveredListener) {
+    public void sendMessage(final @NonNull SMSMessageToSend message, final @Nullable SMSDeliveredListener deliveredListener) {
         sendMessage(message, null, deliveredListener);
     }
 
@@ -120,13 +123,18 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param sentListener      called on message sent or on error, can be null
      * @param deliveredListener called on message delivered or on error, can be null
      */
-    public void sendMessage(final @NonNull SMSMessage message,
+    public void sendMessage(final @NonNull SMSMessageToSend message,
                             final @Nullable SMSSentListener sentListener,
                             final @Nullable SMSDeliveredListener deliveredListener) {
         checkSetup();
+        //set up receivers
         PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
         PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener);
-        SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), sentPI, deliveredPI);
+
+        //retrieve APIMessage from getAPIMessage Helper
+        APIMessage apiMessage = getAPIMessage(message);
+
+        SMSCore.sendMessage(apiMessage.getPhoneNumber(), apiMessage.getTextMessage(), sentPI, deliveredPI);
     }
 
     /**
@@ -137,7 +145,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param listener to call on broadcast received
      * @return a {@link PendingIntent} to be passed to SMSCore
      */
-    private PendingIntent setupNewSentReceiver(final @NonNull SMSMessage message, final @Nullable SMSSentListener listener) {
+    private PendingIntent setupNewSentReceiver(final @NonNull SMSMessageToSend message, final @Nullable SMSSentListener listener) {
         if (listener == null)
             return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
 
@@ -155,7 +163,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param listener to call on broadcast received
      * @return a {@link PendingIntent} to be passed to SMSCore
      */
-    private PendingIntent setupNewDeliverReceiver(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener listener) {
+    private PendingIntent setupNewDeliverReceiver(final @NonNull SMSMessageToSend message, final @Nullable SMSDeliveredListener listener) {
         if (listener == null)
             return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
 
@@ -196,12 +204,12 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     }
 
     /**
-     * Helper function that gets the message content by using the pre-setup parser in {@link SMSMessageHandler}
+     * Helper function that gets the {@link APIMessage} parsed from the {@link SMSMessageToSend}
      *
-     * @param message to get the data from
-     * @return the data parsed from the message
+     * @param message to be parsed
+     * @return {@link APIMessage} parsed from the message
      */
-    private String getSMSContent(SMSMessage message) {
-        return SMSMessageHandler.getInstance().parseData(message);
+    private APIMessage getAPIMessage(SMSMessageToSend message) {
+        return APIParser.parseToAPIMessage(SMSMessageParser.getInstance().parseData(message));
     }
 }

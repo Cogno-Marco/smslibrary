@@ -1,7 +1,8 @@
 package com.eis.smslibrary.listeners;
 
-import com.eis.smslibrary.SMSMessage;
-import com.eis.smslibrary.SMSMessage.DeliveredState;
+import com.eis.smslibrary.message.AbstractSMSMessage.DeliveredState;
+import com.eis.smslibrary.message.SMSMessageToSend;
+
 
 /**
  * General interface for a listener for an SMS Delivered event
@@ -15,5 +16,5 @@ public interface SMSDeliveredListener {
      * @param message that's been delivered (or not)
      * @param deliveredState of the operation
      */
-    void onSMSDelivered(SMSMessage message, DeliveredState deliveredState);
+    void onSMSDelivered(SMSMessageToSend message, DeliveredState deliveredState);
 }
