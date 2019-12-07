@@ -82,6 +82,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
         // if SMS sent had multiple parts
         if (this.message == null) {
             // TODO: use HasMap with Intent.action as key instead of searching on an array?
+            //  This would complicate building the message from parts later.
             for (SMSPart part : messageParts) {
                 if (part.getIntentAction().equals(intent.getAction())) {
                     part.setReceived(sentState);
@@ -118,7 +119,9 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 }
             for (SMSPart part : messageParts) {
                 if (part.getState() != SMSMessage.SentState.MESSAGE_SENT) {
-                    // gives to the listener the state that had the most occurrences
+                    // if message sending failed, gives to the listener the state that had the most
+                    // occurrences
+                    // TODO: reconstruct message, maybe using a separate method
                     listener.onSMSSent(message, maxEntry);
                     context.unregisterReceiver(this);
                     return;
