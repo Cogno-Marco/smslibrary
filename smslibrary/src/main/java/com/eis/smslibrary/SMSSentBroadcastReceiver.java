@@ -25,7 +25,6 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
 
     private SMSSentListener listener;
     private SMSMessage message;
-    // TODO: consider replacing with HashMap, because it's searched on intentAction
     private ArrayList<SMSPart> messageParts;
     private SMSPeer peer;
 
