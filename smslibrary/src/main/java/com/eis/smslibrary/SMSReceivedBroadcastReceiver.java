@@ -7,18 +7,23 @@ import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
+
+import com.eis.smslibrary.core.APIMessage;
+import com.eis.smslibrary.core.APIParser;
+import com.eis.smslibrary.message.SMSMessageReceived;
+
 import it.lucacrema.preferences.PreferencesManager;
 
 /**
  * Broadcast receiver for received messages, called by Android.
  *
- * @author Luca Crema, Marco Mariotto
+ * @author Luca Crema
+ * @author Marco Mariotto
  * @since 29/11/2019
- *
  */
 public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
 
-    public static final String INTENT_MESSAGE_TAG = "SMSMessage";
+    public static final String INTENT_MESSAGE_TAG = "SMSMessageReceived";
     public static final String SERVICE_CLASS_PREFERENCES_KEY = "ApplicationServiceClass";
 
     /**
@@ -34,7 +39,7 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
         Object[] smsExtras = (Object[]) extras.get("pdus");
         String format = (String) extras.get("format");
 
-        if(smsExtras == null) //could be null
+        if (smsExtras == null) //could be null
             return;
 
         for (Object smsData : smsExtras) {
@@ -45,7 +50,11 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
             if (phoneNumber == null) //could be null
                 return;
 
-            SMSMessage parsedMessage = SMSMessageHandler.getInstance().parseMessage(phoneNumber, smsContent);
+            //build APIMessage from Android message data
+            APIMessage apiMessage = new APIMessage(phoneNumber, smsContent);
+
+            //apiMessage->APIParser->SMSMessageParser
+            SMSMessageReceived parsedMessage = SMSMessageParser.getInstance().parseMessage(APIParser.parseToUpperLayerData(apiMessage));
             if (parsedMessage != null) {
                 callApplicationService(context, parsedMessage);
             }
@@ -54,6 +63,7 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
 
     /**
      * Calls the appropriate method to create a message from its pdus
+     *
      * @param smsData message pdus
      * @param format  available only on build version >= 23
      * @return the created message
@@ -72,7 +82,7 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
      * @param context broadcast current context
      * @param message received message
      */
-    private void callApplicationService(Context context, SMSMessage message) {
+    private void callApplicationService(Context context, SMSMessageReceived message) {
         Class<?> listener = null;
         try {
             listener = Class.forName(PreferencesManager.getString(context, SERVICE_CLASS_PREFERENCES_KEY));

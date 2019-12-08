@@ -1,10 +1,10 @@
 package com.eis.smslibrary.listeners;
 
-import com.eis.smslibrary.SMSMessage;
-import com.eis.smslibrary.SMSMessage.SentState;
+import com.eis.smslibrary.message.AbstractSMSMessage.SentState;
+import com.eis.smslibrary.message.SMSMessageToSend;
 
 /**
- * Listener for sent messages
+ * General interface for a listener for an SMS Sent event
  *
  * @author Alessandra Tonin
  */
@@ -12,9 +12,10 @@ public interface SMSSentListener {
 
     /**
      * Callback for message sent to the provider or in case of error
-     * @param message that's been sent/not sent
-     * @param sentState of the operation
+     *
+     * @param message   the message that's been sent/not sent
+     * @param sentState the state of the operation
      */
-    void onSMSSent(SMSMessage message, SentState sentState);
+    void onSMSSent(SMSMessageToSend message, SentState sentState);
 
 }

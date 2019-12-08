@@ -1,59 +1,79 @@
-package com.eis.smslibrary;
+package com.eis.smslibrary.message;
 
 import androidx.annotation.NonNull;
 
+import com.eis.communication.header.Header;
 import com.eis.communication.Message;
 import com.eis.smslibrary.exceptions.InvalidSMSMessageException;
 
 /**
- * Representation of a single sms message
- * This class does NOT parse SMSMessages into sms-ready strings and back!
+ *AbstractSMSMessage is the base {@link Message} having all the common properties an {@link Message} in this layer must have
+ * <ul>
+ *     <li>an {@link Header} to contain service information</li>
+ *     <li><code>MAX_MESSAGE_TEXT_LENGTH</code> to check if the whole data chunk can be stored</li>
+ *     <li>a <code>String</code> data filed to store data</li>
+ * </ul>
+ * <i>Used as a base for building other more complex data-link messages without code replication</i>
  *
- * @author Luca Crema, Marco Mariotto, Alberto Ursino
+ * @param <H> type of header of the <code>AbstractSMSMessage</code>
+ *
+ * @author Luca Crema
+ * @author Marco Mariotto
+ * @author Alberto Ursino
+ * @author Mattia Fanan
+ *
+ * @see Message
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
-public class SMSMessage implements Message<String, SMSPeer> {
-
+public class AbstractSMSMessage<H extends Header<String>> implements Message<H,String> {
     /**
      * Kind of a magic number, should be around 160 but doesn't work all the times.
      * (suggestions accepted)
      */
-    public static final int MAX_MSG_TEXT_LEN = 155;
-    private String messageContent;
-    private SMSPeer peer;
+    public static final int MAX_MESSAGE_TEXT_LENGTH = 155;
+    protected String messageContent;
+    protected H messageHeader;
 
     /**
-     * Constructor for a sms text message.
+     * Constructor for <code>AbstractSMSMessage</code>
      *
-     * @param peer        a valid peer
-     * @param messageText the message content, can be empty but not null
-     * @throws InvalidSMSMessageException if checkMessageText is different from MESSAGE_TEXT_VALID
+     * @param messageHeader the header of this message
+     * @param messageText   the content of this message, can be empty but not null
+     * @throws InvalidSMSMessageException if {@link #checkMessageText} is different from MESSAGE_TEXT_VALID
      */
-    public SMSMessage(@NonNull SMSPeer peer, @NonNull String messageText) throws InvalidSMSMessageException {
+    public AbstractSMSMessage(@NonNull final H messageHeader, @NonNull final String messageText) throws InvalidSMSMessageException {
+
+        if(messageHeader == null || messageText == null)
+            throw new NullPointerException();
+
         //Checks on the message text
         ContentState contentState = checkMessageText(messageText);
+
         if (contentState != ContentState.MESSAGE_TEXT_VALID)
             throw new InvalidSMSMessageException("Message text length exceeds maximum allowed", contentState);
+
         this.messageContent = messageText;
-        this.peer = peer;
+        this.messageHeader = messageHeader;
     }
 
     /**
-     * Checks if the message content could be valid.
+     * Checks if the message content is valid.
      *
-     * @param messageText to be checked.
-     * @return The state of the message after the validity tests.
+     * @param messageText the message to be checked.
+     * @return the state of the message after the validity tests.
      */
-    public static ContentState checkMessageText(@NonNull String messageText) {
-        if (messageText.length() > SMSMessage.MAX_MSG_TEXT_LEN) {
+    public static ContentState checkMessageText(@NonNull final String messageText) {
+
+        if (messageText.length() > SMSMessageReceived.MAX_MESSAGE_TEXT_LENGTH) {
             return ContentState.MESSAGE_TEXT_TOO_LONG;
         }
         return ContentState.MESSAGE_TEXT_VALID;
     }
 
     /**
-     * Retrieves the data received by or to be sent in the network.
+     * Gets the data stored in this message
      *
-     * @return data contained in this message or to put in an sms
+     * @return the data contained in this message
      */
     @Override
     public String getData() {
@@ -61,13 +81,13 @@ public class SMSMessage implements Message<String, SMSPeer> {
     }
 
     /**
-     * Retrieves the sender or the destination for the message
+     * Gets the header contained in this message
      *
-     * @return Peer associated with this message
+     * @return the header contained in this message
      */
     @Override
-    public SMSPeer getPeer() {
-        return peer;
+    public H getHeader() {
+        return messageHeader;
     }
 
     /**
@@ -111,7 +131,5 @@ public class SMSMessage implements Message<String, SMSPeer> {
         DELIVERY_ERROR,
         ERROR_GENERIC_FAILURE
     }
+
 }
-
-
-
