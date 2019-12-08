@@ -1,9 +1,6 @@
 package com.eis.communication.header;
 
 import com.eis.communication.Peer;
-import com.eis.communication.header.DestinationPeerHeader;
-import com.eis.communication.header.Header;
-import com.eis.communication.header.SourcePeerHeader;
 
 import java.io.Serializable;
 
@@ -12,12 +9,10 @@ import java.io.Serializable;
  *
  * @param <P> type of {@link Peer} which can be stored
  * @param <T> type of data in which the header's service information is saved
- *
+ * @author Mattia Fanan
  * @see Header
  * @see SourcePeerHeader
  * @see DestinationPeerHeader
- *
- * @author Mattia Fanan
  */
-public interface BothPeersHeader<P extends Peer,T extends Serializable> extends SourcePeerHeader<P,T>,DestinationPeerHeader<P,T> {
+public interface BothPeersHeader<P extends Peer, T extends Serializable> extends SourcePeerHeader<P, T>, DestinationPeerHeader<P, T> {
 }

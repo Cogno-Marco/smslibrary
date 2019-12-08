@@ -11,7 +11,7 @@ import org.junit.Test;
  * @author Luca Crema.
  * Reveiewed by Marco Cognolato
  */
-public class SMSPeerTest{
+public class SMSPeerTest {
 
     public static final String EMPTY_TELEPHONE_NUMBER = "";
     public static final String TOO_SHORT_TELEPHONE_NUMBER = "+39";
@@ -25,7 +25,7 @@ public class SMSPeerTest{
     private SMSPeer defaultPeer2;
 
     @Before
-    public void setup(){
+    public void setup() {
         defaultPeer1 = new SMSPeer(VALID_TELEPHONE_NUMBER + "1");
         defaultPeer2 = new SMSPeer(VALID_TELEPHONE_NUMBER + "2");
     }
@@ -67,29 +67,29 @@ public class SMSPeerTest{
 
     @Test
     public void constructor_shortTelephoneNumber_trowsException() {
-        try{
+        try {
             new SMSPeer(TOO_SHORT_TELEPHONE_NUMBER);
             Assert.fail("Should have thrown an exception");
-        }catch (InvalidTelephoneNumberException e){
+        } catch (InvalidTelephoneNumberException e) {
             //It's  ok!
         }
     }
 
-    @Test (expected = InvalidTelephoneNumberException.class)
+    @Test(expected = InvalidTelephoneNumberException.class)
     public void constructor_tooLongTelephoneNumber_trowsException() {
-            new SMSPeer(TOO_LONG_TELEPHONE_NUMBER);
-            Assert.fail("Should have thrown an exception");
+        new SMSPeer(TOO_LONG_TELEPHONE_NUMBER);
+        Assert.fail("Should have thrown an exception");
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void constructor_noCountryCodeTelephoneNumber_trowsException() {
-            new SMSPeer(NO_COUNTRY_CODE_TELEPHONE_NUMBER);
+        new SMSPeer(NO_COUNTRY_CODE_TELEPHONE_NUMBER);
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void constructor_emptyTelephoneNumber_trowsException() {
-            new SMSPeer(EMPTY_TELEPHONE_NUMBER);
-            Assert.fail("Should have thrown an exception");
+        new SMSPeer(EMPTY_TELEPHONE_NUMBER);
+        Assert.fail("Should have thrown an exception");
     }
 
     @Test
@@ -126,6 +126,7 @@ public class SMSPeerTest{
     public void equals_different_isFalse() {
         Assert.assertFalse(defaultPeer1.equals(defaultPeer2));
     }
+
     @Test
     public void equals_null_isFalse() {
         Assert.assertFalse(defaultPeer1.equals(null));

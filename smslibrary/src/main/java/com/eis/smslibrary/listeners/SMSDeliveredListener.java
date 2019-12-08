@@ -13,7 +13,8 @@ public interface SMSDeliveredListener {
 
     /**
      * Callback for message sent to the provider or in case of error
-     * @param message that's been delivered (or not)
+     *
+     * @param message        that's been delivered (or not)
      * @param deliveredState of the operation
      */
     void onSMSDelivered(SMSMessageToSend message, DeliveredState deliveredState);

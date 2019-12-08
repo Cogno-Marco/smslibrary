@@ -6,10 +6,8 @@ import java.io.Serializable;
  * Header is the container of all protocol message's service information
  *
  * @param <T> type of data in which the header information is saved
- *
- * @see Serializable
- *
  * @author Mattia Fanan
+ * @see Serializable
  */
 public interface Header<T extends Serializable> extends Serializable {
     /**

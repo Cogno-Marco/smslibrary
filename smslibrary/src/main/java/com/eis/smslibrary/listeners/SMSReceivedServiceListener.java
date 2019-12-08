@@ -5,8 +5,8 @@ import android.content.Intent;
 import androidx.annotation.Nullable;
 import androidx.core.app.JobIntentService;
 
-import com.eis.smslibrary.message.SMSMessageReceived;
 import com.eis.smslibrary.SMSReceivedBroadcastReceiver;
+import com.eis.smslibrary.message.SMSMessageReceived;
 
 /**
  * Abstract class to implement in order to wake up the service when a message is received

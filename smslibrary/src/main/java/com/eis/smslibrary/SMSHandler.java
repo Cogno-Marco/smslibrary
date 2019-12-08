@@ -9,8 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
-import com.eis.smslibrary.core.APIParser;
 import com.eis.smslibrary.core.APIMessage;
+import com.eis.smslibrary.core.APIParser;
 import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;

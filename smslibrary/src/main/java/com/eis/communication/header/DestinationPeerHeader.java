@@ -9,10 +9,8 @@ import java.io.Serializable;
  *
  * @param <P> type of {@link Peer} which can be stored
  * @param <T> type of data in which the header's service information is saved
- *
- * @see Header
- *
  * @author Mattia Fanan
+ * @see Header
  */
 public interface DestinationPeerHeader<P extends Peer, T extends Serializable> extends Header<T> {
     /**

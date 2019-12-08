@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
  * APIMessage contains all the data Android needs to send a sms
  *
  * @author Mattia Fanan
- *
  */
 public final class APIMessage {
     private String phoneNumber;
@@ -18,9 +17,9 @@ public final class APIMessage {
      * @param phoneNumber the phone number of this message
      * @param textMessage the text of this message
      */
-    public APIMessage(@NonNull final String phoneNumber,@NonNull final String textMessage){
+    public APIMessage(@NonNull final String phoneNumber, @NonNull final String textMessage) {
 
-        if(phoneNumber == null || textMessage == null)
+        if (phoneNumber == null || textMessage == null)
             throw new NullPointerException();
 
         this.textMessage = textMessage;
@@ -29,17 +28,19 @@ public final class APIMessage {
 
     /**
      * Gets the message's phone number
+     *
      * @return the phone number of the message
      */
-    public String getPhoneNumber(){
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
     /**
      * Gets the text of this message
+     *
      * @return the text of this message
      */
-    public String getTextMessage(){
+    public String getTextMessage() {
         return textMessage;
     }
 

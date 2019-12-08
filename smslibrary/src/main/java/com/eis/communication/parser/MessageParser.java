@@ -9,10 +9,9 @@ import com.eis.communication.Message;
  * @param <D> the data type used by the channel
  * @param <P> the type of Message to parse
  * @param <O> the type of Message to output
- *
  * @see Message
  */
-public interface MessageParser<D,P extends Message,O extends Message> {
+public interface MessageParser<D, P extends Message, O extends Message> {
 
     /**
      * Interprets data arrived via the communication channel and parses it to a message
@@ -28,5 +27,5 @@ public interface MessageParser<D,P extends Message,O extends Message> {
      * @param message to be translated
      * @return the data to send
      */
-    D parseData (P message);
+    D parseData(P message);
 }

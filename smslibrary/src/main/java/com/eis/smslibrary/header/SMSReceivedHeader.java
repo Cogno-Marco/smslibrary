@@ -10,7 +10,7 @@ import com.eis.smslibrary.SMSPeer;
  *
  * @author Mattia Fanan
  */
-public final class SMSReceivedHeader extends AbstractSMSHeader implements SourcePeerHeader<SMSPeer,String> {
+public final class SMSReceivedHeader extends AbstractSMSHeader implements SourcePeerHeader<SMSPeer, String> {
 
     /**
      * Constructor for SMSReceivedHeader
@@ -33,18 +33,19 @@ public final class SMSReceivedHeader extends AbstractSMSHeader implements Source
 
     /**
      * Indicates whether some other object is "equal to" this one
+     *
      * @param o The reference object with which to compare.
      * @return <code>true</code> if this object is the same as the obj argument; <code>false</code>otherwise.
      */
     @Override
     public boolean equals(Object o) {
-        if(this == o)
+        if (this == o)
             return true;
 
         if (!(o instanceof SMSReceivedHeader))
             return false;
 
-        SMSReceivedHeader header = (SMSReceivedHeader)o;
+        SMSReceivedHeader header = (SMSReceivedHeader) o;
 
         return peer.equals(header.getSource());
     }
@@ -53,7 +54,7 @@ public final class SMSReceivedHeader extends AbstractSMSHeader implements Source
      * @return a hash code value for this object.
      */
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return 47 * 11 * peer.hashCode();
     }
 }

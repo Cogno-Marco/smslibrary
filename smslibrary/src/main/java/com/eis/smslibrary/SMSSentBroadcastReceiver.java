@@ -9,8 +9,8 @@ import android.telephony.SmsManager;
 import androidx.annotation.NonNull;
 
 import com.eis.smslibrary.listeners.SMSSentListener;
-import com.eis.smslibrary.message.SMSMessageToSend;
 import com.eis.smslibrary.message.AbstractSMSMessage.SentState;
+import com.eis.smslibrary.message.SMSMessageToSend;
 
 /**
  * Broadcast receiver for sent messages, called by Android Library.

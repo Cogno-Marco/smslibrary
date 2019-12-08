@@ -24,14 +24,14 @@ public class SMSToSendMessageTest {
 
     @Before
     public void init() {
-        validPeer=new SMSPeer(SMSPeerTest.VALID_TELEPHONE_NUMBER);
-        validHeader=new SMSToSendHeader(validPeer);
+        validPeer = new SMSPeer(SMSPeerTest.VALID_TELEPHONE_NUMBER);
+        validHeader = new SMSToSendHeader(validPeer);
         smsMessageToSend = new SMSMessageToSend(validHeader, AbstractSMSMessageTest.VALID_TEXT_MESSAGE);
     }
 
     @Test(expected = InvalidSMSMessageException.class)
     public void smsMessage_constructor_notValidTextMessage() {
-        SMSMessageToSend msg = new SMSMessageToSend(validHeader, AbstractSMSMessageTest.TOO_LONG_TEXT_MESSAGE);
+        new SMSMessageToSend(validHeader, AbstractSMSMessageTest.TOO_LONG_TEXT_MESSAGE);
         Assert.fail("Should have thrown an InvalidSMSMessageException");
     }
 
@@ -42,7 +42,7 @@ public class SMSToSendMessageTest {
     }
 
     @Test
-    public void getHeader_validHeader_isEquals(){
-        Assert.assertEquals(smsMessageToSend.getHeader(),validHeader);
+    public void getHeader_validHeader_isEquals() {
+        Assert.assertEquals(smsMessageToSend.getHeader(), validHeader);
     }
 }

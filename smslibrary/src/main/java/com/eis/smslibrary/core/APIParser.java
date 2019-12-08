@@ -8,10 +8,10 @@ import androidx.annotation.NonNull;
  *
  * @author Mattia Fanan
  */
-    public final class APIParser {
+public final class APIParser {
 
-        public static final int PHONE_NUMBER_LENGTH = 16;
-        public static final char PADDING = (char)0xfeff0126;//capital latin H
+    public static final int PHONE_NUMBER_LENGTH = 16;
+    public static final char PADDING = (char) 0xfeff0126;//capital latin H
 
     /**
      * Parses data to APIMessage
@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
      */
     public static APIMessage parseToAPIMessage(@NonNull final String data) {
 
-        try{
+        try {
 
             String paddedPhoneNumber = data.substring(0, PHONE_NUMBER_LENGTH);
 
@@ -29,8 +29,9 @@ import androidx.annotation.NonNull;
                     paddedPhoneNumber.substring(0, paddedPhoneNumber.indexOf(PADDING)),//delete padding
                     data.substring(PHONE_NUMBER_LENGTH)
             );
+        } catch (IndexOutOfBoundsException e) {
+            return null;
         }
-        catch (IndexOutOfBoundsException e){return null;}
 
     }
 
@@ -40,14 +41,14 @@ import androidx.annotation.NonNull;
      * @param apiMessage the APIMessage to parse
      * @return <code>String</code> data if <code>apiMessage</code> correctly parsed, <code>null</code> otherwise
      */
-    public static String parseToUpperLayerData(@NonNull final APIMessage apiMessage){
+    public static String parseToUpperLayerData(@NonNull final APIMessage apiMessage) {
 
         String phoneNumber = apiMessage.getPhoneNumber();
 
         //add padding to reach PHONE_NUMBER_LENGTH
         phoneNumber = addPadding(phoneNumber);
 
-        if(phoneNumber != null)
+        if (phoneNumber != null)
             return phoneNumber + apiMessage.getTextMessage();
 
         return null;
@@ -59,14 +60,14 @@ import androidx.annotation.NonNull;
      * @param toAddPadding the <code>String</code> to add padding
      * @return <code>String</code> of length 16 or <code>null</code> if <code>toAddPadding</code> is already longer
      */
-    public static String addPadding(@NonNull String toAddPadding){
+    public static String addPadding(@NonNull String toAddPadding) {
 
-        if(toAddPadding.length() > PHONE_NUMBER_LENGTH)
+        if (toAddPadding.length() > PHONE_NUMBER_LENGTH)
             return null;
 
         //add padding
         StringBuilder stringBuilder = new StringBuilder(toAddPadding);
-        while(stringBuilder.length() < PHONE_NUMBER_LENGTH)
+        while (stringBuilder.length() < PHONE_NUMBER_LENGTH)
             stringBuilder.append(PADDING);
 
         return stringBuilder.toString();

@@ -12,7 +12,8 @@ public interface SMSSentListener {
 
     /**
      * Callback for message sent to the provider or in case of error
-     * @param message that's been sent/not sent
+     *
+     * @param message   that's been sent/not sent
      * @param sentState of the operation
      */
     void onSMSSent(SMSMessageToSend message, SentState sentState);

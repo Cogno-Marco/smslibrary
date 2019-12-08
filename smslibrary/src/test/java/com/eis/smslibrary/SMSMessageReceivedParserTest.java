@@ -2,11 +2,9 @@ package com.eis.smslibrary;
 
 import com.eis.communication.parser.DataParseStrategy;
 import com.eis.communication.parser.MessageParseStrategy;
-import com.eis.smslibrary.header.SMSReceivedHeader;
 import com.eis.smslibrary.header.SMSToSendHeader;
 import com.eis.smslibrary.message.AbstractSMSMessageTest;
 import com.eis.smslibrary.message.SMSMessageReceived;
-import com.eis.smslibrary.message.SMSMessageReceivedTest;
 import com.eis.smslibrary.message.SMSMessageToSend;
 
 import org.junit.Assert;
@@ -30,7 +28,7 @@ public class SMSMessageReceivedParserTest {
 
 
     @Before
-    public void init(){
+    public void init() {
         defaultInstance = SMSMessageParser.getInstance();
 
         defaultInstance.setMessageParseStrategy(DEFAULT_SMS_MESSAGE_PARSE_STRATEGY);
@@ -45,13 +43,13 @@ public class SMSMessageReceivedParserTest {
 
     @Test
     public void parseMessage_message_send_to_receive() {
-        String data=defaultInstance.parseData(DEFAULT_TO_SEND_MESSAGE);
+        String data = defaultInstance.parseData(DEFAULT_TO_SEND_MESSAGE);
         SMSMessageReceived parsedMessage = defaultInstance.parseMessage(data);
 
-        if(!DEFAULT_TO_SEND_MESSAGE.getData().equals(parsedMessage.getData()))
+        if (!DEFAULT_TO_SEND_MESSAGE.getData().equals(parsedMessage.getData()))
             Assert.fail("data should be the same");
 
-        if(!DEFAULT_TO_SEND_MESSAGE.getHeader().getDestination().equals(parsedMessage.getHeader().getSource()))
+        if (!DEFAULT_TO_SEND_MESSAGE.getHeader().getDestination().equals(parsedMessage.getHeader().getSource()))
             Assert.fail("source and destination should be the same");
     }
 
@@ -59,8 +57,8 @@ public class SMSMessageReceivedParserTest {
      * If a normal sms is parsed (without hidden character) it should return null
      */
     @Test
-    public void parseMessage_wrongSMS_isNull(){
+    public void parseMessage_wrongSMS_isNull() {
         //the peer address works like a message without hidden character
-        Assert.assertNull( defaultInstance.parseMessage(DEFAULT_PEER.getAddress()));
+        Assert.assertNull(defaultInstance.parseMessage(DEFAULT_PEER.getAddress()));
     }
 }

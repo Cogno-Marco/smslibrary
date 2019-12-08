@@ -3,8 +3,8 @@ package com.eis.smslibrary;
 import androidx.annotation.NonNull;
 
 import com.eis.communication.parser.DataParseStrategy;
-import com.eis.communication.parser.MessageParser;
 import com.eis.communication.parser.MessageParseStrategy;
+import com.eis.communication.parser.MessageParser;
 import com.eis.smslibrary.core.APIParser;
 import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
 import com.eis.smslibrary.header.AbstractSMSHeader;
@@ -15,7 +15,7 @@ import com.eis.smslibrary.message.SMSMessageToSend;
 /**
  * <a href="https://en.wikipedia.org/wiki/Singleton_pattern">Singleton pattern</a> class used to parse <code>String</code> to {@link SMSMessageReceived}
  * and {@link SMSMessageToSend} to <code>Strings</code>
- * <P>
+ * <p>
  * Uses a <a href="https://en.wikipedia.org/wiki/Strategy_pattern">Strategy pattern</a> to parse message and data, so that any user can update them to its preferred parser
  * <i>By defaults it uses strategies defined by the library</i>
  *
@@ -23,7 +23,6 @@ import com.eis.smslibrary.message.SMSMessageToSend;
  * @author Alberto Ursino
  * @author Marco Mariotto
  * @author Mattia Fanan
- *
  * @see DataParseStrategy
  * @see MessageParseStrategy
  * @see MessageParser
@@ -37,7 +36,7 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
     /**
      * Private constructor
      */
-    private SMSMessageParser(){
+    private SMSMessageParser() {
         messageParseStrategy = new DefaultSMSMessageParseStrategy();
         dataParseStrategy = new DefaultDataParseStrategy();
     }
@@ -47,8 +46,8 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
      *
      * @return Singleton instance of this class
      */
-    public static SMSMessageParser getInstance(){
-        if(instance == null)
+    public static SMSMessageParser getInstance() {
+        if (instance == null)
             instance = new SMSMessageParser();
         return instance;
     }
@@ -58,7 +57,7 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
      *
      * @param messageParseStrategy the custom message parse strategy
      */
-    public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String, SMSMessageReceived> messageParseStrategy){
+    public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String, SMSMessageReceived> messageParseStrategy) {
         this.messageParseStrategy = messageParseStrategy;
     }
 
@@ -67,7 +66,7 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
      *
      * @param dataParseStrategy the custom data parse strategy
      */
-    public void setDataParseStrategy(@NonNull final DataParseStrategy<String, SMSMessageToSend> dataParseStrategy){
+    public void setDataParseStrategy(@NonNull final DataParseStrategy<String, SMSMessageToSend> dataParseStrategy) {
         this.dataParseStrategy = dataParseStrategy;
     }
 
@@ -77,7 +76,7 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
      * @param data the data to parse from the lower layer protocol
      * @return The message if the string has been parsed correctly, <code>null</code> otherwise
      */
-    public SMSMessageReceived parseMessage(@NonNull final String data){
+    public SMSMessageReceived parseMessage(@NonNull final String data) {
         return messageParseStrategy.parseMessage(data);
     }
 
@@ -87,14 +86,14 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
      * @param message the message to be parsed
      * @return The channel data if the message has been parsed correctly, <code>null</code> otherwise
      */
-    public String parseData(@NonNull final SMSMessageToSend message){
+    public String parseData(@NonNull final SMSMessageToSend message) {
         return dataParseStrategy.parseData(message);
     }
 
     /**
      * DefaultSMSMessageParseStrategy is the default {@link MessageParseStrategy} for this class
      */
-    public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSMessageReceived>{
+    public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSMessageReceived> {
 
 
         /**
@@ -119,10 +118,9 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
                 SMSPeer sourcePeer;
 
                 //try to parse the source address
-                try{
-                    sourcePeer=new SMSPeer(foundAddress);
-                }
-                catch (InvalidTelephoneNumberException e){
+                try {
+                    sourcePeer = new SMSPeer(foundAddress);
+                } catch (InvalidTelephoneNumberException e) {
                     return null;
                 }
 
@@ -130,8 +128,7 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
                 String messageData = foundData.substring(1);
 
                 return new SMSMessageReceived(new SMSReceivedHeader(sourcePeer), messageData);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 return null;
             }
         }
@@ -140,7 +137,7 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
     /**
      * DefaultDataParseStrategy is the default {@link DataParseStrategy} for this class
      */
-    public class DefaultDataParseStrategy implements DataParseStrategy<String, SMSMessageToSend>{
+    public class DefaultDataParseStrategy implements DataParseStrategy<String, SMSMessageToSend> {
 
         /**
          * Parse SMSMessageToSend into channel data
@@ -151,10 +148,10 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
         @Override
         public String parseData(SMSMessageToSend message) {
 
-            String address=message.getHeader().getDestination().getAddress();
+            String address = message.getHeader().getDestination().getAddress();
             //adding padding to the address
             //addPadding never return null cause address is always shorter than 16
-            address= APIParser.addPadding(address);
+            address = APIParser.addPadding(address);
 
             return address + message.getHeader().getID() + message.getData();
         }
