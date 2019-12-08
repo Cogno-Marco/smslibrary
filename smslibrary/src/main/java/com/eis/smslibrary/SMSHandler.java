@@ -14,7 +14,6 @@ import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import it.lucacrema.preferences.PreferencesManager;
@@ -40,12 +39,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     private static SMSHandler instance;
 
-    /**
-     * Weak reference doesn't prevent garbage collector to
-     * de-allocate this class when it has reference to a
-     * context that is still running. Prevents memory leaks.
-     */
-    private WeakReference<Context> context;
+    private Context context;
 
     /**
      * This message counter is used so that we can have a different action name
@@ -78,7 +72,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param context current context.
      */
     public void setup(Context context) {
-        this.context = new WeakReference<>(context);
+        this.context = context.getApplicationContext();
     }
 
     /**
@@ -154,8 +148,8 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
         SMSSentBroadcastReceiver onSentReceiver = new SMSSentBroadcastReceiver(message, listener);
         String actionName = SENT_MESSAGE_INTENT_ACTION + (messageCounter++);
-        context.get().registerReceiver(onSentReceiver, new IntentFilter(actionName));
-        return PendingIntent.getBroadcast(context.get(), 0, new Intent(actionName), 0);
+        context.registerReceiver(onSentReceiver, new IntentFilter(actionName));
+        return PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0);
     }
 
     /**
@@ -172,8 +166,8 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
         SMSDeliveredBroadcastReceiver onDeliveredReceiver = new SMSDeliveredBroadcastReceiver(message, listener);
         String actionName = DELIVERED_MESSAGE_INTENT_ACTION + (messageCounter++);
-        context.get().registerReceiver(onDeliveredReceiver, new IntentFilter(actionName));
-        return PendingIntent.getBroadcast(context.get(), 0, new Intent(actionName), 0);
+        context.registerReceiver(onDeliveredReceiver, new IntentFilter(actionName));
+        return PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0);
     }
 
     /**
@@ -195,12 +189,12 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
         ArrayList<SMSPart> parts = new ArrayList<>();
         for (String text : texts) {
             String actionName = SENT_MESSAGE_INTENT_ACTION + (messageCounter++);
-            intents.add(PendingIntent.getBroadcast(context.get(), 0, new Intent(actionName), 0));
+            intents.add(PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0));
             intentFilter.addAction(actionName);
             parts.add(new SMSPart(text, actionName));
         }
         SMSSentBroadcastReceiver onSentReceiver = new SMSSentBroadcastReceiver(parts, listener, peer);
-        context.get().registerReceiver(onSentReceiver, intentFilter);
+        context.registerReceiver(onSentReceiver, intentFilter);
         return intents;
     }
 
@@ -223,7 +217,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName) {
         checkSetup();
-        PreferencesManager.setString(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
+        PreferencesManager.setString(context, SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
     }
 
     /**
@@ -231,7 +225,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     public void removeReceivedListener() {
         checkSetup();
-        PreferencesManager.removeValue(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY);
+        PreferencesManager.removeValue(context, SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY);
     }
 
     /**
