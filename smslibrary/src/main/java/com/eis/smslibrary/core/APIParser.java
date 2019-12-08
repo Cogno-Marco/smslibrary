@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
  * APIParser is raw parser from strings generated from {@link com.eis.smslibrary.SMSMessageParser} to {@link APIMessage} and back
  *
  * @author Mattia Fanan
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
 public final class APIParser {
 

@@ -10,10 +10,10 @@ import com.eis.communication.Message;
  * @param <P> the type of Message to parse
  * @author Luca Crema (thanks to Marco Cognolato for design pattern reference)
  * @author Mattia Fanan
- *
  * @see Message
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
-public interface DataParseStrategy<D,P extends Message> {
+public interface DataParseStrategy<D, P extends Message> {
 
     /**
      * Parse library message into channel data

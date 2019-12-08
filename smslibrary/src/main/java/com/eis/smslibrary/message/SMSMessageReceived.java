@@ -9,6 +9,7 @@ import com.eis.smslibrary.header.SMSReceivedHeader;
  * SMSReceivedHeader is {@link AbstractSMSMessage} extension taking as <code>Header</code> {@link SMSReceivedHeader}
  *
  * @author Mattia Fanan
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
 public final class SMSMessageReceived extends AbstractSMSMessage<SMSReceivedHeader> {
 

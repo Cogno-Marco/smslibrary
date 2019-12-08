@@ -15,6 +15,7 @@ import com.eis.smslibrary.SMSPeer;
  *
  * @author Mattia Fanan
  * @see Header
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
 public class AbstractSMSHeader implements Header<String> {
     //protocol identifier

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
  * APIMessage contains all the data Android needs to send a sms
  *
  * @author Mattia Fanan
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
 public final class APIMessage {
     private String phoneNumber;

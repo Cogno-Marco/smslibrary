@@ -10,7 +10,6 @@ import com.eis.communication.Message;
  * @param <O> the type of Message to output
  * @author Luca Crema (thanks to Marco Cognolato for design pattern reference)
  * @author Mattia Fanan
- *
  * @see Message
  */
 public interface MessageParseStrategy<D, O extends Message> {

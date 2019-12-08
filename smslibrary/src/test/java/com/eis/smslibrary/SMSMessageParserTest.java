@@ -15,7 +15,7 @@ import org.junit.Test;
  * @author Luca Crema
  * @author Mattia Fanan
  */
-public class SMSMessageReceivedParserTest {
+public class SMSMessageParserTest {
 
     private SMSMessageParser defaultInstance;
     private static final MessageParseStrategy<String, SMSMessageReceived> DEFAULT_SMS_MESSAGE_PARSE_STRATEGY = SMSMessageParser.getInstance().new DefaultSMSMessageParseStrategy();
@@ -43,7 +43,10 @@ public class SMSMessageReceivedParserTest {
 
     @Test
     public void parseMessage_message_send_to_receive() {
+        //simulate the channel behaviour
+        //pare message to send to data
         String data = defaultInstance.parseData(DEFAULT_TO_SEND_MESSAGE);
+        //parse data to message received
         SMSMessageReceived parsedMessage = defaultInstance.parseMessage(data);
 
         if (!DEFAULT_TO_SEND_MESSAGE.getData().equals(parsedMessage.getData()))

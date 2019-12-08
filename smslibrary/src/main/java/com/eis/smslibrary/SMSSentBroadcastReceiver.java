@@ -18,7 +18,8 @@ import com.eis.smslibrary.message.SMSMessageToSend;
  * There has to be one different SentBroadcastReceiver per message sent,
  * so every IntentFilter name has to be different
  *
- * @author Luca Crema, Marco Mariotto
+ * @author Luca Crema
+ * @author Marco Mariotto
  */
 public class SMSSentBroadcastReceiver extends BroadcastReceiver {
 

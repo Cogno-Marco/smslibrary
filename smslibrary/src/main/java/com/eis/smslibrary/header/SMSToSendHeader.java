@@ -9,6 +9,7 @@ import com.eis.smslibrary.SMSPeer;
  * SMSToSendHeader is {@link AbstractSMSHeader} extension implementing {@link DestinationPeerHeader} in order to obtain a suitable header for {@link com.eis.smslibrary.message.SMSMessageToSend}
  *
  * @author Mattia Fanan
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
 public final class SMSToSendHeader extends AbstractSMSHeader implements DestinationPeerHeader<SMSPeer, String> {
 

@@ -23,6 +23,7 @@ import com.eis.smslibrary.exceptions.InvalidSMSMessageException;
  * @author Mattia Fanan
  *
  * @see Message
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
 public class AbstractSMSMessage<H extends Header<String>> implements Message<H,String> {
     /**

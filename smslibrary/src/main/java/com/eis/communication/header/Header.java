@@ -8,6 +8,7 @@ import java.io.Serializable;
  * @param <T> type of data in which the header information is saved
  * @author Mattia Fanan
  * @see Serializable
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
 public interface Header<T extends Serializable> extends Serializable {
     /**

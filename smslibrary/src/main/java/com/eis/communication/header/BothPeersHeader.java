@@ -13,6 +13,7 @@ import java.io.Serializable;
  * @see Header
  * @see SourcePeerHeader
  * @see DestinationPeerHeader
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
 public interface BothPeersHeader<P extends Peer, T extends Serializable> extends SourcePeerHeader<P, T>, DestinationPeerHeader<P, T> {
 }

@@ -26,7 +26,11 @@ import it.lucacrema.preferences.PreferencesManager;
  * access it with {@link #getInstance}, and before doing anything you
  * should call {@link #setup}.<br/>
  *
- * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini, Marco Cognolato
+ * @author Luca Crema
+ * @author Marco Mariotto
+ * @author Alberto Ursino
+ * @author Marco Tommasini
+ * @author Marco Cognolato
  * @since 29/11/2019
  */
 @SuppressWarnings({"WeakerAccess", "unused"})

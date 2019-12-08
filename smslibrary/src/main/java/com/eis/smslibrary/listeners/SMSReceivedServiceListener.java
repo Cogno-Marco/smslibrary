@@ -11,7 +11,10 @@ import com.eis.smslibrary.message.SMSMessageReceived;
 /**
  * Abstract class to implement in order to wake up the service when a message is received
  *
- * @author Luca Crema, Alberto Ursino, Marco Tommasini, Alessandra Tonin
+ * @author Luca Crema
+ * @author Alberto Ursino
+ * @author Marco Tommasini
+ * @author Alessandra Tonin
  * @since 29/11/2019
  */
 public abstract class SMSReceivedServiceListener extends JobIntentService {

@@ -9,6 +9,8 @@ import com.eis.communication.Message;
  * @param <D> the data type used by the channel
  * @param <P> the type of Message to parse
  * @param <O> the type of Message to output
+ * @author Luca Crema (thanks to Marco Cognolato for design pattern reference)
+ * @author Mattia Fanan
  * @see Message
  */
 public interface MessageParser<D, P extends Message, O extends Message> {

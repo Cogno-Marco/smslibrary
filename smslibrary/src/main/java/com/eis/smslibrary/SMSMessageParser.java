@@ -74,7 +74,7 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
      * Interprets a <code>String</code> arrived via the communication channel and parses it to a library message
      *
      * @param data the data to parse from the lower layer protocol
-     * @return The message if the string has been parsed correctly, <code>null</code> otherwise
+     * @return the message if the string has been parsed correctly, <code>null</code> otherwise
      */
     public SMSMessageReceived parseMessage(@NonNull final String data) {
         return messageParseStrategy.parseMessage(data);
@@ -84,7 +84,7 @@ public class SMSMessageParser implements MessageParser<String, SMSMessageToSend,
      * Translates a message into a string that can be passed to the lower layer protocol
      *
      * @param message the message to be parsed
-     * @return The channel data if the message has been parsed correctly, <code>null</code> otherwise
+     * @return the channel data if the message has been parsed correctly, <code>null</code> otherwise
      */
     public String parseData(@NonNull final SMSMessageToSend message) {
         return dataParseStrategy.parseData(message);

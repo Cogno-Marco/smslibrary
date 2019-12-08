@@ -9,6 +9,7 @@ import com.eis.smslibrary.SMSPeer;
  * SMSReceivedHeader is {@link AbstractSMSHeader} extension implementing {@link SourcePeerHeader} in order to obtain a suitable header for {@link com.eis.smslibrary.message.SMSMessageReceived}
  *
  * @author Mattia Fanan
+ * @since 08/12/2019 (gg/mm/aaaa)
  */
 public final class SMSReceivedHeader extends AbstractSMSHeader implements SourcePeerHeader<SMSPeer, String> {
 
