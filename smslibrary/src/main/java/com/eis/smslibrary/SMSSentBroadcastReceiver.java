@@ -81,6 +81,13 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
 
         // if SMS sent had multiple parts
         if (this.message == null) {
+            // if sending of a part failed, gives to the listener its sentState containing the error
+            if (sentState != SMSMessage.SentState.MESSAGE_SENT) {
+                reconstructMessage();
+                listener.onSMSSent(message, sentState);
+                context.unregisterReceiver(this);
+                return;
+            }
             // TODO: use HasMap with Intent.action as key instead of searching on an array?
             //  This would complicate building the SMSMessage in method reconstructMessage().
             for (SMSPart part : messageParts) {
@@ -91,41 +98,6 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
             for (SMSPart part : messageParts) {
                 // if we're still waiting to receive intents for some parts, exit
                 if (!part.wasReceived()) return;
-            }
-            /* registers number of occurrences of each SentState in messageParts. We don't care
-             * about MESSAGE_SENT, because we only need SentStates indicating an error.
-             */
-            HashMap<SMSMessage.SentState, Integer> occurrences = new HashMap<>();
-            for (SMSPart part : messageParts) {
-                SMSMessage.SentState state = part.getState();
-                if (state == SMSMessage.SentState.MESSAGE_SENT) {
-                    continue;
-                }
-                Integer value = occurrences.get(state);
-                if (value == null) {
-                    occurrences.put(state, 1);
-                } else {
-                    occurrences.put(state, ++value);
-                }
-            }
-            /* finds SentState with most occurrences, except for MESSAGE_SENT. This could be needed
-             * later to inform the listener of what went wrong.
-             */
-            SMSMessage.SentState maxEntry = SMSMessage.SentState.ERROR_GENERIC_FAILURE;
-            for (SMSMessage.SentState entry : occurrences.keySet())
-                if (occurrences.get(maxEntry) == null ||
-                        occurrences.get(entry) >= occurrences.get(maxEntry)) {
-                    maxEntry = entry;
-                }
-            for (SMSPart part : messageParts) {
-                if (part.getState() != SMSMessage.SentState.MESSAGE_SENT) {
-                    // if message sending failed, gives to the listener the state that had the most
-                    // occurrences
-                    reconstructMessage();
-                    listener.onSMSSent(message, maxEntry);
-                    context.unregisterReceiver(this);
-                    return;
-                }
             }
             reconstructMessage();
             listener.onSMSSent(message, sentState);
