@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
     public final class APIParser {
 
         public static final int PHONE_NUMBER_LENGTH = 16;
-        public static final String PADDING = (char)0xfeff0126 + "";//capital latin H
+        public static final char PADDING = (char)0xfeff0126;//capital latin H
 
     /**
      * Parses data to APIMessage
@@ -64,10 +64,12 @@ import androidx.annotation.NonNull;
         if(toAddPadding.length() > PHONE_NUMBER_LENGTH)
             return null;
 
-        while(toAddPadding.length() < PHONE_NUMBER_LENGTH)//TODO use StringBuilder
-            toAddPadding += PADDING;
+        //add padding
+        StringBuilder stringBuilder = new StringBuilder(toAddPadding);
+        while(stringBuilder.length() < PHONE_NUMBER_LENGTH)
+            stringBuilder.append(PADDING);
 
-        return toAddPadding;
+        return stringBuilder.toString();
     }
 
 }
