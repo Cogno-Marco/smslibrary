@@ -7,6 +7,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import it.lucacrema.preferences.PreferencesManager;
 
 /**
@@ -14,7 +18,6 @@ import it.lucacrema.preferences.PreferencesManager;
  *
  * @author Luca Crema, Marco Mariotto
  * @since 29/11/2019
- *
  */
 public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
 
@@ -30,30 +33,41 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
         if (extras == null) {
             return;
         }
-
-        Object[] smsExtras = (Object[]) extras.get("pdus");
-        String format = (String) extras.get("format");
-
-        if(smsExtras == null) //could be null
+        Object[] pdus = (Object[]) extras.get("pdus");
+        if (pdus == null) {
             return;
+        }
+        String format = (String) extras.get("format");
+        Map<String, String> peerMessageMap = new HashMap<>(pdus.length);
 
-        for (Object smsData : smsExtras) {
-            SmsMessage receivedSMS = createMessageFromPdu(smsData, format);
-            String smsContent = receivedSMS.getMessageBody();
-            String phoneNumber = receivedSMS.getOriginatingAddress();
-
-            if (phoneNumber == null) //could be null
-                return;
-
-            SMSMessage parsedMessage = SMSMessageHandler.getInstance().parseMessage(phoneNumber, smsContent);
-            if (parsedMessage != null) {
-                callApplicationService(context, parsedMessage);
+        /* There can be multiple SMSes from multiple senders. We'll concatenate multiple SMSes from
+         * the same sender in one message.
+         */
+        for (Object pdu : pdus) {
+            SmsMessage message = createMessageFromPdu(pdu, format);
+            String phoneNumber = message.getOriginatingAddress();
+            if (phoneNumber == null) { //could be null
+                phoneNumber = "";
             }
+            if (!peerMessageMap.containsKey(phoneNumber)) {
+                peerMessageMap.put(phoneNumber, message.getMessageBody());
+
+            } else {
+                String previousParts = peerMessageMap.get(phoneNumber);
+                String updatedMessage = previousParts + message.getMessageBody();
+                peerMessageMap.put(phoneNumber, updatedMessage);
+            }
+        }
+        for (String peer : peerMessageMap.keySet()) {
+            SMSMessage parsedMessage =
+                    SMSMessageHandler.getInstance().parseMessage(peer, peerMessageMap.get(peer));
+            if (parsedMessage != null) callApplicationService(context, parsedMessage);
         }
     }
 
     /**
      * Calls the appropriate method to create a message from its pdus
+     *
      * @param smsData message pdus
      * @param format  available only on build version >= 23
      * @return the created message

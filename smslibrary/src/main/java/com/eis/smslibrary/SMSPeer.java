@@ -22,11 +22,14 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
      * @throws InvalidTelephoneNumberException If telephoneNumber check is not {@link TelephoneNumberState#TELEPHONE_NUMBER_VALID}.
      */
     public SMSPeer(String telephoneNumber) throws InvalidTelephoneNumberException {
-        TelephoneNumberState telephoneNumberState = SMSPeer.checkPhoneNumber(telephoneNumber);
-        if(telephoneNumberState != TelephoneNumberState.TELEPHONE_NUMBER_VALID)
-            throw new InvalidTelephoneNumberException(telephoneNumberState);
-
-        this.telephoneNumber = telephoneNumber;
+        if (telephoneNumber == null || telephoneNumber.equals("")) {
+            this.telephoneNumber = "";
+        } else {
+            TelephoneNumberState telephoneNumberState = SMSPeer.checkPhoneNumber(telephoneNumber);
+            if (telephoneNumberState != TelephoneNumberState.TELEPHONE_NUMBER_VALID)
+                throw new InvalidTelephoneNumberException(telephoneNumberState);
+            this.telephoneNumber = telephoneNumber;
+        }
     }
 
     /**
@@ -45,7 +48,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
             return TelephoneNumberState.TELEPHONE_NUMBER_TOO_SHORT;
         }
         //Check if it's actually a number with a plus and doesn't contain anything else
-        if (!telephoneNumber.matches("\\+?\\d{"+MIN_TELEPHONE_NUMBER_LENGTH+","+MAX_TELEPHONE_NUMBER_LENGTH+"}")) {
+        if (!telephoneNumber.matches("\\+?\\d{" + MIN_TELEPHONE_NUMBER_LENGTH + "," + MAX_TELEPHONE_NUMBER_LENGTH + "}")) {
             return TelephoneNumberState.TELEPHONE_NUMBER_NOT_A_NUMBER;
         }
         //Check if there is a country code.
@@ -58,6 +61,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
     /**
      * Compares this object with the specified object for order.
+     *
      * @param o The object to be compared.
      * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
      */
@@ -68,6 +72,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
     /**
      * Retrieves the peer's address.
+     *
      * @return Peer's address.
      */
     @Override
@@ -88,14 +93,15 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
     /**
      * Indicates whether some other object is "equal to" this one
+     *
      * @param o The reference object with which to compare.
      * @return True if this object is the same as the obj argument; false otherwise.
      */
     @Override
     public boolean equals(Object o) {
-        if(o == null)
+        if (o == null)
             return false;
-        if(this == o)
+        if (this == o)
             return true;
         if (!(o instanceof SMSPeer))
             return false;
@@ -107,7 +113,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
      * @return a hash code value for this object.
      */
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return 31 * telephoneNumber.hashCode();
     }
 
@@ -115,7 +121,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
      * @return A string representation of the peer
      */
     @NonNull
-    public String toString(){
+    public String toString() {
         return telephoneNumber;
     }
 }
