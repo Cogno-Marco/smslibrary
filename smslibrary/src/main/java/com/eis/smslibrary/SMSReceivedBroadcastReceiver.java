@@ -16,7 +16,7 @@ import it.lucacrema.preferences.PreferencesManager;
 /**
  * Broadcast receiver for received messages, called by Android.
  *
- * @author Luca Crema, Marco Mariotto
+ * @author Luca Crema, Marco Mariotto, Giovanni Velludo
  * @since 29/11/2019
  */
 public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {

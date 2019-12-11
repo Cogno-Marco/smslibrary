@@ -8,7 +8,7 @@ import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
 /**
  * Implementation of {@link Peer} for SMS communication channel.
  *
- * @author Luca Crema, Marco Mariotto. Reviewed by Marco Cognolato and Mattia Fanan
+ * @author Luca Crema, Marco Mariotto, Giovanni Velludo. Reviewed by Marco Cognolato and Mattia Fanan
  */
 public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
