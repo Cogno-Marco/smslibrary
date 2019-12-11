@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import com.eis.communication.Message;
 import com.eis.smslibrary.exceptions.InvalidSMSMessageException;
 
+import java.util.Objects;
+
 /**
  * Representation of a single sms message
  * This class does NOT parse SMSMessages into sms-ready strings and back!
@@ -23,9 +25,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
     // should be lower to account for use of Unicode characters and special GSM characters
     private String messageContent;
     private SMSPeer peer;
-    //TODO: add timestamp to distinguish identical messages sent to the same Peer, needed by
-    // SMSSentListener and SMSDeliveredListener when comparing messages? The timestamp should be
-    // compared in method equals()
+    private long unixTime;
 
     /**
      * Constructor for a sms text message.
@@ -41,6 +41,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
             throw new InvalidSMSMessageException("Message text length exceeds maximum allowed", contentState);
         this.messageContent = messageText;
         this.peer = peer;
+        this.unixTime = System.currentTimeMillis();
     }
 
     /**
@@ -74,6 +75,43 @@ public class SMSMessage implements Message<String, SMSPeer> {
     @Override
     public SMSPeer getPeer() {
         return peer;
+    }
+
+    /**
+     * Returns the time in milliseconds at which this SMSMessage object was created.
+     *
+     * @return the difference, measured in milliseconds, between the time of the creation of this
+     *         object and midnight, January 1, 1970 UTC
+     */
+    public long getUnixTime() {
+        return unixTime;
+    }
+
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     *
+     * @param   o the reference object with which to compare.
+     * @return  {@code true} if this object is the same as the o argument; {@code false} otherwise.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SMSMessage that = (SMSMessage) o;
+        return unixTime == that.unixTime &&
+                messageContent.equals(that.messageContent) &&
+                peer.equals(that.peer);
+    }
+
+    /**
+     * Returns a hash code value for the object. This method is supported for the benefit of hash
+     * tables such as those provided by {@link java.util.HashMap}.
+     *
+     * @return a hash code value for this object.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(messageContent, peer, unixTime);
     }
 
     /**
