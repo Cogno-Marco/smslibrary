@@ -9,22 +9,29 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationHandler;
-import com.eis.smslibrary.listeners.SMSReceivedListener;
+import com.eis.smslibrary.listeners.SMSDeliveredListener;
+import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
 import java.lang.ref.WeakReference;
 
+import it.lucacrema.preferences.PreferencesManager;
+
+
 /**
  * Communication handler for SMSs. It's a Singleton, you should
  * access it with {@link #getInstance}, and before doing anything you
- * should call {@link #setup}.
+ * should call {@link #setup}.<br/>
  *
- * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini
+ * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini, Marco Cognolato
+ * @since 29/11/2019
  */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class SMSHandler implements CommunicationHandler<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
-    public static final int RANDOM_STARTING_COUNTER_VALUE_RANGE  = 100000;
+    public static final String DELIVERED_MESSAGE_INTENT_ACTION = "SMS_DELIVERED";
+    public static final int RANDOM_STARTING_COUNTER_VALUE_RANGE = 100000;
 
     /**
      * Singleton instance
@@ -39,11 +46,6 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     private WeakReference<Context> context;
 
     /**
-     * Received listener reference
-     */
-    private SMSReceivedListener receivedListener;
-
-    /**
      * This message counter is used so that we can have a different action name
      * for pending intent (that will call broadcastReceiver). If we were to use the
      * same action name for every message we would have a conflict and we wouldn't
@@ -56,7 +58,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     private SMSHandler() {
         //Random because if we close and open the app the value probably differs
-        messageCounter = (int)(Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
+        messageCounter = (int) (Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
     }
 
     /**
@@ -65,7 +67,6 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     public static SMSHandler getInstance() {
         if (instance == null)
             instance = new SMSHandler();
-
         return instance;
     }
 
@@ -86,7 +87,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     @Override
     public void sendMessage(final @NonNull SMSMessage message) {
-        sendMessage(message, null);
+        sendMessage(message, null, null);
     }
 
     /**
@@ -97,35 +98,42 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * @param sentListener called on message sent or on error, can be null
      */
     public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSSentListener sentListener) {
+        sendMessage(message, sentListener, null);
+    }
+
+    /**
+     * Sends a message to a destination peer via SMS then
+     * calls the listener.
+     *
+     * @param message           to be sent in the channel to a peer
+     * @param deliveredListener called on message delivered or on error, can be null
+     */
+    public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener deliveredListener) {
+        sendMessage(message, null, deliveredListener);
+    }
+
+    /**
+     * Sends a message to a destination peer via SMS then
+     * calls the listener.
+     *
+     * @param message           to be sent in the channel to a peer
+     * @param sentListener      called on message sent or on error, can be null
+     * @param deliveredListener called on message delivered or on error, can be null
+     */
+    public void sendMessage(final @NonNull SMSMessage message,
+                            final @Nullable SMSSentListener sentListener,
+                            final @Nullable SMSDeliveredListener deliveredListener) {
         checkSetup();
-        String smsContent = SMSMessageHandler.getInstance().parseData(message);
         PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
-
-        SMSCore.sendMessage(smsContent, message.getPeer().getAddress(),sentPI,null);
-    }
-
-    /**
-     * @param receivedListener the listener called on message received
-     */
-    public void setReceivedListener(SMSReceivedListener receivedListener){
-        this.receivedListener = receivedListener;
-    }
-
-    /**
-     * Method used by {@link SMSReceivedBroadcastReceiver} to call the listener
-     * for messages received
-     * @param receivedMessage the message that has been received
-     */
-    protected void callReceivedListener(SMSMessage receivedMessage){
-        if(receivedListener != null)
-            receivedListener.onMessageReceived(receivedMessage);
+        PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener);
+        SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), sentPI, deliveredPI);
     }
 
     /**
      * Creates a new {@link SMSSentBroadcastReceiver} and registers it to receive broadcasts
      * with action {@value SENT_MESSAGE_INTENT_ACTION}
      *
-     * @param message that will be sent
+     * @param message  that will be sent
      * @param listener to call on broadcast received
      * @return a {@link PendingIntent} to be passed to SMSCore
      */
@@ -140,11 +148,60 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     }
 
     /**
+     * Creates a new {@link SMSDeliveredBroadcastReceiver} and registers it to receive broadcasts
+     * with action {@value DELIVERED_MESSAGE_INTENT_ACTION}
+     *
+     * @param message  that will be sent
+     * @param listener to call on broadcast received
+     * @return a {@link PendingIntent} to be passed to SMSCore
+     */
+    private PendingIntent setupNewDeliverReceiver(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener listener) {
+        if (listener == null)
+            return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
+
+        SMSDeliveredBroadcastReceiver onDeliveredReceiver = new SMSDeliveredBroadcastReceiver(message, listener);
+        String actionName = DELIVERED_MESSAGE_INTENT_ACTION + (messageCounter++);
+        context.get().registerReceiver(onDeliveredReceiver, new IntentFilter(actionName));
+        return PendingIntent.getBroadcast(context.get(), 0, new Intent(actionName), 0);
+    }
+
+    /**
      * Checks if the handler has been setup
+     *
      * @throws IllegalStateException if the handler has not been setup
      */
-    private void checkSetup(){
-        if(context == null)
+    private void checkSetup() {
+        if (context == null)
             throw new IllegalStateException("You must call setup() first");
+    }
+
+    /**
+     * Saves in memory the service class name to wake up. It doesn't need an
+     * instance of the class, it just saves the name and instantiates it when needed.
+     *
+     * @param receivedListenerClassName the listener called on message received
+     * @param <T>                       the class type that extends {@link SMSReceivedServiceListener} to be called
+     */
+    public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName) {
+        checkSetup();
+        PreferencesManager.setString(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
+    }
+
+    /**
+     * Unsubscribe the current {@link SMSReceivedServiceListener} from being called on message arrival
+     */
+    public void removeReceivedListener() {
+        checkSetup();
+        PreferencesManager.removeValue(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY);
+    }
+
+    /**
+     * Helper function that gets the message content by using the pre-setup parser in {@link SMSMessageHandler}
+     *
+     * @param message to get the data from
+     * @return the data parsed from the message
+     */
+    private String getSMSContent(SMSMessage message) {
+        return SMSMessageHandler.getInstance().parseData(message);
     }
 }
