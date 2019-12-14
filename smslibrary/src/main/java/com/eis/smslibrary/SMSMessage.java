@@ -21,11 +21,13 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * https://en.wikipedia.org/wiki/Concatenated_SMS
      */
     static final int MAX_MSG_TEXT_LEN = 39015;
+    private static final String GSM_CHARACTERS_REGEX = "^[A-Za-z0-9 \\r\\n@Ł$ĽčéůěňÇŘřĹĺ\u0394_\u03A6\u0393\u039B\u03A9\u03A0\u03A8\u03A3\u0398\u039EĆćßÉ!\"#$%&'()*+,\\-./:;<=>?ĄÄÖŃÜ§żäöńüŕ^{}\\\\\\[~\\]|\u20AC]*$";
     //TODO: check if only characters from GSM character set are used? Otherwise MAX_MSG_TEXT_LEN
     // should be lower to account for use of Unicode characters and special GSM characters
     private String messageContent;
     private SMSPeer peer;
     private long unixTime;
+    // TODO: check if all BroadcastReceivers handle unixTime correctly
 
     /**
      * Constructor for a sms text message.
@@ -51,10 +53,10 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * @return The state of the message after the validity tests.
      */
     public static ContentState checkMessageText(@NonNull String messageText) {
-        if (messageText.length() > SMSMessage.MAX_MSG_TEXT_LEN) {
-            return ContentState.MESSAGE_TEXT_TOO_LONG;
+        if (messageText.matches(GSM_CHARACTERS_REGEX) && messageText.length() <= MAX_MSG_TEXT_LEN) {
+            return ContentState.MESSAGE_TEXT_VALID;
         }
-        return ContentState.MESSAGE_TEXT_VALID;
+        return ContentState.MESSAGE_TEXT_TOO_LONG;
     }
 
     /**
