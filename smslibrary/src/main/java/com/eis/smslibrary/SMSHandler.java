@@ -54,6 +54,8 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     private SMSHandler() {
         //Random because if we close and open the app the value probably differs
+        //TODO: consider writing messageCounter to memory after every use, instead of relying on its
+        // randomness, because it could lead to collisions
         messageCounter = (int) (Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
     }
 
@@ -148,6 +150,8 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
         ArrayList<SMSPart> parts = new ArrayList<>();
         for (String text : texts) {
             String actionName = SENT_MESSAGE_INTENT_ACTION + (messageCounter++);
+            //TODO: check if compareTo of different actionName variables produces expected results,
+            // and invert order of digits or add padding to messageCounter if necessary
             intents.add(PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0));
             intentFilter.addAction(actionName);
             parts.add(new SMSPart(text, actionName));
