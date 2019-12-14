@@ -50,6 +50,7 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
                 break;
             default:
                 deliveredState = SMSMessage.DeliveredState.ERROR_GENERIC_FAILURE;
+                break;
         }
 
         if (listener != null) //extra check, even though listener should never be null
