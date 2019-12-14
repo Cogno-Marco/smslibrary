@@ -114,7 +114,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
      */
     @Override
     public int hashCode() {
-        return 31 * telephoneNumber.hashCode();
+        return telephoneNumber.hashCode();
     }
 
     /**
