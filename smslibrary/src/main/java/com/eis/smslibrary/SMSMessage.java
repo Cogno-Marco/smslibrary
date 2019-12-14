@@ -26,8 +26,6 @@ public class SMSMessage implements Message<String, SMSPeer> {
     // should be lower to account for use of Unicode characters and special GSM characters
     private String messageContent;
     private SMSPeer peer;
-    private long unixTime;
-    // TODO: check if all BroadcastReceivers handle unixTime correctly
 
     /**
      * Constructor for a sms text message.
@@ -43,7 +41,6 @@ public class SMSMessage implements Message<String, SMSPeer> {
             throw new InvalidSMSMessageException("Message text length exceeds maximum allowed", contentState);
         this.messageContent = messageText;
         this.peer = peer;
-        this.unixTime = System.currentTimeMillis();
     }
 
     /**
@@ -52,7 +49,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * @param messageText to be checked.
      * @return The state of the message after the validity tests.
      */
-    public static ContentState checkMessageText(@NonNull String messageText) {
+    private static ContentState checkMessageText(@NonNull String messageText) {
         if (messageText.matches(GSM_CHARACTERS_REGEX) && messageText.length() <= MAX_MSG_TEXT_LEN) {
             return ContentState.MESSAGE_TEXT_VALID;
         }
@@ -80,16 +77,6 @@ public class SMSMessage implements Message<String, SMSPeer> {
     }
 
     /**
-     * Returns the time in milliseconds at which this SMSMessage object was created.
-     *
-     * @return the difference, measured in milliseconds, between the time of the creation of this
-     *         object and midnight, January 1, 1970 UTC
-     */
-    public long getUnixTime() {
-        return unixTime;
-    }
-
-    /**
      * Indicates whether some other object is "equal to" this one.
      *
      * @param   o the reference object with which to compare.
@@ -100,8 +87,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SMSMessage that = (SMSMessage) o;
-        return unixTime == that.unixTime &&
-                messageContent.equals(that.messageContent) &&
+        return messageContent.equals(that.messageContent) &&
                 peer.equals(that.peer);
     }
 
@@ -113,7 +99,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(messageContent, peer, unixTime);
+        return Objects.hash(messageContent, peer);
     }
 
     /**

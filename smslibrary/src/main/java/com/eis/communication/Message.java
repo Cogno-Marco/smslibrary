@@ -22,14 +22,6 @@ public interface  Message<D, P extends Peer> extends Serializable {
     P getPeer();
 
     /**
-     * Returns the time in milliseconds at which this Message object was created.
-     *
-     * @return the difference, measured in milliseconds, between the time of the creation of this
-     *         object and midnight, January 1, 1970 UTC
-     */
-    long getUnixTime();
-
-    /**
      * Indicates whether some other object is "equal to" this one.
      *
      * @param   o the reference object with which to compare.
