@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Broadcast receiver for sent messages, called by Android Library.
@@ -92,7 +91,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
             //  This would complicate building the SMSMessage in method reconstructMessage().
             for (SMSPart part : messageParts) {
                 if (part.getIntentAction().equals(intent.getAction())) {
-                    part.setReceived(sentState);
+                    part.setReceived();
                 }
             }
             for (SMSPart part : messageParts) {

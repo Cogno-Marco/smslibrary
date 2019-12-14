@@ -13,7 +13,6 @@ class SMSPart {
     private String message;
     private String intentAction;
     private boolean received = false;
-    private SMSMessage.SentState sentState = SMSMessage.SentState.ERROR_GENERIC_FAILURE;
 
     /**
      * Creates a new triple, with field `received` set to false by default.
@@ -48,17 +47,8 @@ class SMSPart {
 
     /**
      * Method to be called when the Intent associated to this part is received.
-     * @param sentState result state of the message sending operation.
      */
-    void setReceived(SMSMessage.SentState sentState) {
+    void setReceived() {
         received = true;
-        this.sentState = sentState;
-    }
-
-    /**
-     * @return result code of this part.
-     */
-    SMSMessage.SentState getState() {
-        return sentState;
     }
 }
