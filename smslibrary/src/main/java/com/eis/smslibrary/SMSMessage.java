@@ -22,8 +22,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      */
     static final int MAX_MSG_TEXT_LEN = 39015;
     private static final String GSM_CHARACTERS_REGEX = "^[A-Za-z0-9 \\r\\n@Ł$ĽčéůěňÇŘřĹĺ\u0394_\u03A6\u0393\u039B\u03A9\u03A0\u03A8\u03A3\u0398\u039EĆćßÉ!\"#$%&'()*+,\\-./:;<=>?ĄÄÖŃÜ§żäöńüŕ^{}\\\\\\[~\\]|\u20AC]*$";
-    //TODO: check if only characters from GSM character set are used? Otherwise MAX_MSG_TEXT_LEN
-    // should be lower to account for use of Unicode characters and special GSM characters
+    //TODO: test if regex is always correct
     private String messageContent;
     private SMSPeer peer;
 
@@ -53,6 +52,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
         if (messageText.matches(GSM_CHARACTERS_REGEX) && messageText.length() <= MAX_MSG_TEXT_LEN) {
             return ContentState.MESSAGE_TEXT_VALID;
         }
+        //TODO: count GSM characters from alphabet extension table as 2 characters
         return ContentState.MESSAGE_TEXT_TOO_LONG;
     }
 
@@ -79,8 +79,8 @@ public class SMSMessage implements Message<String, SMSPeer> {
     /**
      * Indicates whether some other object is "equal to" this one.
      *
-     * @param   o the reference object with which to compare.
-     * @return  {@code true} if this object is the same as the o argument; {@code false} otherwise.
+     * @param o the reference object with which to compare.
+     * @return {@code true} if this object is the same as the o argument; {@code false} otherwise.
      */
     @Override
     public boolean equals(Object o) {
@@ -135,7 +135,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * These are given by Android library as an int, they have been put in an enum so
      * that one can see al the possible values without having to look
      * at the official Android documentation
-     *
+     * <p>
      * These are used in {@link com.eis.smslibrary.listeners.SMSDeliveredListener}
      */
     public enum DeliveredState {
