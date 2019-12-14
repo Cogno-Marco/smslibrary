@@ -39,7 +39,7 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        SMSMessage.DeliveredState deliveredState = SMSMessage.DeliveredState.ERROR_GENERIC_FAILURE;
+        SMSMessage.DeliveredState deliveredState;
 
         switch (getResultCode()) {
             case Activity.RESULT_OK:
@@ -48,6 +48,8 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
             case Activity.RESULT_CANCELED:
                 deliveredState = SMSMessage.DeliveredState.DELIVERY_ERROR;
                 break;
+            default:
+                deliveredState = SMSMessage.DeliveredState.ERROR_GENERIC_FAILURE;
         }
 
         if (listener != null) //extra check, even though listener should never be null

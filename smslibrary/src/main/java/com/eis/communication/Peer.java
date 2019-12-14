@@ -1,7 +1,5 @@
 package com.eis.communication;
 
-import androidx.annotation.NonNull;
-
 import java.io.Serializable;
 
 /**
