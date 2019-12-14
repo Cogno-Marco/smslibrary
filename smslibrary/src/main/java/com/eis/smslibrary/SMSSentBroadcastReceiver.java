@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Broadcast receiver for sent messages, called by Android Library.
@@ -41,8 +42,8 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
     /**
      * Constructor for the custom {@link BroadcastReceiver}, used when multiple messages are sent.
      *
-     * @param parts     parts that will be sent.
-     * @param listener  listener to be called when the operation is completed.
+     * @param parts    parts that will be sent.
+     * @param listener listener to be called when the operation is completed.
      */
     SMSSentBroadcastReceiver(@NonNull final ArrayList<SMSPart> parts,
                              @NonNull final SMSSentListener listener, @NonNull final SMSPeer peer) {
@@ -87,12 +88,12 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 context.unregisterReceiver(this);
                 return;
             }
-            // TODO: use HasMap with Intent.action as key instead of searching on an array?
-            //  This would complicate building the SMSMessage in method reconstructMessage().
-            for (SMSPart part : messageParts) {
-                if (part.getIntentAction().equals(intent.getAction())) {
-                    part.setReceived();
-                }
+            // binary search on messagePart for the part associated to this intent's action
+            int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
+            if (partIndex >= 0) {
+                SMSPart part = messageParts.get(partIndex);
+                part.setReceived();
+                messageParts.set(partIndex, part);
             }
             for (SMSPart part : messageParts) {
                 // if we're still waiting to receive intents for some parts, exit
