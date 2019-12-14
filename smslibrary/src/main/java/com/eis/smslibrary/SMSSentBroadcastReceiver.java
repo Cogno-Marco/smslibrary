@@ -24,26 +24,15 @@ import java.util.Collections;
 public class SMSSentBroadcastReceiver extends BroadcastReceiver {
 
     private SMSSentListener listener;
-    private SMSMessage message;
     private ArrayList<SMSPart> messageParts;
     private SMSPeer peer;
 
     /**
-     * Constructor for the custom {@link BroadcastReceiver}, used when a single message is sent.
+     * Constructor for the custom {@link BroadcastReceiver}.
      *
-     * @param message  the message that will be sent.
+     * @param parts    parts of the message that will be sent.
      * @param listener listener to be called when the operation is completed.
-     */
-    SMSSentBroadcastReceiver(@NonNull final SMSMessage message, @NonNull final SMSSentListener listener) {
-        this.listener = listener;
-        this.message = message;
-    }
-
-    /**
-     * Constructor for the custom {@link BroadcastReceiver}, used when multiple messages are sent.
-     *
-     * @param parts    parts that will be sent.
-     * @param listener listener to be called when the operation is completed.
+     * @param peer     peer to whom the message will be sent.
      */
     SMSSentBroadcastReceiver(@NonNull final ArrayList<SMSPart> parts,
                              @NonNull final SMSSentListener listener, @NonNull final SMSPeer peer) {
@@ -79,45 +68,36 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
-        // if SMS sent had multiple parts
-        if (this.message == null) {
-            // if sending of a part failed, gives to the listener its sentState containing the error
-            if (sentState != SMSMessage.SentState.MESSAGE_SENT) {
-                reconstructMessage();
-                listener.onSMSSent(message, sentState);
-                context.unregisterReceiver(this);
-                return;
-            }
-            // binary search on messagePart for the part associated to this intent's action
-            int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
-            if (partIndex >= 0) {
-                SMSPart part = messageParts.get(partIndex);
-                part.setReceived();
-                messageParts.set(partIndex, part);
-            }
-            for (SMSPart part : messageParts) {
-                // if we're still waiting to receive intents for some parts, exit
-                if (!part.wasReceived()) return;
-            }
-            reconstructMessage();
-            listener.onSMSSent(message, sentState);
+        // if sending of a part failed, gives to the listener its sentState containing the error
+        if (sentState != SMSMessage.SentState.MESSAGE_SENT) {
+            listener.onSMSSent(reconstructMessage(), sentState);
             context.unregisterReceiver(this);
-
-        } else { // if SMS sent was a single message
-            listener.onSMSSent(message, sentState);
-            context.unregisterReceiver(this);
+            return;
         }
+        // binary search on messageParts for the part associated to this intent's action
+        int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
+        if (partIndex >= 0) {
+            SMSPart part = messageParts.get(partIndex);
+            part.setReceived();
+            messageParts.set(partIndex, part);
+        }
+        for (SMSPart part : messageParts) {
+            // if we're still waiting to receive intents for some parts, exit
+            if (!part.wasReceived()) return;
+        }
+        listener.onSMSSent(reconstructMessage(), sentState);
+        context.unregisterReceiver(this);
     }
 
     /**
      * Reconstructs SMSMessage to pass to listeners, using the messageParts in which it was split.
      */
-    private void reconstructMessage() {
+    private SMSMessage reconstructMessage() {
         StringBuilder text = new StringBuilder();
         for (SMSPart part : messageParts) {
             text.append(part.getMessage());
         }
-        message = new SMSMessage(peer, text.toString());
+        return new SMSMessage(peer, text.toString());
     }
 }
 

@@ -9,32 +9,41 @@ import androidx.annotation.NonNull;
 
 import com.eis.smslibrary.listeners.SMSDeliveredListener;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * Broadcast receiver for delivered messages, called by Android Library.
  * Must be instantiated and set as receiver with context.registerReceiver(...).
  * There has to be one different DeliveredBroadcastReceiver per message sent,
  * so every IntentFilter name has to be different
  *
- * @author Marco Cognolato
+ * @author Marco Cognolato, Giovanni Velludo
  */
 public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
+
     private SMSDeliveredListener listener;
-    private SMSMessage message;
+    private ArrayList<SMSPart> messageParts;
+    private SMSPeer peer;
 
     /**
      * Constructor for the custom {@link BroadcastReceiver}.
      *
-     * @param message  that will be sent.
-     * @param listener to be called when the operation is completed.
+     * @param parts    parts of the message to be delivered.
+     * @param listener listener to be called when the operation is completed
+     * @param peer     peer to whom the message will be delivered.
      */
-    SMSDeliveredBroadcastReceiver(@NonNull final SMSMessage message, @NonNull final SMSDeliveredListener listener) {
+    SMSDeliveredBroadcastReceiver(@NonNull final ArrayList<SMSPart> parts,
+                                  @NonNull final SMSDeliveredListener listener,
+                                  @NonNull final SMSPeer peer) {
         this.listener = listener;
-        this.message = message;
+        this.messageParts = parts;
+        this.peer = peer;
     }
 
     /**
      * This method is subscribed to the intent of a message delivered, and will be called whenever a message is delivered using this library.
-     * It interprets the state of the message delivering: {@link SMSMessage.DeliveredState#MESSAGE_DELIVERED} if it has been correctly sent,
+     * It interprets the state of the message delivering: {@link SMSMessage.DeliveredState#MESSAGE_DELIVERED} if it has been correctly delivered,
      * some other state otherwise; then calls the listener and unregisters itself.
      */
     @Override
@@ -50,9 +59,36 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
-        if (listener != null) //extra check, even though listener should never be null
-            listener.onSMSDelivered(message, deliveredState);
-
+        // if delivery of a part failed, gives to the listener its deliveredState containing the
+        // error
+        if (deliveredState != SMSMessage.DeliveredState.MESSAGE_DELIVERED) {
+            listener.onSMSDelivered(reconstructMessage(), deliveredState);
+            context.unregisterReceiver(this);
+            return;
+        }
+        // binary search on messageParts for the SMSPart associated to this intent's action
+        int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
+        if (partIndex >= 0) {
+            SMSPart part = messageParts.get(partIndex);
+            part.setReceived();
+            messageParts.set(partIndex, part);
+        }
+        for (SMSPart part : messageParts) {
+            // if we're still waiting to receive intents for some parts, exit
+            if (!part.wasReceived()) return;
+        }
+        listener.onSMSDelivered(reconstructMessage(), deliveredState);
         context.unregisterReceiver(this);
+    }
+
+    /**
+     * Reconstructs SMSMessage to pass to listeners, using the messageParts in which it was split.
+     */
+    private SMSMessage reconstructMessage() {
+        StringBuilder text = new StringBuilder();
+        for (SMSPart part : messageParts) {
+            text.append(part.getMessage());
+        }
+        return new SMSMessage(peer, text.toString());
     }
 }

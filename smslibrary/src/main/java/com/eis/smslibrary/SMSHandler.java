@@ -120,65 +120,24 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
                             final @Nullable SMSSentListener sentListener,
                             final @Nullable SMSDeliveredListener deliveredListener) {
         if (sentListener != null || deliveredListener != null) {
-            // a setup with a context is needed only when at least one non-null listener is passed
+            // a setup with a context is not needed when no listeners are passed
             checkSetup();
         }
-        ArrayList<String> parts = SmsManager.getDefault().divideMessage(getSMSContent(message));
-        if (parts.size() == 1) {
-            PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
-            PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener);
-            SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), sentPI, deliveredPI);
-        } else {
-            ArrayList<PendingIntent> sentPIs = setupMultipleSentReceivers(parts, sentListener, message.getPeer());
-            SMSCore.sendMessages(parts, message.getPeer().getAddress(), sentPIs, null);
-        }
-    }
-
-    /**
-     * Creates a new {@link SMSSentBroadcastReceiver} and registers it to receive broadcasts
-     * with action {@value SENT_MESSAGE_INTENT_ACTION}
-     *
-     * @param message  that will be sent
-     * @param listener to call on broadcast received
-     * @return a {@link PendingIntent} to be passed to SMSCore
-     */
-    private PendingIntent setupNewSentReceiver(final @NonNull SMSMessage message, final @Nullable SMSSentListener listener) {
-        if (listener == null)
-            return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
-
-        SMSSentBroadcastReceiver onSentReceiver = new SMSSentBroadcastReceiver(message, listener);
-        String actionName = SENT_MESSAGE_INTENT_ACTION + (messageCounter++);
-        context.registerReceiver(onSentReceiver, new IntentFilter(actionName));
-        return PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0);
-    }
-
-    /**
-     * Creates a new {@link SMSDeliveredBroadcastReceiver} and registers it to receive broadcasts
-     * with action {@value DELIVERED_MESSAGE_INTENT_ACTION}
-     *
-     * @param message  that will be sent
-     * @param listener to call on broadcast received
-     * @return a {@link PendingIntent} to be passed to SMSCore
-     */
-    private PendingIntent setupNewDeliverReceiver(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener listener) {
-        if (listener == null)
-            return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
-
-        SMSDeliveredBroadcastReceiver onDeliveredReceiver = new SMSDeliveredBroadcastReceiver(message, listener);
-        String actionName = DELIVERED_MESSAGE_INTENT_ACTION + (messageCounter++);
-        context.registerReceiver(onDeliveredReceiver, new IntentFilter(actionName));
-        return PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0);
+        ArrayList<String> texts = SmsManager.getDefault().divideMessage(getSMSContent(message));
+        ArrayList<PendingIntent> sentPIs = setupNewSentReceiver(texts, sentListener, message.getPeer());
+        ArrayList<PendingIntent> deliveredPIs = setupNewDeliverReceiver(texts, deliveredListener, message.getPeer());
+        SMSCore.sendMessages(texts, message.getPeer().getAddress(), sentPIs, deliveredPIs);
     }
 
     /**
      * Creates a new {@link SMSSentBroadcastReceiver} and registers it to receive broadcasts
      * with actions {@value SENT_MESSAGE_INTENT_ACTION}
      *
-     * @param texts parts of the message to be sent.
+     * @param texts    parts of the message to be sent.
      * @param listener listener to call on broadcast received.
      * @return an {@link ArrayList} of {@link PendingIntent} to be passed to SMSCore.
      */
-    private ArrayList<PendingIntent> setupMultipleSentReceivers(
+    private ArrayList<PendingIntent> setupNewSentReceiver(
             final @NonNull ArrayList<String> texts, final @Nullable SMSSentListener listener,
             final @NonNull SMSPeer peer) {
         if (listener == null)
@@ -195,6 +154,34 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
         }
         SMSSentBroadcastReceiver onSentReceiver = new SMSSentBroadcastReceiver(parts, listener, peer);
         context.registerReceiver(onSentReceiver, intentFilter);
+        return intents;
+    }
+
+    /**
+     * Creates a new {@link SMSDeliveredBroadcastReceiver} and registers it to receive broadcasts
+     * with actions {@value DELIVERED_MESSAGE_INTENT_ACTION}
+     *
+     * @param texts    parts of the message to be delivered.
+     * @param listener listener to call on broadcast received.
+     * @return an {@link ArrayList} of {@link PendingIntent} to be passed to SMSCore.
+     */
+    private ArrayList<PendingIntent> setupNewDeliverReceiver(
+            final @NonNull ArrayList<String> texts, final @Nullable SMSDeliveredListener listener,
+            final @NonNull SMSPeer peer) {
+        if (listener == null)
+            return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
+
+        ArrayList<PendingIntent> intents = new ArrayList<>();
+        IntentFilter intentFilter = new IntentFilter();
+        ArrayList<SMSPart> parts = new ArrayList<>();
+        for (String text : texts) {
+            String actionName = DELIVERED_MESSAGE_INTENT_ACTION + (messageCounter++);
+            intents.add(PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0));
+            intentFilter.addAction(actionName);
+            parts.add(new SMSPart(text, actionName));
+        }
+        SMSDeliveredBroadcastReceiver onDeliverReceiver = new SMSDeliveredBroadcastReceiver(parts, listener, peer);
+        context.registerReceiver(onDeliverReceiver, intentFilter);
         return intents;
     }
 

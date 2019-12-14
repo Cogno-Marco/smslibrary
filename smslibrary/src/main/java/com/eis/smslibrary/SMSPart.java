@@ -7,7 +7,7 @@ import java.util.Comparator;
  * - the corresponding Intent's action to be received by SMSDeliveredBroadcastReceiver or
  * SMSSentBroadcastReceiver;
  * - whether the Intent was received;
- * - the result state of the "send" operation for this part.
+ * - the result state of the "send" or "deliver" operation for this part.
  *
  * @author Giovanni Velludo
  */
