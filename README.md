@@ -1,7 +1,9 @@
 # SMS library
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6a35c6f870564e06a4ddbc15c0299e86)](https://www.codacy.com/manual/CremaLuca/smslibrary?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Cogno-IDU/smslibrary&amp;utm_campaign=Badge_Grade)
+
 Android library to send and receive SMS messages quickly.
 
-# Installation
+## Installation
 Installation is done using [Jitpack](https://jitpack.io).
 
 Add to the root application `build.gradle`
@@ -20,7 +22,7 @@ dependencies {
     implementation 'com.github.Cogno-IDU:smslibrary:v-1.0'
 }
 ```
-# Usage
+## Usage
 
 ### Permissions
 In order to send and receive SMSs you need to be granted two permissions. From Android 6.0 you have to use
