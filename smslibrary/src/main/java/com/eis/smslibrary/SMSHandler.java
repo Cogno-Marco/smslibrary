@@ -14,6 +14,7 @@ import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import it.lucacrema.preferences.PreferencesManager;
@@ -47,15 +48,13 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      * same action name for every message we would have a conflict and we wouldn't
      * know what message has been sent
      */
-    private int messageCounter;
+    private long messageCounter;
 
     /**
      * Private constructor for Singleton
      */
     private SMSHandler() {
         //Random because if we close and open the app the value probably differs
-        //TODO: consider writing messageCounter to memory after every use, instead of relying on its
-        // randomness, because it could lead to collisions
         messageCounter = (int) (Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
     }
 
@@ -149,9 +148,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
         IntentFilter intentFilter = new IntentFilter();
         ArrayList<SMSPart> parts = new ArrayList<>();
         for (String text : texts) {
-            String actionName = SENT_MESSAGE_INTENT_ACTION + (messageCounter++);
-            //TODO: check if compareTo of different actionName variables produces expected results,
-            // and invert order of digits or add padding to messageCounter if necessary
+            String actionName = SENT_MESSAGE_INTENT_ACTION + addPadding(messageCounter++);
             intents.add(PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0));
             intentFilter.addAction(actionName);
             parts.add(new SMSPart(text, actionName));
@@ -179,7 +176,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
         IntentFilter intentFilter = new IntentFilter();
         ArrayList<SMSPart> parts = new ArrayList<>();
         for (String text : texts) {
-            String actionName = DELIVERED_MESSAGE_INTENT_ACTION + (messageCounter++);
+            String actionName = DELIVERED_MESSAGE_INTENT_ACTION + addPadding(messageCounter++);
             intents.add(PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0));
             intentFilter.addAction(actionName);
             parts.add(new SMSPart(text, actionName));
@@ -227,5 +224,18 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
      */
     private String getSMSContent(SMSMessage message) {
         return SMSMessageHandler.getInstance().parseData(message);
+    }
+
+    /**
+     * Adds zeroes to the left of a given integer, if its String representation is smaller than 19
+     * digits. Needed to correctly compare intent action's names in SMSPart.
+     *
+     * @param i the integer to which to add padding.
+     * @return a 19 characters String containing the integer's decimal representation with padding.
+     */
+    private static String addPadding(long i) {
+        final String messageCounterMaxDigits = "0000000000000000000";
+        DecimalFormat df = new DecimalFormat(messageCounterMaxDigits);
+        return df.format(i);
     }
 }

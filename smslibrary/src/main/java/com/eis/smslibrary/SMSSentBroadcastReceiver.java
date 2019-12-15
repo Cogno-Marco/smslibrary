@@ -74,7 +74,8 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
             context.unregisterReceiver(this);
             return;
         }
-        // binary search on messageParts for the part associated to this intent's action
+        // binary search on messageParts for the SMSPart associated to this intent's action
+        // SMSParts are compared on intentAction, other fields don't matter
         int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
         if (partIndex >= 0) {
             SMSPart part = messageParts.get(partIndex);
