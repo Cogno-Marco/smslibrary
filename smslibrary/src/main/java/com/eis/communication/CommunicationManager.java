@@ -5,7 +5,7 @@ package com.eis.communication;
  *
  * @param <T> message class to be used for the channel
  */
-public interface CommunicationHandler<T extends Message> {
+public interface CommunicationManager<T extends Message> {
 
     /**
      * Sends a single message in the channel, message content must be shorter than the maximum channel message size
