@@ -30,6 +30,7 @@ import it.lucacrema.preferences.PreferencesManager;
  * @since 29/11/2019
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
+//TODO: add instrumented tests for this class
 public class SMSManager implements CommunicationManager<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
@@ -127,6 +128,11 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @param deliveredListener called on message delivered or on error, can be null
      * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
      */
+    //TODO: replicate tests constructor_emptyTelephoneNumber_trowsException(),
+    // constructor_tooLongTelephoneNumber_trowsException(),
+    // constructor_shortTelephoneNumber_trowsException(),
+    // constructor_noCountryCodeTelephoneNumber_trowsException() from SMSPeerTest in tests for this
+    // method
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSSentListener sentListener,
                             final @Nullable SMSDeliveredListener deliveredListener)
@@ -135,8 +141,8 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
             // a setup with a context is not needed when no listeners are passed
             checkSetup();
         }
-        if (!(message.getPeer().getState() ==
-                SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)) {
+        if (message.getPeer().getState() !=
+                SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID) {
             throw new InvalidTelephoneNumberException(message.getPeer().getState());
         }
         ArrayList<String> texts = SmsManager.getDefault().divideMessage(getSMSContent(message));

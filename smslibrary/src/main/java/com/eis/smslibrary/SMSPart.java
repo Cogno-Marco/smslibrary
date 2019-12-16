@@ -10,6 +10,7 @@ import java.util.Comparator;
  *
  * @author Giovanni Velludo
  */
+//TODO: test compareTo() and compare() methods
 class SMSPart implements Comparable<SMSPart>, Comparator<SMSPart> {
 
     private String message;

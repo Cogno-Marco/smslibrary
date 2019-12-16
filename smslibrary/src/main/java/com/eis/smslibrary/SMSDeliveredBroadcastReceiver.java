@@ -20,6 +20,7 @@ import java.util.Collections;
  *
  * @author Marco Cognolato, Giovanni Velludo
  */
+//TODO: test this class
 public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
 
     private SMSDeliveredListener listener;
