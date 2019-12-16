@@ -16,20 +16,15 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     public static final int MIN_TELEPHONE_NUMBER_LENGTH = 3;
 
     private String telephoneNumber;
+    private TelephoneNumberState state;
 
     /**
      * @param telephoneNumber Address for the peer.
      * @throws InvalidTelephoneNumberException If telephoneNumber check is not {@link TelephoneNumberState#TELEPHONE_NUMBER_VALID}.
      */
-    public SMSPeer(String telephoneNumber) throws InvalidTelephoneNumberException {
-        if (telephoneNumber == null || telephoneNumber.equals("")) {
-            this.telephoneNumber = "";
-        } else {
-            TelephoneNumberState telephoneNumberState = SMSPeer.checkPhoneNumber(telephoneNumber);
-            if (telephoneNumberState != TelephoneNumberState.TELEPHONE_NUMBER_VALID)
-                throw new InvalidTelephoneNumberException(telephoneNumberState);
-            this.telephoneNumber = telephoneNumber;
-        }
+    public SMSPeer(String telephoneNumber) {
+        this.state = SMSPeer.checkPhoneNumber(telephoneNumber);
+        this.telephoneNumber = telephoneNumber;
     }
 
     /**
@@ -78,6 +73,17 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     @Override
     public String getAddress() {
         return telephoneNumber;
+    }
+
+    /**
+     * Returns a TelephoneNumberState indicating whether it's possible to send SMSMessages to this
+     * SMSPeer.
+     *
+     * @return the state of this SMSPeer. SMSMessage can be sent to it only if the state is
+     * TELEPHONE_NUMBER_VALID.
+     */
+    public TelephoneNumberState getState() {
+        return this.state;
     }
 
     /**

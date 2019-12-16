@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.eis.communication.CommunicationManager;
+import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
 import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
@@ -81,31 +82,39 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * Requires {@link android.Manifest.permission#SEND_SMS}
      *
      * @param message to be sent in the channel to a peer
+     * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
      */
     @Override
-    public void sendMessage(final @NonNull SMSMessage message) {
+    public void sendMessage(final @NonNull SMSMessage message)
+            throws InvalidTelephoneNumberException {
         sendMessage(message, null, null);
     }
 
     /**
-     * Sends a message to a destination peer via SMS then
-     * calls the listener.
+     * Sends a message to a destination peer via SMS then calls the listener.
+     * Requires {@link android.Manifest.permission#SEND_SMS}
      *
      * @param message      to be sent in the channel to a peer
      * @param sentListener called on message sent or on error, can be null
+     * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
      */
-    public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSSentListener sentListener) {
+    public void sendMessage(final @NonNull SMSMessage message,
+                            final @Nullable SMSSentListener sentListener)
+            throws InvalidTelephoneNumberException {
         sendMessage(message, sentListener, null);
     }
 
     /**
-     * Sends a message to a destination peer via SMS then
-     * calls the listener.
+     * Sends a message to a destination peer via SMS then calls the listener.
+     * Requires {@link android.Manifest.permission#SEND_SMS}
      *
      * @param message           to be sent in the channel to a peer
      * @param deliveredListener called on message delivered or on error, can be null
+     * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
      */
-    public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener deliveredListener) {
+    public void sendMessage(final @NonNull SMSMessage message,
+                            final @Nullable SMSDeliveredListener deliveredListener)
+            throws InvalidTelephoneNumberException {
         sendMessage(message, null, deliveredListener);
     }
 
@@ -116,17 +125,25 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @param message           to be sent in the channel to a peer
      * @param sentListener      called on message sent or on error, can be null
      * @param deliveredListener called on message delivered or on error, can be null
+     * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
      */
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSSentListener sentListener,
-                            final @Nullable SMSDeliveredListener deliveredListener) {
+                            final @Nullable SMSDeliveredListener deliveredListener)
+            throws InvalidTelephoneNumberException {
         if (sentListener != null || deliveredListener != null) {
             // a setup with a context is not needed when no listeners are passed
             checkSetup();
         }
+        if (!(message.getPeer().getState() ==
+                SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)) {
+            throw new InvalidTelephoneNumberException(message.getPeer().getState());
+        }
         ArrayList<String> texts = SmsManager.getDefault().divideMessage(getSMSContent(message));
-        ArrayList<PendingIntent> sentPIs = setupNewSentReceiver(texts, sentListener, message.getPeer());
-        ArrayList<PendingIntent> deliveredPIs = setupNewDeliverReceiver(texts, deliveredListener, message.getPeer());
+        ArrayList<PendingIntent> sentPIs =
+                setupNewSentReceiver(texts, sentListener, message.getPeer());
+        ArrayList<PendingIntent> deliveredPIs =
+                setupNewDeliverReceiver(texts, deliveredListener, message.getPeer());
         SMSCore.sendMessages(texts, message.getPeer().getAddress(), sentPIs, deliveredPIs);
     }
 

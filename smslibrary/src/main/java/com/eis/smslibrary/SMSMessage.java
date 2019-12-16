@@ -45,15 +45,15 @@ public class SMSMessage implements Message<String, SMSPeer> {
     }
 
     /**
-     * Checks if the message content could be valid.
+     * Checks if the message content is valid.
      *
      * @param messageText to be checked.
-     * @return The state of the message after the validity tests.
+     * @return The state of the message after validity tests.
      */
-    private static ContentState checkMessageText(@NonNull String messageText) {
+    static ContentState checkMessageText(@NonNull String messageText) {
         int charNum = 0;
         for (int i = 0; i < messageText.length(); i++) {
-            String currentChar = messageText.substring(i, i+1);
+            String currentChar = messageText.substring(i, i + 1);
             if (currentChar.matches(GSM_CHARACTERS_EXTENSION_REGEX)) {
                 charNum += 2;
             } else if (currentChar.matches(GSM_CHARACTERS_REGEX)) {
