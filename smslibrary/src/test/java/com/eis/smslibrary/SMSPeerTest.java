@@ -1,5 +1,7 @@
 package com.eis.smslibrary;
 
+import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
