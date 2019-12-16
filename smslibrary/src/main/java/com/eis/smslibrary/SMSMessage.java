@@ -17,12 +17,14 @@ public class SMSMessage implements Message<String, SMSPeer> {
 
     /**
      * Maximum number of concatenated messages in which an SMS can be split is 255, each containing
-     * no more than 153 7-bit GSM characters.
+     * no more than 153 7-bit GSM characters: 153 * 255 = 39015.
      * https://en.wikipedia.org/wiki/Concatenated_SMS
      */
     static final int MAX_MSG_TEXT_LEN = 39015;
-    private static final String GSM_CHARACTERS_REGEX = "^[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà\\f^{}\\\\\\[~\\]|€]*$";
-    //TODO: test if regex is always correct
+    static final int MAX_UTF16_MSG_TEXT_LEN = (MAX_MSG_TEXT_LEN * 7) / 16;
+    // these regex can be used both on single characters and entire strings
+    private static final String GSM_CHARACTERS_REGEX = "^[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà]*$";
+    private static final String GSM_CHARACTERS_EXTENSION_REGEX = "^[\\f^{}\\\\\\[~\\]|€]*$";
     private String messageContent;
     private SMSPeer peer;
 
@@ -49,10 +51,24 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * @return The state of the message after the validity tests.
      */
     private static ContentState checkMessageText(@NonNull String messageText) {
-        if (messageText.matches(GSM_CHARACTERS_REGEX) && messageText.length() <= MAX_MSG_TEXT_LEN) {
+        int charNum = 0;
+        for (int i = 0; i < messageText.length(); i++) {
+            String currentChar = messageText.substring(i, i+1);
+            if (currentChar.matches(GSM_CHARACTERS_EXTENSION_REGEX)) {
+                charNum += 2;
+            } else if (currentChar.matches(GSM_CHARACTERS_REGEX)) {
+                charNum++;
+            } else {
+                //found a non-GSM character
+                if (messageText.length() <= MAX_UTF16_MSG_TEXT_LEN) {
+                    return ContentState.MESSAGE_TEXT_VALID;
+                }
+                return ContentState.MESSAGE_TEXT_TOO_LONG;
+            }
+        }
+        if (charNum <= MAX_MSG_TEXT_LEN) {
             return ContentState.MESSAGE_TEXT_VALID;
         }
-        //TODO: count GSM characters from alphabet extension table as 2 characters
         return ContentState.MESSAGE_TEXT_TOO_LONG;
     }
 
