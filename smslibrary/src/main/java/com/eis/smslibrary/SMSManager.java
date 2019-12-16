@@ -9,7 +9,7 @@ import android.telephony.SmsManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.eis.communication.CommunicationHandler;
+import com.eis.communication.CommunicationManager;
 import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
@@ -29,7 +29,7 @@ import it.lucacrema.preferences.PreferencesManager;
  * @since 29/11/2019
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class SMSHandler implements CommunicationHandler<SMSMessage> {
+public class SMSManager implements CommunicationManager<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
     public static final String DELIVERED_MESSAGE_INTENT_ACTION = "SMS_DELIVERED";
@@ -38,7 +38,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     /**
      * Singleton instance
      */
-    private static SMSHandler instance;
+    private static SMSManager instance;
 
     private Context context;
 
@@ -53,7 +53,7 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     /**
      * Private constructor for Singleton
      */
-    private SMSHandler() {
+    private SMSManager() {
         //Random because if we close and open the app the value probably differs
         messageCounter = (int) (Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
     }
@@ -61,9 +61,9 @@ public class SMSHandler implements CommunicationHandler<SMSMessage> {
     /**
      * @return the current instance of this class
      */
-    public static SMSHandler getInstance() {
+    public static SMSManager getInstance() {
         if (instance == null)
-            instance = new SMSHandler();
+            instance = new SMSManager();
         return instance;
     }
 
