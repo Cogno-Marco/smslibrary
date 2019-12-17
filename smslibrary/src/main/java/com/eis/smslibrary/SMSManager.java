@@ -80,7 +80,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param message      to be sent in the channel to a peer
      * @param sentListener called on message sent or on error, can be null
-     * @param context The context of the application used to setup the listener
+     * @param context      The context of the application used to setup the listener
      */
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSSentListener sentListener,
@@ -94,7 +94,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param message           to be sent in the channel to a peer
      * @param deliveredListener called on message delivered or on error, can be null
-     * @param context The context of the application used to setup the listener
+     * @param context           The context of the application used to setup the listener
      */
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSDeliveredListener deliveredListener,
@@ -109,7 +109,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @param message           to be sent in the channel to a peer
      * @param sentListener      called on message sent or on error, can be null
      * @param deliveredListener called on message delivered or on error, can be null
-     * @param context The context of the application used to setup the listener
+     * @param context           The context of the application used to setup the listener
      */
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSSentListener sentListener,
@@ -126,7 +126,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param message  that will be sent
      * @param listener to call on broadcast received
-     * @param context The context of the application used to setup the listener
+     * @param context  The context of the application used to setup the listener
      * @return a {@link PendingIntent} to be passed to SMSCore
      */
     private PendingIntent setupNewSentReceiver(final @NonNull SMSMessage message,
@@ -147,7 +147,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param message  that will be sent
      * @param listener to call on broadcast received
-     * @param context The context of the application used to setup the listener
+     * @param context  The context of the application used to setup the listener
      * @return a {@link PendingIntent} to be passed to SMSCore
      */
     private PendingIntent setupNewDeliverReceiver(final @NonNull SMSMessage message,
@@ -176,6 +176,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
 
     /**
      * Unsubscribe the current {@link SMSReceivedServiceListener} from being called on message arrival
+     *
      * @param context The context used to remove the listener
      */
     public void removeReceivedListener(Context context) {
