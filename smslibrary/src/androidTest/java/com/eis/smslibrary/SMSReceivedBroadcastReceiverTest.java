@@ -46,7 +46,7 @@ public class SMSReceivedBroadcastReceiverTest {
         String myPhoneNumber = tMgr.getLine1Number();
 
         SMSMessage testMessage = new SMSMessage(new SMSPeer(myPhoneNumber), "prova");
-        SMSManager.getInstance().sendMessage(new SMSMessage(new SMSPeer(myPhoneNumber), "prova"));
+        SMSManager.getInstance().sendMessage(testMessage);
         try {
             Thread.sleep(5000);
         }
