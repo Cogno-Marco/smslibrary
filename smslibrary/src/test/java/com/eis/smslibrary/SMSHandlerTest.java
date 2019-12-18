@@ -10,6 +10,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+/**
+ * Class used to test SMSManager using Mocks
+ *
+ * @author Marco Cognolato
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class SMSHandlerTest {
 

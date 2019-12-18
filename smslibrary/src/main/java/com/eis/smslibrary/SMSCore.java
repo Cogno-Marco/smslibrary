@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * Wrapper for the {@link android.telephony} library.
  * This class is only used to interface with the core sms library of Android.
  *
- * @author Luca Crema
+ * @author Luca Crema, Marco Cognolato
  */
 final class SMSCore {
 
@@ -21,6 +21,8 @@ final class SMSCore {
     /**
      * Sets up a given valid custom manager
      * @param manager The custom manager to set up to send messages
+     *
+     * @author Marco Cognolato
      */
     static void setManager(SmsManager manager){
         SMSCore.manager = manager;
@@ -28,6 +30,8 @@ final class SMSCore {
 
     /**
      * @return Returns the pre-set up manager if not null, else returns the default manager
+     *
+     * @author Marco Cognolato
      */
     private static SmsManager getManager(){
         return manager == null ? SmsManager.getDefault() : manager;
