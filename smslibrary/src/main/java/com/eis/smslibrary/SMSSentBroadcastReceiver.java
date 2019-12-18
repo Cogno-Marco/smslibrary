@@ -41,7 +41,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        SMSMessage.SentState sentState = SMSMessage.SentState.ERROR_GENERIC_FAILURE;
+        SMSMessage.SentState sentState;
 
         switch (getResultCode()) {
             case Activity.RESULT_OK:
@@ -58,6 +58,9 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 break;
             case SmsManager.RESULT_ERROR_LIMIT_EXCEEDED:
                 sentState = SMSMessage.SentState.ERROR_LIMIT_EXCEEDED;
+                break;
+            default:
+                sentState = SMSMessage.SentState.ERROR_GENERIC_FAILURE;
                 break;
         }
 

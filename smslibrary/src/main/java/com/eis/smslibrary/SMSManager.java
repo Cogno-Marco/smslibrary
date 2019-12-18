@@ -13,18 +13,13 @@ import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
-import java.lang.ref.WeakReference;
-
 import it.lucacrema.preferences.PreferencesManager;
-
 
 /**
  * Communication handler for SMSs. It's a Singleton, you should
- * access it with {@link #getInstance}, and before doing anything you
- * should call {@link #setup}.<br/>
+ * access it with {@link #getInstance}
  *
  * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini, Marco Cognolato
- * @since 29/11/2019
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class SMSManager implements CommunicationManager<SMSMessage> {
@@ -39,11 +34,9 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
     private static SMSManager instance;
 
     /**
-     * Weak reference doesn't prevent garbage collector to
-     * de-allocate this class when it has reference to a
-     * context that is still running. Prevents memory leaks.
+     * Received listener reference
      */
-    private WeakReference<Context> context;
+    private SMSReceivedServiceListener receivedListener;
 
     /**
      * This message counter is used so that we can have a different action name
@@ -71,15 +64,6 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
     }
 
     /**
-     * Setup for the handler.
-     *
-     * @param context current context.
-     */
-    public void setup(Context context) {
-        this.context = new WeakReference<>(context);
-    }
-
-    /**
      * Sends a message to a destination peer via SMS.
      * Requires {@link android.Manifest.permission#SEND_SMS}
      *
@@ -87,7 +71,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      */
     @Override
     public void sendMessage(final @NonNull SMSMessage message) {
-        sendMessage(message, null, null);
+        sendMessage(message, null, null, null);
     }
 
     /**
@@ -96,9 +80,12 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param message      to be sent in the channel to a peer
      * @param sentListener called on message sent or on error, can be null
+     * @param context      The context of the application used to setup the listener
      */
-    public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSSentListener sentListener) {
-        sendMessage(message, sentListener, null);
+    public void sendMessage(final @NonNull SMSMessage message,
+                            final @Nullable SMSSentListener sentListener,
+                            Context context) {
+        sendMessage(message, sentListener, null, context);
     }
 
     /**
@@ -107,9 +94,12 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param message           to be sent in the channel to a peer
      * @param deliveredListener called on message delivered or on error, can be null
+     * @param context           The context of the application used to setup the listener
      */
-    public void sendMessage(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener deliveredListener) {
-        sendMessage(message, null, deliveredListener);
+    public void sendMessage(final @NonNull SMSMessage message,
+                            final @Nullable SMSDeliveredListener deliveredListener,
+                            Context context) {
+        sendMessage(message, null, deliveredListener, context);
     }
 
     /**
@@ -119,13 +109,14 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @param message           to be sent in the channel to a peer
      * @param sentListener      called on message sent or on error, can be null
      * @param deliveredListener called on message delivered or on error, can be null
+     * @param context           The context of the application used to setup the listener
      */
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSSentListener sentListener,
-                            final @Nullable SMSDeliveredListener deliveredListener) {
-        checkSetup();
-        PendingIntent sentPI = setupNewSentReceiver(message, sentListener);
-        PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener);
+                            final @Nullable SMSDeliveredListener deliveredListener,
+                            Context context) {
+        PendingIntent sentPI = setupNewSentReceiver(message, sentListener, context);
+        PendingIntent deliveredPI = setupNewDeliverReceiver(message, deliveredListener, context);
         SMSCore.sendMessage(getSMSContent(message), message.getPeer().getAddress(), sentPI, deliveredPI);
     }
 
@@ -135,16 +126,19 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param message  that will be sent
      * @param listener to call on broadcast received
+     * @param context  The context of the application used to setup the listener
      * @return a {@link PendingIntent} to be passed to SMSCore
      */
-    private PendingIntent setupNewSentReceiver(final @NonNull SMSMessage message, final @Nullable SMSSentListener listener) {
-        if (listener == null)
-            return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
+    private PendingIntent setupNewSentReceiver(final @NonNull SMSMessage message,
+                                               final @Nullable SMSSentListener listener,
+                                               Context context) {
+        if (listener == null || context == null)
+            return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener or context
 
         SMSSentBroadcastReceiver onSentReceiver = new SMSSentBroadcastReceiver(message, listener);
         String actionName = SENT_MESSAGE_INTENT_ACTION + (messageCounter++);
-        context.get().registerReceiver(onSentReceiver, new IntentFilter(actionName));
-        return PendingIntent.getBroadcast(context.get(), 0, new Intent(actionName), 0);
+        context.registerReceiver(onSentReceiver, new IntentFilter(actionName));
+        return PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0);
     }
 
     /**
@@ -153,26 +147,19 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param message  that will be sent
      * @param listener to call on broadcast received
+     * @param context  The context of the application used to setup the listener
      * @return a {@link PendingIntent} to be passed to SMSCore
      */
-    private PendingIntent setupNewDeliverReceiver(final @NonNull SMSMessage message, final @Nullable SMSDeliveredListener listener) {
-        if (listener == null)
+    private PendingIntent setupNewDeliverReceiver(final @NonNull SMSMessage message,
+                                                  final @Nullable SMSDeliveredListener listener,
+                                                  Context context) {
+        if (listener == null || context == null)
             return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
 
         SMSDeliveredBroadcastReceiver onDeliveredReceiver = new SMSDeliveredBroadcastReceiver(message, listener);
         String actionName = DELIVERED_MESSAGE_INTENT_ACTION + (messageCounter++);
-        context.get().registerReceiver(onDeliveredReceiver, new IntentFilter(actionName));
-        return PendingIntent.getBroadcast(context.get(), 0, new Intent(actionName), 0);
-    }
-
-    /**
-     * Checks if the handler has been setup
-     *
-     * @throws IllegalStateException if the handler has not been setup
-     */
-    private void checkSetup() {
-        if (context == null)
-            throw new IllegalStateException("You must call setup() first");
+        context.registerReceiver(onDeliveredReceiver, new IntentFilter(actionName));
+        return PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0);
     }
 
     /**
@@ -181,18 +168,19 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param receivedListenerClassName the listener called on message received
      * @param <T>                       the class type that extends {@link SMSReceivedServiceListener} to be called
+     * @param context                   the context used to set the listener
      */
-    public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName) {
-        checkSetup();
-        PreferencesManager.setString(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
+    public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName, Context context) {
+        PreferencesManager.setString(context, SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
     }
 
     /**
      * Unsubscribe the current {@link SMSReceivedServiceListener} from being called on message arrival
+     *
+     * @param context The context used to remove the listener
      */
-    public void removeReceivedListener() {
-        checkSetup();
-        PreferencesManager.removeValue(context.get(), SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY);
+    public void removeReceivedListener(Context context) {
+        PreferencesManager.removeValue(context, SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY);
     }
 
     /**
