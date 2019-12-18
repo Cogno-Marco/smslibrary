@@ -11,6 +11,6 @@ public class TestReceivedListener extends SMSReceivedServiceListener {
     @Override
     public void onMessageReceived(SMSMessage message) {
         //TODO: verify that message received is correct, remove this exception
-        throw new Exception();
+        //throw new Exception();
     }
 }
