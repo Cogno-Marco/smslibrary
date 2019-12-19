@@ -47,17 +47,18 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * @author Matteo Carnelos
      */
     public SMSPeer(@NonNull String telephoneNumber) throws InvalidTelephoneNumberException {
-        if(defaultRegion.isEmpty() && (!telephoneNumber.startsWith("00") || !telephoneNumber.startsWith("+")))
+        // If the given number is an emulator number, skip the validity checks
+        if(adjustForEmulator(telephoneNumber)) return;
+        if(defaultRegion.isEmpty() && !telephoneNumber.startsWith("+"))
             throw new InvalidTelephoneNumberException("The given number does not explicitly contain " +
                     "the prefix and the default region is not obtainable. Please use the method " +
                     "SMSPeer.setDefaultRegion() in order to set a valid one.");
         Phonenumber.PhoneNumber phoneNumber = parseNumber(telephoneNumber);
-        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
-        if(!phoneNumberUtil.isValidNumber(phoneNumber))
-            throw new InvalidTelephoneNumberException("Invalid telephone number: \"" + telephoneNumber + "\"." +
+        if(!PhoneNumberUtil.getInstance().isValidNumber(phoneNumber))
+            throw new InvalidTelephoneNumberException("Invalid telephone number: \"" + telephoneNumber + "\". " +
                     "Note that a telephone number outside the currently set default region should " +
                     "be passed with also the prefix or it might be considered invalid.");
-        this.telephoneNumber = phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+        this.telephoneNumber = formatE164(phoneNumber);
     }
 
     /**
@@ -75,6 +76,40 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
             throw new IllegalArgumentException("Not parsable telephone number: \"" + number + "\".");
         }
         return phoneNumber;
+    }
+
+    /**
+     * Format the given phone number into the E164 format. The E164 format is basically the string
+     * address without dashes, spaces and brackets. Example: "+393401234567".
+     *
+     * @param phoneNumber The {@link Phonenumber.PhoneNumber} object.
+     * @return A string representing the formatted number.
+     * @author Matteo Carnelos
+     */
+    private String formatE164(Phonenumber.PhoneNumber phoneNumber) {
+        return PhoneNumberUtil.getInstance().format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+    }
+
+    /**
+     * Adjust the address string in case it is the phone number of an emulator.
+     * The emulator phone numbers could be either "+1555521555*", "555521555*" or "555*". All
+     * these numbers are invalid in the real world, so they need to avoid validation checks.
+     *
+     * @param address The address to eventually adjust.
+     * @return True if the number given is an emulator number, false otherwise.
+     * @author Matteo Carnelos
+     */
+    private boolean adjustForEmulator(String address) {
+        // This regex checks if the given number is one of the following types:
+        // +1#555521555*     [* = any decimal number]
+        // 555521555*        [# = either a space or '-']
+        // +1#555*
+        // 555*
+        if(address.matches("^(\\+1)?[ -]?(555521)?555\\d$")) {
+            this.telephoneNumber = "+1555521555" + address.charAt(address.length()-1);
+            return true;
+        }
+        return false;
     }
 
     /**

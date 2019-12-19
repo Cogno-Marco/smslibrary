@@ -1,7 +1,8 @@
 package com.eis.smslibrary.exceptions;
 
 /**
- * Exception usually thrown if a Peer has been instantiated without having the telephone number checked for validity
+ * Exception usually thrown if a Peer has been instantiated without having the telephone number checked for validity.
+ *
  * @author Luca Crema, suggested by Marco Cognolato
  * @author Matteo Carnelos
  */

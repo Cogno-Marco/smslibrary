@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.eis.communication.MessageHandler;
 import com.eis.communication.MessageParseStrategy;
+import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
 
 /**
  * Singleton class used to parse String to SMSMessage and back
@@ -49,10 +50,11 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
      * @return the message if the string has been parsed correctly, null otherwise
      */
     public SMSMessage parseMessage(@NonNull final String peerData, @NonNull final String messageData){
-        if(SMSPeer.checkPhoneNumber(peerData) != SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
-            return null;
+        SMSPeer peer;
+        try { peer = new SMSPeer(peerData); }
+        catch(InvalidTelephoneNumberException | IllegalArgumentException e) { return null; }
 
-        return parseStrategy.parseMessage(messageData,new SMSPeer(peerData));
+        return parseStrategy.parseMessage(messageData,peer);
     }
 
     /**
