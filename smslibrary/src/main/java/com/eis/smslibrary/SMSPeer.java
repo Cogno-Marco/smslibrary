@@ -4,56 +4,77 @@ import androidx.annotation.NonNull;
 
 import com.eis.communication.Peer;
 import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
+
+import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Implementation of {@link Peer} for SMS communication channel.
  *
  * @author Luca Crema, Marco Mariotto. Reviewed by Marco Cognolato and Mattia Fanan
+ * @author Matteo Carnelos
  */
-public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
+public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Serializable {
 
-    public static final int MAX_TELEPHONE_NUMBER_LENGTH = 15;
-    public static final int MIN_TELEPHONE_NUMBER_LENGTH = 3;
-
+    private static String defaultRegion = Locale.getDefault().getCountry();
     private String telephoneNumber;
 
     /**
-     * @param telephoneNumber Address for the peer.
-     * @throws InvalidTelephoneNumberException If telephoneNumber check is not {@link TelephoneNumberState#TELEPHONE_NUMBER_VALID}.
+     * Set the default country code used when a telephone number without prefix is given.
+     *
+     * @param defaultRegion The default 2 digit ISO country code.
+     * @throws IllegalArgumentException If the given code is not a valid ISO country code.
+     * @author Matteo Carnelos
      */
-    public SMSPeer(String telephoneNumber) throws InvalidTelephoneNumberException {
-        TelephoneNumberState telephoneNumberState = SMSPeer.checkPhoneNumber(telephoneNumber);
-        if(telephoneNumberState != TelephoneNumberState.TELEPHONE_NUMBER_VALID)
-            throw new InvalidTelephoneNumberException(telephoneNumberState);
-
-        this.telephoneNumber = telephoneNumber;
+    public static void setDefaultRegion(@NonNull String defaultRegion) {
+        if(!Arrays.asList(Locale.getISOCountries()).contains(defaultRegion))
+            throw new IllegalArgumentException("The given string is not a valid ISO country code");
+        SMSPeer.defaultRegion = defaultRegion;
     }
 
     /**
-     * Checks if the given phone number is valid.
+     * Create a new SMSPeer object. If the given number does not explicitly contains the prefix
+     * will be added the default one.
+     * Note: It is not always possible to obtain the correct default country code, especially if the
+     * phone is moving between countries. To set a custom one use the method {@link #setDefaultRegion(String)}.
      *
-     * @param telephoneNumber the phone number to check. Must not be null
-     * @return The {@link TelephoneNumberState} of the telephone number after the tests.
+     * @param telephoneNumber Address for the peer.
+     * @throws InvalidTelephoneNumberException If telephoneNumber is not valid.
+     * @throws IllegalArgumentException If the given telephoneNumber is not parsable.
+     * @author Matteo Carnelos
      */
-    public static TelephoneNumberState checkPhoneNumber(String telephoneNumber) {
-        //Check if the number is shorter than the MAX.
-        if (telephoneNumber.length() > MAX_TELEPHONE_NUMBER_LENGTH + 1) {
-            return TelephoneNumberState.TELEPHONE_NUMBER_TOO_LONG;
+    public SMSPeer(@NonNull String telephoneNumber) throws InvalidTelephoneNumberException {
+        if(defaultRegion.isEmpty() && (!telephoneNumber.startsWith("00") || !telephoneNumber.startsWith("+")))
+            throw new InvalidTelephoneNumberException("The given number does not explicitly contain " +
+                    "the prefix and the default region is not obtainable. Please use the method " +
+                    "SMSPeer.setDefaultRegion() in order to set a valid one.");
+        Phonenumber.PhoneNumber phoneNumber = parseNumber(telephoneNumber);
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        if(!phoneNumberUtil.isValidNumber(phoneNumber))
+            throw new InvalidTelephoneNumberException("Invalid telephone number: \"" + telephoneNumber + "\"." +
+                    "Note that a telephone number outside the currently set default region should " +
+                    "be passed with also the prefix or it might be considered invalid.");
+        this.telephoneNumber = phoneNumberUtil.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+    }
+
+    /**
+     * Return a parsed PhoneNumber object.
+     *
+     * @param number The destination string, eventually with the prefix.
+     * @return The PhoneNumber object containing the phone number parsed.
+     * @throws IllegalArgumentException If the given destination is not parsable.
+     * @author Matteo Carnelos
+     */
+    private Phonenumber.PhoneNumber parseNumber(String number) throws IllegalArgumentException {
+        Phonenumber.PhoneNumber phoneNumber;
+        try { phoneNumber = PhoneNumberUtil.getInstance().parse(number, defaultRegion); }
+        catch(NumberParseException e) {
+            throw new IllegalArgumentException("Not parsable telephone number: \"" + number + "\".");
         }
-        //Check if the number is longer than the MIN.
-        if (telephoneNumber.length() < MIN_TELEPHONE_NUMBER_LENGTH + 1) {
-            return TelephoneNumberState.TELEPHONE_NUMBER_TOO_SHORT;
-        }
-        //Check if it's actually a number with a plus and doesn't contain anything else
-        if (!telephoneNumber.matches("\\+?\\d{"+MIN_TELEPHONE_NUMBER_LENGTH+","+MAX_TELEPHONE_NUMBER_LENGTH+"}")) {
-            return TelephoneNumberState.TELEPHONE_NUMBER_NOT_A_NUMBER;
-        }
-        //Check if there is a country code.
-        if (telephoneNumber.charAt(0) != '+') {
-            return TelephoneNumberState.TELEPHONE_NUMBER_NO_COUNTRY_CODE;
-        }
-        //If it passed all the tests we are sure the number is valid.
-        return TelephoneNumberState.TELEPHONE_NUMBER_VALID;
+        return phoneNumber;
     }
 
     /**
@@ -76,17 +97,6 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     }
 
     /**
-     * Possible states of a telephone number after a validity check
-     */
-    public enum TelephoneNumberState {
-        TELEPHONE_NUMBER_VALID,
-        TELEPHONE_NUMBER_TOO_SHORT,
-        TELEPHONE_NUMBER_TOO_LONG,
-        TELEPHONE_NUMBER_NO_COUNTRY_CODE,
-        TELEPHONE_NUMBER_NOT_A_NUMBER
-    }
-
-    /**
      * Indicates whether some other object is "equal to" this one
      * @param o The reference object with which to compare.
      * @return True if this object is the same as the obj argument; false otherwise.
@@ -102,11 +112,14 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
     }
 
     /**
-     * @return a hash code value for this object.
+     * Return the hash code for the object.
+     *
+     * @return An integer representing the hash code.
+     * @author Matteo Carnelos
      */
     @Override
-    public int hashCode(){
-        return 31 * telephoneNumber.hashCode();
+    public int hashCode() {
+        return telephoneNumber.hashCode();
     }
 
     /**
