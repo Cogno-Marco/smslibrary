@@ -12,9 +12,30 @@ import java.util.ArrayList;
  * Wrapper for the {@link android.telephony} library.
  * This class is only used to interface with the core sms library of Android.
  *
- * @author Luca Crema
+ * @author Luca Crema, Marco Cognolato
  */
 final class SMSCore {
+
+    static SmsManager manager;
+
+    /**
+     * Sets up a given valid custom manager
+     * @param manager The custom manager to set up to send messages
+     *
+     * @author Marco Cognolato
+     */
+    static void setManager(SmsManager manager){
+        SMSCore.manager = manager;
+    }
+
+    /**
+     * @return Returns the pre-set up manager if not null, else returns the default manager
+     *
+     * @author Marco Cognolato
+     */
+    private static SmsManager getManager(){
+        return manager == null ? SmsManager.getDefault() : manager;
+    }
 
     /**
      * Calls the library method to send a single message
@@ -25,7 +46,7 @@ final class SMSCore {
      * @param deliveredPI {@link PendingIntent} for a broadcast on message received, can be null
      */
     static void sendMessage(@NonNull final String message, @NonNull final String phoneNumber, @Nullable final PendingIntent sentPI, @Nullable final PendingIntent deliveredPI) {
-        SmsManager.getDefault().sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+        getManager().sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
     }
 
     /**
@@ -37,7 +58,7 @@ final class SMSCore {
      * @param deliveredPIs {@link ArrayList}  of pending intents for a broadcast on message delivered, can be null
      */
     static void sendMessages(@NonNull final ArrayList<String> messages, @NonNull final String phoneNumber, @Nullable final ArrayList<PendingIntent> sentPIs, @Nullable final ArrayList<PendingIntent> deliveredPIs) {
-        SmsManager.getDefault().sendMultipartTextMessage(phoneNumber, null, messages, sentPIs, deliveredPIs);
+        getManager().sendMultipartTextMessage(phoneNumber, null, messages, sentPIs, deliveredPIs);
     }
 
 }

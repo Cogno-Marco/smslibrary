@@ -20,11 +20,9 @@ import java.util.ArrayList;
 
 import it.lucacrema.preferences.PreferencesManager;
 
-
 /**
  * Communication handler for SMSs. It's a Singleton, you should
- * access it with {@link #getInstance}, and before doing anything you
- * should call {@link #setup}.<br/>
+ * access it with {@link #getInstance}
  *
  * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini, Marco Cognolato, Giovanni Velludo
  * @since 29/11/2019
@@ -42,7 +40,10 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      */
     private static SMSManager instance;
 
-    private Context context;
+    /**
+     * Received listener reference
+     */
+    private SMSReceivedServiceListener receivedListener;
 
     /**
      * This message counter is used so that we can have a different action name
@@ -70,15 +71,6 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
     }
 
     /**
-     * Setup for the handler.
-     *
-     * @param context current context.
-     */
-    public void setup(Context context) {
-        this.context = context.getApplicationContext();
-    }
-
-    /**
      * Sends a message to a destination peer via SMS.
      * Requires {@link android.Manifest.permission#SEND_SMS}
      *
@@ -88,7 +80,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
     @Override
     public void sendMessage(final @NonNull SMSMessage message)
             throws InvalidTelephoneNumberException {
-        sendMessage(message, null, null);
+        sendMessage(message, null, null, null);
     }
 
     /**
@@ -97,12 +89,13 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param message      to be sent in the channel to a peer
      * @param sentListener called on message sent or on error, can be null
+     * @param context      The context of the application used to setup the listener
      * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
      */
     public void sendMessage(final @NonNull SMSMessage message,
-                            final @Nullable SMSSentListener sentListener)
-            throws InvalidTelephoneNumberException {
-        sendMessage(message, sentListener, null);
+                            final @Nullable SMSSentListener sentListener,
+                            Context context) throws InvalidTelephoneNumberException  {
+        sendMessage(message, sentListener, null, context);
     }
 
     /**
@@ -111,12 +104,13 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param message           to be sent in the channel to a peer
      * @param deliveredListener called on message delivered or on error, can be null
+     * @param context           The context of the application used to setup the listener
      * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
      */
     public void sendMessage(final @NonNull SMSMessage message,
-                            final @Nullable SMSDeliveredListener deliveredListener)
-            throws InvalidTelephoneNumberException {
-        sendMessage(message, null, deliveredListener);
+                            final @Nullable SMSDeliveredListener deliveredListener,
+                            Context context) throws InvalidTelephoneNumberException {
+        sendMessage(message, null, deliveredListener, context);
     }
 
     /**
@@ -126,30 +120,22 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @param message           to be sent in the channel to a peer
      * @param sentListener      called on message sent or on error, can be null
      * @param deliveredListener called on message delivered or on error, can be null
+     * @param context           The context of the application used to setup the listener
      * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
      */
-    //TODO: replicate tests constructor_emptyTelephoneNumber_trowsException(),
-    // constructor_tooLongTelephoneNumber_trowsException(),
-    // constructor_shortTelephoneNumber_trowsException(),
-    // constructor_noCountryCodeTelephoneNumber_trowsException() from SMSPeerTest in tests for this
-    // method
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSSentListener sentListener,
-                            final @Nullable SMSDeliveredListener deliveredListener)
-            throws InvalidTelephoneNumberException {
-        if (sentListener != null || deliveredListener != null) {
-            // a setup with a context is not needed when no listeners are passed
-            checkSetup();
-        }
+                            final @Nullable SMSDeliveredListener deliveredListener,
+                            Context context) throws InvalidTelephoneNumberException {
         if (message.getPeer().getState() !=
                 SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID) {
             throw new InvalidTelephoneNumberException(message.getPeer().getState());
         }
         ArrayList<String> texts = SmsManager.getDefault().divideMessage(getSMSContent(message));
         ArrayList<PendingIntent> sentPIs =
-                setupNewSentReceiver(texts, sentListener, message.getPeer());
+                setupNewSentReceiver(texts, sentListener, message.getPeer(), context);
         ArrayList<PendingIntent> deliveredPIs =
-                setupNewDeliverReceiver(texts, deliveredListener, message.getPeer());
+                setupNewDeliverReceiver(texts, deliveredListener, message.getPeer(), context);
         SMSCore.sendMessages(texts, message.getPeer().getAddress(), sentPIs, deliveredPIs);
     }
 
@@ -159,12 +145,13 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param texts    parts of the message to be sent.
      * @param listener listener to call on broadcast received.
+     * @param context  The context of the application used to setup the listener
      * @return an {@link ArrayList} of {@link PendingIntent} to be passed to SMSCore.
      */
     private ArrayList<PendingIntent> setupNewSentReceiver(
             final @NonNull ArrayList<String> texts, final @Nullable SMSSentListener listener,
-            final @NonNull SMSPeer peer) {
-        if (listener == null)
+            final @NonNull SMSPeer peer, Context context) {
+        if (listener == null || context == null)
             return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
 
         ArrayList<PendingIntent> intents = new ArrayList<>();
@@ -187,12 +174,13 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      *
      * @param texts    parts of the message to be delivered.
      * @param listener listener to call on broadcast received.
+     * @param context  The context of the application used to setup the listener
      * @return an {@link ArrayList} of {@link PendingIntent} to be passed to SMSCore.
      */
     private ArrayList<PendingIntent> setupNewDeliverReceiver(
             final @NonNull ArrayList<String> texts, final @Nullable SMSDeliveredListener listener,
-            final @NonNull SMSPeer peer) {
-        if (listener == null)
+            final @NonNull SMSPeer peer, Context context) {
+        if (listener == null || context == null)
             return null; //Doesn't make any sense to have a BroadcastReceiver if there is no listener
 
         ArrayList<PendingIntent> intents = new ArrayList<>();
@@ -210,32 +198,23 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
     }
 
     /**
-     * Checks if the handler has been setup
-     *
-     * @throws IllegalStateException if the handler has not been setup
-     */
-    private void checkSetup() {
-        if (context == null)
-            throw new IllegalStateException("You must call setup() first");
-    }
-
-    /**
      * Saves in memory the service class name to wake up. It doesn't need an
      * instance of the class, it just saves the name and instantiates it when needed.
      *
      * @param receivedListenerClassName the listener called on message received
      * @param <T>                       the class type that extends {@link SMSReceivedServiceListener} to be called
+     * @param context                   the context used to set the listener
      */
-    public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName) {
-        checkSetup();
+    public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName, Context context) {
         PreferencesManager.setString(context, SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
     }
 
     /**
      * Unsubscribe the current {@link SMSReceivedServiceListener} from being called on message arrival
+     *
+     * @param context The context used to remove the listener
      */
-    public void removeReceivedListener() {
-        checkSetup();
+    public void removeReceivedListener(Context context) {
         PreferencesManager.removeValue(context, SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY);
     }
 

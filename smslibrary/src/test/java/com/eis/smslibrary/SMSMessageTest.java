@@ -29,8 +29,7 @@ public class SMSMessageTest{
 
     @Test(expected = InvalidSMSMessageException.class)
     public void smsMessage_constructor_notValidTextMessage() {
-        SMSMessage msg = new SMSMessage(new SMSPeer(VALID_TELEPHONE_NUMBER), TOO_LONG_TEXT_MESSAGE);
-        Assert.fail("Should have thrown an InvalidSMSMessageException");
+        new SMSMessage(new SMSPeer(VALID_TELEPHONE_NUMBER), TOO_LONG_TEXT_MESSAGE);
     }
 
     @Test
