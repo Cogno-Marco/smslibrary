@@ -27,8 +27,6 @@ public class SMSReceivedBroadcastReceiverTest {
     @Rule
     public GrantPermissionRule readPhoneStatePermissionRule = GrantPermissionRule.grant(Manifest.permission.READ_PHONE_STATE);
 
-    private Context instrumContext;
-
     @Test
     public void onReceive() {
         // Mockito setup
@@ -36,11 +34,10 @@ public class SMSReceivedBroadcastReceiverTest {
         ArgumentCaptor<SMSMessage> messageReceived = ArgumentCaptor.forClass(SMSMessage.class);
 
         // SMSManager setup
-        instrumContext = InstrumentationRegistry.getInstrumentation().getContext();
-        SMSManager.getInstance().setup(instrumContext);
+        Context instrumContext = InstrumentationRegistry.getInstrumentation().getContext();
         TestSMSReceivedServiceListener testListener = new TestSMSReceivedServiceListener();
         testListener.addListener(mockListener);
-        SMSManager.getInstance().setReceivedListener(TestSMSReceivedServiceListener.class);
+        SMSManager.getInstance().setReceivedListener(TestSMSReceivedServiceListener.class, instrumContext);
 
         TelephonyManager tMgr = (TelephonyManager) instrumContext.getSystemService(Context.TELEPHONY_SERVICE);
         String myPhoneNumber = tMgr.getLine1Number();
