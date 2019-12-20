@@ -66,16 +66,16 @@ public class SMSPeerTest {
     public void validPeers_areCreated() {
         // Random cases
         for(String validAddress : randomValidAddresses)
-            new SMSPeer(validAddress);
+            assertEquals(validAddress, new SMSPeer(validAddress).getAddress());
         // Special cases
-        new SMSPeer(VALID_ADDR);
-        new SMSPeer(VALID_ADDR_WITH_PREFIX);
-        new SMSPeer(VALID_ADDR_WITH_PREFIX_AND_SPACES);
-        new SMSPeer(VALID_ADDR_WITH_DASHES);
-        new SMSPeer(VALID_ADDR_WITH_PREFIX_AND_DASHES);
-        new SMSPeer(EMULATOR_ADDR);
-        new SMSPeer(EMULATOR_ADDR_WITH_EXT);
-        new SMSPeer(EMULATOR_ADDR_WITH_PREFIX_AND_EXT);
+        assertEquals(VALID_ADDR_WITH_PREFIX, new SMSPeer(VALID_ADDR).getAddress());
+        assertEquals(VALID_ADDR_WITH_PREFIX, new SMSPeer(VALID_ADDR_WITH_PREFIX).getAddress());
+        assertEquals(VALID_ADDR_WITH_PREFIX, new SMSPeer(VALID_ADDR_WITH_PREFIX_AND_SPACES).getAddress());
+        assertEquals(VALID_ADDR_WITH_PREFIX, new SMSPeer(VALID_ADDR_WITH_DASHES).getAddress());
+        assertEquals(VALID_ADDR_WITH_PREFIX, new SMSPeer(VALID_ADDR_WITH_PREFIX_AND_DASHES).getAddress());
+        assertEquals(EMULATOR_ADDR_WITH_PREFIX_AND_EXT, new SMSPeer(EMULATOR_ADDR).getAddress());
+        assertEquals(EMULATOR_ADDR_WITH_PREFIX_AND_EXT, new SMSPeer(EMULATOR_ADDR_WITH_EXT).getAddress());
+        assertEquals(EMULATOR_ADDR_WITH_PREFIX_AND_EXT, new SMSPeer(EMULATOR_ADDR_WITH_PREFIX_AND_EXT).getAddress());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -106,12 +106,6 @@ public class SMSPeerTest {
         SMSPeer lowerPeer = new SMSPeer(VALID_ADDR);
         SMSPeer higherPeer = new SMSPeer(HIGHER_VALID_ADDR);
         assertTrue(higherPeer.compareTo(lowerPeer) > 0);
-    }
-
-    @Test
-    public void validAddresses_areGet() {
-        for(String validAddress : randomValidAddresses)
-            assertEquals(validAddress, new SMSPeer(validAddress).getAddress());
     }
 
     @Test
