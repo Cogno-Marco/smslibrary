@@ -19,6 +19,24 @@ import java.util.Locale;
  */
 public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Serializable {
 
+    private static final String REGION_NEEDED_EXC_MSG = "The given number does not explicitly " +
+            "contain the prefix and the default region is not obtainable. Please use the method " +
+            "SMSPeer.setDefaultRegion() in order to set a valid one.";
+    private static final String INVALID_NUMBER_EXC_MSG = "Invalid telephone number: '%s'. Note that " +
+            "a telephone number pointing outside the currently set default region (%s) should " +
+            "be passed with also the prefix or it might be considered invalid.";
+    private static final String NOT_PARSABLE_EXC_MSG = "Not parsable telephone number: '%s'. Please " +
+            "retry with a different String.";
+    private static final String INVALID_ISO_EXC_MSG = "The given string is not a valid ISO country code.";
+
+    // The following regex checks if the given string is one of the following types:
+    // +1#555521555*     [* = any decimal number]
+    // 555521555*        [# = either a space or '-']
+    // +1#555*
+    // 555*
+    // It's used to detect emulator phone numbers
+    private static final String EMU_DETECTION_REGEX = "^(\\+1)?[ -]?(555521)?555\\d$";
+
     private static String defaultRegion = Locale.getDefault().getCountry();
     private String telephoneNumber;
 
@@ -31,7 +49,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      */
     public static void setDefaultRegion(@NonNull String defaultRegion) {
         if(!Arrays.asList(Locale.getISOCountries()).contains(defaultRegion))
-            throw new IllegalArgumentException("The given string is not a valid ISO country code");
+            throw new IllegalArgumentException(INVALID_ISO_EXC_MSG);
         SMSPeer.defaultRegion = defaultRegion;
     }
 
@@ -49,15 +67,15 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
     public SMSPeer(@NonNull String telephoneNumber) throws InvalidTelephoneNumberException {
         // If the given number is an emulator number, skip the validity checks
         if(adjustForEmulator(telephoneNumber)) return;
+
         if(defaultRegion.isEmpty() && !telephoneNumber.startsWith("+"))
-            throw new InvalidTelephoneNumberException("The given number does not explicitly contain " +
-                    "the prefix and the default region is not obtainable. Please use the method " +
-                    "SMSPeer.setDefaultRegion() in order to set a valid one.");
+            throw new InvalidTelephoneNumberException(REGION_NEEDED_EXC_MSG);
+
         Phonenumber.PhoneNumber phoneNumber = parseNumber(telephoneNumber);
         if(!PhoneNumberUtil.getInstance().isValidNumber(phoneNumber))
-            throw new InvalidTelephoneNumberException("Invalid telephone number: \"" + telephoneNumber + "\". " +
-                    "Note that a telephone number outside the currently set default region should " +
-                    "be passed with also the prefix or it might be considered invalid.");
+            throw new InvalidTelephoneNumberException(
+                    String.format(INVALID_NUMBER_EXC_MSG, telephoneNumber, defaultRegion));
+
         this.telephoneNumber = formatE164(phoneNumber);
     }
 
@@ -73,7 +91,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
         Phonenumber.PhoneNumber phoneNumber;
         try { phoneNumber = PhoneNumberUtil.getInstance().parse(number, defaultRegion); }
         catch(NumberParseException e) {
-            throw new IllegalArgumentException("Not parsable telephone number: \"" + number + "\".");
+            throw new IllegalArgumentException(String.format(NOT_PARSABLE_EXC_MSG, number));
         }
         return phoneNumber;
     }
@@ -100,12 +118,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * @author Matteo Carnelos
      */
     private boolean adjustForEmulator(String address) {
-        // This regex checks if the given number is one of the following types:
-        // +1#555521555*     [* = any decimal number]
-        // 555521555*        [# = either a space or '-']
-        // +1#555*
-        // 555*
-        if(address.matches("^(\\+1)?[ -]?(555521)?555\\d$")) {
+        if(address.matches(EMU_DETECTION_REGEX)) {
             this.telephoneNumber = "+1555521555" + address.charAt(address.length()-1);
             return true;
         }

@@ -11,7 +11,6 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Test class for SMSPeer.
@@ -81,19 +80,16 @@ public class SMSPeerTest {
     @Test(expected = IllegalArgumentException.class)
     public void emptyPeer_isNotCreated() {
         new SMSPeer(EMPTY_ADDR);
-        fail();
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void shortPeer_isNotCreated() {
         new SMSPeer(SHORT_ADDR);
-        fail();
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void longPeer_isNotCreated() {
         new SMSPeer(LONG_ADDR);
-        fail();
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
