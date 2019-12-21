@@ -33,7 +33,8 @@ final class SMSCore {
      *
      * @author Marco Cognolato
      */
-    private static SmsManager getManager(){
+    //TODO: use PowerMock to mock static method SmsManager.getDefault() instead of using this method, then delete getManager() and setManager()
+    static SmsManager getManager(){
         return manager == null ? SmsManager.getDefault() : manager;
     }
 

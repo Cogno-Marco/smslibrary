@@ -20,6 +20,8 @@ import static org.mockito.Mockito.mock;
 
 public class SMSReceivedBroadcastReceiverTest {
 
+    //TODO: check if BroadcastReceiver for SMS messages is actually called, consider lowering target API level to register BroadcastReceiver in Manifest
+
     @Rule
     public GrantPermissionRule sendSmsPermissionRule = GrantPermissionRule.grant(Manifest.permission.SEND_SMS);
     @Rule

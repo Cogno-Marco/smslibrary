@@ -131,7 +131,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
                 SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID) {
             throw new InvalidTelephoneNumberException(message.getPeer().getState());
         }
-        ArrayList<String> texts = SmsManager.getDefault().divideMessage(getSMSContent(message));
+        ArrayList<String> texts = SMSCore.getManager().divideMessage(getSMSContent(message));
         ArrayList<PendingIntent> sentPIs =
                 setupNewSentReceiver(texts, sentListener, message.getPeer(), context);
         ArrayList<PendingIntent> deliveredPIs =
