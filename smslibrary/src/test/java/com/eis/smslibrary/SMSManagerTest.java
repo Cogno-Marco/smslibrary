@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
  * @author Marco Cognolato, Giovanni Velludo
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SMSHandlerTest {
+public class SMSManagerTest {
 
     @Mock
     private SmsManager managerMock;
