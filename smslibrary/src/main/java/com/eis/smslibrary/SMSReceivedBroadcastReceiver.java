@@ -19,7 +19,6 @@ import it.lucacrema.preferences.PreferencesManager;
  * @author Luca Crema, Marco Mariotto, Giovanni Velludo
  * @since 29/11/2019
  */
-//TODO: add instrumented tests for this class
 public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
 
     public static final String INTENT_MESSAGE_TAG = "SMSMessage";
