@@ -18,7 +18,7 @@ import org.mockito.Mockito;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
-public class SMSReceivedBroadcastReceiverTest {
+public class SMSReceivedInstrumentedTest {
 
     //TODO: check if BroadcastReceiver for SMS messages is actually called, consider lowering target API level to register BroadcastReceiver in Manifest
 

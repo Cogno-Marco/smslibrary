@@ -53,13 +53,11 @@ public class SMSManagerTest {
 
         SMSCore.setManager(managerMock);
         instance.sendMessage(VALID_MESSAGE);
-        verify(managerMock).sendMultipartTextMessage(peerNumberCaptor.capture(), isNull(String.class), messageTextCaptor.capture(), isNull(ArrayList.class), isNull(ArrayList.class));
 
+        verify(managerMock).sendMultipartTextMessage(peerNumberCaptor.capture(), isNull(String.class), messageTextCaptor.capture(), isNull(ArrayList.class), isNull(ArrayList.class));
         assertEquals(peerNumberCaptor.getValue(), PEER_NUMBER);
         assertEquals(messageTextCaptor.getValue(), messageText);
     }
-
-    //TODO: add tests to check how message splitting is done, recompose message from ArrayList and check if it's ok
 
     @Test(expected = NullPointerException.class)
     public void nullMessage_throws() {
