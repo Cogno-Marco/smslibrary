@@ -27,7 +27,6 @@ import it.lucacrema.preferences.PreferencesManager;
  * @since 29/11/2019
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
-//TODO: add instrumented tests for this class, we could test SMSSentBroadcastReceiver simultaneously to see if messages are correctly sent
 public class SMSManager implements CommunicationManager<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";

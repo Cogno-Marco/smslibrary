@@ -20,7 +20,6 @@ import java.util.Collections;
  *
  * @author Marco Cognolato, Giovanni Velludo
  */
-//TODO: see if it's possible to unit test this class, instrumented tests are impossible in the emulator because there's no phone carrier who can tell us if the message was delivered
 public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
 
     private SMSDeliveredListener listener;
