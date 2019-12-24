@@ -7,9 +7,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author Alberto Ursino, Luca Crema
+ * @author Alberto Ursino, Luca Crema, Giovanni Velludo
  */
-public class SMSMessageTest{
+public class SMSMessageTest {
 
     private SMSMessage smsMessage;
     private static final int MAX_MSG_TEXT_LEN = SMSMessage.MAX_MSG_TEXT_LEN;
@@ -22,8 +22,8 @@ public class SMSMessageTest{
 
     private static final String VALID_GSM_EXT_TEXT_MESSAGE = "€^{}~[]\f|\\";
     private static final String TOO_LONG_GSM_EXT_TEXT_MESSAGE = new String(new char[MAX_MSG_TEXT_LEN]).replace("\0", "|");
-    private static final String MAX_LENGTH_GSM_EXT_TEXT_MESSAGE = new String(new char[MAX_MSG_TEXT_LEN/2]).replace('\0', '|');
-    private static final String MAX_LENGTH_GSM_EXT_TEXT_MESSAGE_P1 = new String(new char[(MAX_MSG_TEXT_LEN/2) + 1]).replace('\0', '|'); //P1 = Plus 1
+    private static final String MAX_LENGTH_GSM_EXT_TEXT_MESSAGE = new String(new char[MAX_MSG_TEXT_LEN / 2]).replace('\0', '|');
+    private static final String MAX_LENGTH_GSM_EXT_TEXT_MESSAGE_P1 = new String(new char[(MAX_MSG_TEXT_LEN / 2) + 1]).replace('\0', '|'); //P1 = Plus 1
 
     private static final String VALID_UTF16_TEXT_MESSAGE = "\uD83D\uDC16\uD83D\uDCA8";
     private static final String TOO_LONG_UTF16_TEXT_MESSAGE = new String(new char[MAX_UTF16_MSG_TEXT_LEN * 2]).replace('\0', '¬');

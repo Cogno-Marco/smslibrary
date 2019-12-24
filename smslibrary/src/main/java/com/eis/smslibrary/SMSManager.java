@@ -93,7 +93,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      */
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSSentListener sentListener,
-                            Context context) throws InvalidTelephoneNumberException  {
+                            Context context) throws InvalidTelephoneNumberException {
         sendMessage(message, sentListener, null, context);
     }
 

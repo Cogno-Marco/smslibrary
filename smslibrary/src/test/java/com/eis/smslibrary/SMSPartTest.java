@@ -5,14 +5,17 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * @author Giovanni Velludo
+ */
 public class SMSPartTest {
 
     private SMSPart part;
     private static final String message = "Test message";
-    private static final String intentAction =                     "SMS_SENT0000000000316463531";
-    private static final String lowerIntentAction =                "SMS_SENT0000000000316441531";
-    private static final String lowerWithLessDigitsIntentAction =  "SMS_SENT0000000000006461531";
-    private static final String higherIntentAction =               "SMS_SENT0000000000716441531";
+    private static final String intentAction = "SMS_SENT0000000000316463531";
+    private static final String lowerIntentAction = "SMS_SENT0000000000316441531";
+    private static final String lowerWithLessDigitsIntentAction = "SMS_SENT0000000000006461531";
+    private static final String higherIntentAction = "SMS_SENT0000000000716441531";
     private static final String higherWithMoreDigitsIntentAction = "SMS_SENT0000000056716461531";
 
     @Before

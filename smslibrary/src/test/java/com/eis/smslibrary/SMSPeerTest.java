@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author Alberto Ursino & Luca Crema. Reveiewed by Marco Cognolato
+ * @author Alberto Ursino, Luca Crema, Giovanni Velludo. Reveiewed by Marco Cognolato
  */
 public class SMSPeerTest {
 
@@ -24,7 +24,7 @@ public class SMSPeerTest {
     public void setup() {
         defaultPeer1 = new SMSPeer(VALID_TELEPHONE_NUMBER + "1");
         defaultPeer2 = new SMSPeer(VALID_TELEPHONE_NUMBER + "2");
-        copyOfPeer1  = new SMSPeer(VALID_TELEPHONE_NUMBER + "1");
+        copyOfPeer1 = new SMSPeer(VALID_TELEPHONE_NUMBER + "1");
     }
 
     @Test
