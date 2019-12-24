@@ -6,8 +6,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 
@@ -15,18 +16,17 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * Class used to test SMSManager using Mocks
  *
  * @author Marco Cognolato, Giovanni Velludo
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(SmsManager.class)
 public class SMSManagerTest {
-
-    @Mock
-    private SmsManager managerMock;
 
     @Captor
     private ArgumentCaptor<ArrayList<String>> messageTextCaptor;
@@ -49,7 +49,12 @@ public class SMSManagerTest {
     public void validMessage_isSent() {
         ArrayList<String> messageText = new ArrayList<>(1);
         messageText.add(MESSAGE_TEXT);
+
+        SmsManager managerMock = mock(SmsManager.class);
         when(managerMock.divideMessage(anyString())).thenReturn(messageText);
+
+        PowerMockito.mockStatic(SmsManager.class);
+        PowerMockito.when(SmsManager.getDefault()).thenReturn(managerMock);
 
         instance.sendMessage(VALID_MESSAGE);
 
