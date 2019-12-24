@@ -55,7 +55,7 @@ public class SMSPeerTest {
     }
 
     @Test
-    public void staticCheckPhoneNumber_telephoneNumber_isValid() {
+    public void checkPhoneNumber_telephoneNumber_isValid() {
         Assert.assertEquals(SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID, SMSPeer.checkPhoneNumber(VALID_TELEPHONE_NUMBER));
     }
 
@@ -63,41 +63,6 @@ public class SMSPeerTest {
     public void constructor_telephoneNumber_noException() {
         new SMSPeer(VALID_TELEPHONE_NUMBER);
     }
-
-    /* TODO: move to SMSManager tests
-
-    @Test(expected = InvalidTelephoneNumberException.class)
-    public void constructor_shortTelephoneNumber_trowsException() {
-        try{
-            new SMSPeer(TOO_SHORT_TELEPHONE_NUMBER);
-            Assert.fail("Should have thrown an exception");
-        }catch (InvalidTelephoneNumberException e){
-            //It's  ok!
-        }
-    }*/
-
-    /* TODO: move to SMSManager tests
-
-    @Test(expected = InvalidTelephoneNumberException.class)
-    public void constructor_tooLongTelephoneNumber_trowsException() {
-            new SMSPeer(TOO_LONG_TELEPHONE_NUMBER);
-            Assert.fail("Should have thrown an exception");
-    }*/
-
-    /* TODO: move to SMSManager tests
-
-    @Test(expected = InvalidTelephoneNumberException.class)
-    public void constructor_noCountryCodeTelephoneNumber_trowsException() {
-            new SMSPeer(NO_COUNTRY_CODE_TELEPHONE_NUMBER);
-    }*/
-
-    /* TODO: move to SMSManager tests
-
-    @Test(expected = InvalidTelephoneNumberException.class)
-    public void constructor_emptyTelephoneNumber_trowsException() {
-            new SMSPeer(EMPTY_TELEPHONE_NUMBER);
-            Assert.fail("Should have thrown an exception");
-    }*/
 
     @Test
     public void compareTo_differentPeer_isOrdered() {

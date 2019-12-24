@@ -18,6 +18,7 @@ public class SMSMessageTest{
     private static final String TOO_LONG_TEXT_MESSAGE = new String(new char[MAX_MSG_TEXT_LEN * 2]).replace('\0', ' ');
     private static final String MAX_LENGTH_TEXT_MESSAGE = new String(new char[MAX_MSG_TEXT_LEN]).replace('\0', ' ');
     private static final String MAX_LENGTH_TEXT_MESSAGE_P1 = new String(new char[MAX_MSG_TEXT_LEN + 1]).replace('\0', ' '); //P1 = Plus 1
+    //TODO: add tests for messages containing Unicode characters
     private static final String EMPTY_TEXT_MESSAGE = "";
     private static final String VALID_TELEPHONE_NUMBER = "+393433433433";
 
