@@ -12,8 +12,8 @@ import java.util.Comparator;
  */
 class SMSPart implements Comparable<SMSPart>, Comparator<SMSPart> {
 
-    private String message;
-    private String intentAction;
+    private final String message;
+    private final String intentAction;
     private boolean received = false;
 
     /**

@@ -22,9 +22,9 @@ import java.util.Collections;
  */
 public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
 
-    private SMSDeliveredListener listener;
-    private ArrayList<SMSPart> messageParts;
-    private SMSPeer peer;
+    private final SMSDeliveredListener listener;
+    private final ArrayList<SMSPart> messageParts;
+    private final SMSPeer peer;
 
     /**
      * Constructor for the custom {@link BroadcastReceiver}.

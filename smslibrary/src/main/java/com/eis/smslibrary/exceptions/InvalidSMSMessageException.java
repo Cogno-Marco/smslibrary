@@ -38,8 +38,8 @@ public class InvalidSMSMessageException extends RuntimeException {
     }
 
     /**
-     * Retrieves the state of the message that is the reason of the exception
-     * @return
+     * Retrieves the state of the message that is the reason of the exception.
+     * @return the state of the message that is the reason of the exception.
      */
     public SMSMessage.ContentState getState() {
         return this.state;

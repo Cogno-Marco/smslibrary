@@ -12,11 +12,11 @@ import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
  */
 public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
-    public static final int MAX_TELEPHONE_NUMBER_LENGTH = 15;
-    public static final int MIN_TELEPHONE_NUMBER_LENGTH = 3;
+    private static final int MAX_TELEPHONE_NUMBER_LENGTH = 15;
+    private static final int MIN_TELEPHONE_NUMBER_LENGTH = 3;
 
-    private String telephoneNumber;
-    private TelephoneNumberState state;
+    private final String telephoneNumber;
+    private final TelephoneNumberState state;
 
     /**
      * @param telephoneNumber Address for the peer.
@@ -33,7 +33,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
      * @param telephoneNumber the phone number to check. Must not be null
      * @return The {@link TelephoneNumberState} of the telephone number after the tests.
      */
-    public static TelephoneNumberState checkPhoneNumber(String telephoneNumber) {
+    static TelephoneNumberState checkPhoneNumber(String telephoneNumber) {
         //Check if the number is shorter than the MAX.
         if (telephoneNumber.length() > MAX_TELEPHONE_NUMBER_LENGTH + 1) {
             return TelephoneNumberState.TELEPHONE_NUMBER_TOO_LONG;

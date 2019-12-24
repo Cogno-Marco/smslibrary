@@ -41,7 +41,7 @@ public class SMSManagerTest {
     private final String VALID_MESSAGE_TEXT = "valid text";
     private final SMSPeer VALID_PEER = new SMSPeer(VALID_PEER_NUMBER);
     private final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, VALID_MESSAGE_TEXT);
-    private SMSManager managerInstance = SMSManager.getInstance();
+    private final SMSManager managerInstance = SMSManager.getInstance();
     private static final String EMPTY_TELEPHONE_NUMBER = "";
     private static final String TOO_SHORT_TELEPHONE_NUMBER = "+39";
     private static final String TOO_LONG_TELEPHONE_NUMBER = "+39111111111111111111";

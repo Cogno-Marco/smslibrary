@@ -67,7 +67,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
 
     public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage>{
 
-        protected static final String HIDDEN_CHARACTER = "\r";
+        static final String HIDDEN_CHARACTER = "\r";
 
         /**
          * Parses sms data into a SMSMessage if possible
