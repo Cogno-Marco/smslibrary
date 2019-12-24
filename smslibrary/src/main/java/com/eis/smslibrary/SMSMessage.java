@@ -50,6 +50,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * @param messageText to be checked.
      * @return The state of the message after validity tests.
      */
+    //TODO: try improving performance by using matches() on entire message first
     static ContentState checkMessageText(@NonNull String messageText) {
         int charNum = 0;
         for (int i = 0; i < messageText.length(); i++) {

@@ -1,0 +1,71 @@
+package com.eis.smslibrary;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+public class SMSPartTest {
+
+    private SMSPart part;
+    private final String message = "Test message";
+    private final String intentAction =                     "SMS_SENT0000000000316463531";
+    private final String lowerIntentAction =                "SMS_SENT0000000000316441531";
+    private final String lowerWithLessDigitsIntentAction =  "SMS_SENT0000000000006461531";
+    private final String higherIntentAction =               "SMS_SENT0000000000716441531";
+    private final String higherWithMoreDigitsIntentAction = "SMS_SENT0000000056716461531";
+
+    @Before
+    public void init() {
+        part = new SMSPart(message, intentAction);
+    }
+
+    @Test
+    public void getMessage() {
+        assertEquals(message, part.getMessage());
+    }
+
+    @Test
+    public void wasReceived_and_setReceived() {
+        assertFalse(part.wasReceived());
+        part.setReceived();
+        assertTrue(part.wasReceived());
+    }
+
+    @Test
+    public void compareTo_itself() {
+        assertEquals(0, part.compareTo(part));
+    }
+
+    @Test
+    public void compareTo_lower() {
+        SMSPart lowerPart = new SMSPart(message, lowerIntentAction);
+        assertTrue(part.compareTo(lowerPart) > 0);
+    }
+
+    @Test
+    public void compareTo_lowerWithLessDigits() {
+        SMSPart lowerWithLessDigitsPart = new SMSPart(message, lowerWithLessDigitsIntentAction);
+        assertTrue(part.compareTo(lowerWithLessDigitsPart) > 0);
+    }
+
+    @Test
+    public void compareTo_higher() {
+        SMSPart higherPart = new SMSPart(message, higherIntentAction);
+        assertTrue(part.compareTo(higherPart) < 0);
+    }
+
+    @Test
+    public void compareTo_higherWithMoreDigits() {
+        SMSPart higherWithMoreDigitsPart = new SMSPart(message, higherWithMoreDigitsIntentAction);
+        assertTrue(part.compareTo(higherWithMoreDigitsPart) < 0);
+    }
+
+    @Test
+    public void compare() {
+        //only a couple of tests are needed, because compare() calls compareTo()
+        assertEquals(0, (part.compare(part, part)));
+        SMSPart lowerPart = new SMSPart(message, lowerIntentAction);
+        assertTrue(part.compare(part, lowerPart) > 0);
+    }
+}
