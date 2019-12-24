@@ -60,20 +60,22 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * phone is moving between countries. To set a custom one use the method {@link #setDefaultRegion(String)}.
      *
      * @param telephoneNumber Address for the peer.
-     * @throws InvalidTelephoneNumberException If telephoneNumber is not valid.
-     * @throws IllegalArgumentException If the given telephoneNumber is not parsable.
+     * @throws InvalidTelephoneNumberException If telephoneNumber is not valid or not parsable.
      * @author Matteo Carnelos
      */
-    public SMSPeer(@NonNull String telephoneNumber) throws InvalidTelephoneNumberException {
+    public SMSPeer(@NonNull String telephoneNumber) {
         // If the given number is an emulator number, skip the validity checks
         if(adjustForEmulator(telephoneNumber)) return;
 
         if(defaultRegion.isEmpty() && !telephoneNumber.startsWith("+"))
-            throw new InvalidTelephoneNumberException(REGION_NEEDED_EXC_MSG);
+            throw new InvalidTelephoneNumberException(
+                    InvalidTelephoneNumberException.Type.REGION_NEEDED,
+                    REGION_NEEDED_EXC_MSG);
 
         Phonenumber.PhoneNumber phoneNumber = parseNumber(telephoneNumber);
         if(!PhoneNumberUtil.getInstance().isValidNumber(phoneNumber))
             throw new InvalidTelephoneNumberException(
+                    InvalidTelephoneNumberException.Type.INVALID_NUMBER,
                     String.format(INVALID_NUMBER_EXC_MSG, telephoneNumber, defaultRegion));
 
         this.telephoneNumber = formatE164(phoneNumber);
@@ -84,14 +86,16 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      *
      * @param number The destination string, eventually with the prefix.
      * @return The PhoneNumber object containing the phone number parsed.
-     * @throws IllegalArgumentException If the given destination is not parsable.
+     * @throws InvalidTelephoneNumberException If the given destination is not parsable.
      * @author Matteo Carnelos
      */
-    private Phonenumber.PhoneNumber parseNumber(String number) throws IllegalArgumentException {
+    private Phonenumber.PhoneNumber parseNumber(String number) {
         Phonenumber.PhoneNumber phoneNumber;
         try { phoneNumber = PhoneNumberUtil.getInstance().parse(number, defaultRegion); }
         catch(NumberParseException e) {
-            throw new IllegalArgumentException(String.format(NOT_PARSABLE_EXC_MSG, number));
+            throw new InvalidTelephoneNumberException(
+                    InvalidTelephoneNumberException.Type.NOT_PARSABLE_NUMBER,
+                    String.format(NOT_PARSABLE_EXC_MSG, number));
         }
         return phoneNumber;
     }

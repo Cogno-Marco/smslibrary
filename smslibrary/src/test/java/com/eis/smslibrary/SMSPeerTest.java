@@ -77,24 +77,36 @@ public class SMSPeerTest {
         assertEquals(EMULATOR_ADDR_WITH_PREFIX_AND_EXT, new SMSPeer(EMULATOR_ADDR_WITH_PREFIX_AND_EXT).getAddress());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void emptyPeer_isNotCreated() {
-        new SMSPeer(EMPTY_ADDR);
+        try { new SMSPeer(EMPTY_ADDR); }
+        catch(InvalidTelephoneNumberException e) {
+            assertEquals(InvalidTelephoneNumberException.Type.NOT_PARSABLE_NUMBER, e.getType());
+        }
     }
 
-    @Test(expected = InvalidTelephoneNumberException.class)
+    @Test
     public void shortPeer_isNotCreated() {
-        new SMSPeer(SHORT_ADDR);
+        try { new SMSPeer(SHORT_ADDR);}
+        catch(InvalidTelephoneNumberException e) {
+            assertEquals(InvalidTelephoneNumberException.Type.INVALID_NUMBER, e.getType());
+        }
     }
 
-    @Test(expected = InvalidTelephoneNumberException.class)
+    @Test
     public void longPeer_isNotCreated() {
-        new SMSPeer(LONG_ADDR);
+        try { new SMSPeer(LONG_ADDR);}
+        catch(InvalidTelephoneNumberException e) {
+            assertEquals(InvalidTelephoneNumberException.Type.INVALID_NUMBER, e.getType());
+        }
     }
 
-    @Test(expected = InvalidTelephoneNumberException.class)
+    @Test
     public void invalidPeer_isNotCreated() {
-        new SMSPeer(randomInvalidAddress);
+        try { new SMSPeer(randomInvalidAddress);}
+        catch(InvalidTelephoneNumberException e) {
+            assertEquals(InvalidTelephoneNumberException.Type.INVALID_NUMBER, e.getType());
+        }
     }
 
     @Test
