@@ -234,8 +234,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @param i the integer to which to add padding.
      * @return a 19 characters String containing the integer's decimal representation with padding.
      */
-    //TODO: test with int
-    private static String addPadding(long i) {
+    static String addPadding(long i) {
         final String messageCounterMaxDigits = "0000000000000000000";
         DecimalFormat df = new DecimalFormat(messageCounterMaxDigits);
         return df.format(i);

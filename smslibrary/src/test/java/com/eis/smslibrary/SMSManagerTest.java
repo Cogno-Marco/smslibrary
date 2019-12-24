@@ -104,4 +104,18 @@ public class SMSManagerTest {
         managerInstance.sendMessage(message);
         Assert.fail("Should have thrown an exception");
     }
+
+    @Test
+    public void addPadding() {
+        int notPadded = 25;
+        String padded = "0000000000000000025";
+        assertEquals(padded, SMSManager.addPadding(notPadded));
+    }
+
+    @Test
+    public void addPadding_maxDigitsNumber() {
+        long notPadded = 4512589235566663025L;
+        String padded = "4512589235566663025";
+        assertEquals(padded, SMSManager.addPadding(notPadded));
+    }
 }
