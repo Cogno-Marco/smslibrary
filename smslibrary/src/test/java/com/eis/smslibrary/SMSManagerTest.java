@@ -51,7 +51,6 @@ public class SMSManagerTest {
         messageText.add(MESSAGE_TEXT);
         when(managerMock.divideMessage(anyString())).thenReturn(messageText);
 
-        SMSCore.setManager(managerMock);
         instance.sendMessage(VALID_MESSAGE);
 
         verify(managerMock).sendMultipartTextMessage(peerNumberCaptor.capture(),
