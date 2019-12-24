@@ -54,10 +54,10 @@ public class SMSMessage implements Message<String, SMSPeer> {
         int charNum = 0;
         for (int i = 0; i < messageText.length(); i++) {
             String currentChar = messageText.substring(i, i + 1);
-            if (currentChar.matches(GSM_CHARACTERS_EXTENSION_REGEX)) {
-                charNum += 2;
-            } else if (currentChar.matches(GSM_CHARACTERS_REGEX)) {
+            if (currentChar.matches(GSM_CHARACTERS_REGEX)) {
                 charNum++;
+            } else if (currentChar.matches(GSM_CHARACTERS_EXTENSION_REGEX)) {
+                charNum += 2;
             } else {
                 //found a non-GSM character
                 if (messageText.length() <= MAX_UTF16_MSG_TEXT_LEN) {
