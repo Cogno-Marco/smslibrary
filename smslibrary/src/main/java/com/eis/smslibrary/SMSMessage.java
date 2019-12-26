@@ -24,6 +24,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
     static final int MAX_UTF16_MSG_TEXT_LEN = (MAX_MSG_TEXT_LEN * 7) / 16;
     // these regex can be used both on single characters and entire strings
     private static final String GSM_CHARACTERS_STRING_REGEX = "^[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà]*$";
+    private static final String GSM_CHARACTERS_EXTENSION_STRING_REGEX = "^[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà\\f^{}\\\\\\[~\\]|€]*$";
     private static final String GSM_CHARACTERS_REGEX = "[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà]";
     private static final String GSM_CHARACTERS_EXTENSION_REGEX = "[\\f^{}\\\\\\[~\\]|€]";
     private String messageContent;
@@ -52,32 +53,35 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * @return The state of the message after validity tests.
      */
     static ContentState checkMessageText(@NonNull String messageText) {
-        int charNum = 0;
+        /* Since applications using this library will probably try to avoid wasting characters,
+         * they'll mostly stick to using the regular GSM character set, so we perform pattern
+         * matching on the whole message first, to avoid multiple checks on single characters
+         * when not necessary.
+         */
         if (messageText.matches(GSM_CHARACTERS_STRING_REGEX)) {
-            /* Since applications using this library will probably try to avoid wasting characters,
-             * they'll mostly stick to using the regular GSM character set, so we perform pattern
-             * matching on the whole message first, to avoid multiple checks on single characters
-             * when not necessary.
-             */
-            charNum = messageText.length();
+            // messageText contains only GSM characters
+            if (messageText.length() <= MAX_MSG_TEXT_LEN) {
+                return ContentState.MESSAGE_TEXT_VALID;
+            }
+        } else if (!messageText.matches(GSM_CHARACTERS_EXTENSION_STRING_REGEX)) {
+            // messageText contains Unicode characters
+            if (messageText.length() <= MAX_UTF16_MSG_TEXT_LEN) {
+                return ContentState.MESSAGE_TEXT_VALID;
+            }
         } else {
+            // messageText contains characters from the GSM charset and its extension table
+            int charNum = 0;
             for (int i = 0; i < messageText.length(); i++) {
                 String currentChar = messageText.substring(i, i + 1);
                 if (currentChar.matches(GSM_CHARACTERS_REGEX)) {
                     charNum++;
                 } else if (currentChar.matches(GSM_CHARACTERS_EXTENSION_REGEX)) {
                     charNum += 2;
-                } else {
-                    //found a non-GSM character
-                    if (messageText.length() <= MAX_UTF16_MSG_TEXT_LEN) {
-                        return ContentState.MESSAGE_TEXT_VALID;
-                    }
-                    return ContentState.MESSAGE_TEXT_TOO_LONG;
                 }
             }
-        }
-        if (charNum <= MAX_MSG_TEXT_LEN) {
-            return ContentState.MESSAGE_TEXT_VALID;
+            if (charNum <= MAX_MSG_TEXT_LEN) {
+                return ContentState.MESSAGE_TEXT_VALID;
+            }
         }
         return ContentState.MESSAGE_TEXT_TOO_LONG;
     }
