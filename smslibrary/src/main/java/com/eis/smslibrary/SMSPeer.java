@@ -20,7 +20,6 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer> {
 
     /**
      * @param telephoneNumber Address for the peer.
-     * @throws InvalidTelephoneNumberException If telephoneNumber check is not {@link TelephoneNumberState#TELEPHONE_NUMBER_VALID}.
      */
     public SMSPeer(String telephoneNumber) {
         this.state = SMSPeer.checkPhoneNumber(telephoneNumber);
