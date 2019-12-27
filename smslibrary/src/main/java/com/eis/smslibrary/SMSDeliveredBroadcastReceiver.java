@@ -29,9 +29,9 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
     /**
      * Constructor for the custom {@link BroadcastReceiver}.
      *
-     * @param parts    parts of the message to be delivered.
-     * @param listener listener to be called when the operation is completed
-     * @param peer     peer to whom the message will be delivered.
+     * @param parts    the parts of the message to be delivered.
+     * @param listener the listener to be called when the operation is completed
+     * @param peer     the peer to whom the message will be delivered.
      */
     SMSDeliveredBroadcastReceiver(@NonNull final ArrayList<SMSPart> parts,
                                   @NonNull final SMSDeliveredListener listener,
@@ -71,11 +71,7 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
         }
         // binary search on messageParts for the SMSPart associated to this intent's action
         int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
-        if (partIndex >= 0) {
-            SMSPart part = messageParts.get(partIndex);
-            part.setReceived();
-            messageParts.set(partIndex, part);
-        }
+        if (partIndex >= 0) messageParts.get(partIndex).setReceived();
         for (SMSPart part : messageParts) {
             // if we're still waiting to receive intents for some parts, exit
             if (!part.wasReceived()) return;

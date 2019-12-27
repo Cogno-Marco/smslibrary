@@ -34,9 +34,7 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
             return;
         }
         Object[] pdus = (Object[]) extras.get("pdus");
-        if (pdus == null) {
-            return;
-        }
+        if (pdus == null) return;
         String format = (String) extras.get("format");
         Map<String, String> peerMessageMap = new HashMap<>(pdus.length);
 
@@ -46,12 +44,9 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
         for (Object pdu : pdus) {
             SmsMessage message = createMessageFromPdu(pdu, format);
             String phoneNumber = message.getOriginatingAddress();
-            if (phoneNumber == null) { //could be null
-                phoneNumber = "";
-            }
+            if (phoneNumber == null) phoneNumber = "";
             if (!peerMessageMap.containsKey(phoneNumber)) {
                 peerMessageMap.put(phoneNumber, message.getMessageBody());
-
             } else {
                 String previousParts = peerMessageMap.get(phoneNumber);
                 String updatedMessage = previousParts + message.getMessageBody();

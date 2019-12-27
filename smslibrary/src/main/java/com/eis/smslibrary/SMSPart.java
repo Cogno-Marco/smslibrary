@@ -10,7 +10,7 @@ import java.util.Comparator;
  *
  * @author Giovanni Velludo
  */
-class SMSPart implements Comparable<SMSPart>, Comparator<SMSPart> {
+class SMSPart implements Comparable<SMSPart> {
 
     private final String message;
     private final String intentAction;
@@ -51,10 +51,5 @@ class SMSPart implements Comparable<SMSPart>, Comparator<SMSPart> {
     @Override
     public int compareTo(SMSPart part) {
         return intentAction.compareTo(part.intentAction);
-    }
-
-    @Override
-    public int compare(SMSPart part1, SMSPart part2) {
-        return part1.intentAction.compareTo(part2.intentAction);
     }
 }

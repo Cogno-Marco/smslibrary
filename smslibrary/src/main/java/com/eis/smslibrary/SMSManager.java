@@ -142,9 +142,9 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * Creates a new {@link SMSSentBroadcastReceiver} and registers it to receive broadcasts
      * with actions {@value SENT_MESSAGE_INTENT_ACTION}
      *
-     * @param texts    parts of the message to be sent.
-     * @param listener listener to call on broadcast received.
-     * @param context  The context of the application used to setup the listener
+     * @param texts    the parts of the message to be sent.
+     * @param listener the listener to call on broadcast received.
+     * @param context  the context of the application used to setup the listener
      * @return an {@link ArrayList} of {@link PendingIntent} to be passed to SMSCore.
      */
     private ArrayList<PendingIntent> setupNewSentReceiver(
@@ -171,9 +171,9 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * Creates a new {@link SMSDeliveredBroadcastReceiver} and registers it to receive broadcasts
      * with actions {@value DELIVERED_MESSAGE_INTENT_ACTION}
      *
-     * @param texts    parts of the message to be delivered.
-     * @param listener listener to call on broadcast received.
-     * @param context  The context of the application used to setup the listener
+     * @param texts    the parts of the message to be delivered.
+     * @param listener the listener to call on broadcast received.
+     * @param context  the context of the application used to setup the listener
      * @return an {@link ArrayList} of {@link PendingIntent} to be passed to SMSCore.
      */
     private ArrayList<PendingIntent> setupNewDeliverReceiver(

@@ -65,12 +65,4 @@ public class SMSPartTest {
         SMSPart higherWithMoreDigitsPart = new SMSPart(message, higherWithMoreDigitsIntentAction);
         assertTrue(part.compareTo(higherWithMoreDigitsPart) < 0);
     }
-
-    @Test
-    public void compare() {
-        //only a couple of tests are needed, because compare() calls compareTo()
-        assertEquals(0, (part.compare(part, part)));
-        SMSPart lowerPart = new SMSPart(message, lowerIntentAction);
-        assertTrue(part.compare(part, lowerPart) > 0);
-    }
 }
