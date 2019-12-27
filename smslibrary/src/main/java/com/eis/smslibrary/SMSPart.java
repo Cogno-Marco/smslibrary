@@ -1,7 +1,5 @@
 package com.eis.smslibrary;
 
-import java.util.Comparator;
-
 /**
  * Object associating to each part of a multi-part SMS text message:
  * - the corresponding Intent's action to be received by SMSDeliveredBroadcastReceiver or
