@@ -24,20 +24,4 @@ public interface Message<D, P extends Peer> extends Serializable {
      */
     P getPeer();
 
-    /**
-     * Indicates whether some other object is "equal to" this one.
-     *
-     * @param o the reference object with which to compare.
-     * @return {@code true} if this object is the same as the o argument; {@code false} otherwise.
-     */
-    boolean equals(Object o);
-
-    /**
-     * Returns a hash code value for the object. This method is supported for the benefit of hash
-     * tables such as those provided by {@link java.util.HashMap}.
-     *
-     * @return a hash code value for this object.
-     */
-    int hashCode();
-
 }
