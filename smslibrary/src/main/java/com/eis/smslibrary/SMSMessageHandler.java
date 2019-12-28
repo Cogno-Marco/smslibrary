@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.eis.communication.MessageHandler;
 import com.eis.communication.MessageParseStrategy;
+import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
 
 /**
  * Singleton class used to parse String to SMSMessage and back
@@ -42,17 +43,19 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
     }
 
     /**
-     * Interprets a string arrived via the communication channel and parses it to a library {@link SMSMessage}
+     * Interprets a string arrived via the communication channel and parses it to a library {@link SMSMessage}.
      *
-     * @param peerData from the sms pdus
-     * @param messageData from the sms pdus
-     * @return the message if the string has been parsed correctly, null otherwise
+     * @param peerData Data about the peer coming from the sms pdus.
+     * @param messageData Data about the message coming from the sms pdus.
+     * @return The message if the string has been parsed correctly, null otherwise.
+     * @author Matteo Carnelos
      */
-    public SMSMessage parseMessage(@NonNull final String peerData, @NonNull final String messageData){
-        if(SMSPeer.checkPhoneNumber(peerData) != SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
-            return null;
-
-        return parseStrategy.parseMessage(messageData,new SMSPeer(peerData));
+    public SMSMessage parseMessage(@NonNull final String peerData, @NonNull final String messageData) {
+        try {
+            SMSPeer peer = new SMSPeer(peerData);
+            return parseStrategy.parseMessage(messageData, peer);
+        }
+        catch(InvalidTelephoneNumberException | IllegalArgumentException e) { return null; }
     }
 
     /**
