@@ -2,21 +2,27 @@ package com.eis.smslibrary;
 
 import android.telephony.SmsManager;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * Class used to test SMSManager using Mocks
  *
  * @author Marco Cognolato
  */
-@RunWith(MockitoJUnitRunner.class)
-public class SMSHandlerTest {
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(SmsManager.class)
+public class SMSManagerTest {
 
     private SmsManager managerMock = mock(SmsManager.class);
 
@@ -27,6 +33,12 @@ public class SMSHandlerTest {
     private final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, MESSAGE_TEXT);
     private SMSManager instance = SMSManager.getInstance();
 
+    @Before
+    public void setup(){
+        PowerMockito.mockStatic(SmsManager.class);
+        when(SmsManager.getDefault()).thenReturn(managerMock);
+    }
+
     @Test
     public void singletonInstance() {
         assertEquals(SMSManager.getInstance(), SMSManager.getInstance());
@@ -34,7 +46,6 @@ public class SMSHandlerTest {
 
     @Test()
     public void validMessage_isSent() {
-        SMSCore.setManager(managerMock);
         instance.sendMessage(VALID_MESSAGE);
         verify(managerMock).sendTextMessage(PEER_TEXT, null, SENT_TEXT, null, null);
     }
