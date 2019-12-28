@@ -32,7 +32,7 @@ public class SMSSentBroadcastReceiverTest {
 
     @Test
     public void constructor_doesntThrow(){
-        SMSSentBroadcastReceiver rec = new SMSSentBroadcastReceiver(VALID_MESSAGE, listenerMock);
+        new SMSSentBroadcastReceiver(VALID_MESSAGE, listenerMock);
     }
 
     @Test
