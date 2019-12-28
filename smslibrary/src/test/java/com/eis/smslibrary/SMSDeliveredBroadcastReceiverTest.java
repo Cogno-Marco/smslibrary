@@ -3,10 +3,8 @@ package com.eis.smslibrary;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.telephony.SmsManager;
 
 import com.eis.smslibrary.listeners.SMSDeliveredListener;
-import com.eis.smslibrary.listeners.SMSSentListener;
 
 import org.junit.Before;
 import org.junit.Test;
