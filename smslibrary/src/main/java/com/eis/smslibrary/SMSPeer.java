@@ -75,6 +75,13 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
         }
     }
 
+    /**
+     * Checks the validity of a phone number and returns a parsed PhoneNumber object if valid.
+     *
+     * @param telephoneNumber The phone number for which to check validity.
+     * @return A parsed PhoneNumber object, if telephoneNumber is valid.
+     * @throws InvalidTelephoneNumberException if telePhone number is not valid.
+     */
     private Phonenumber.PhoneNumber checkValidity(@NonNull String telephoneNumber)
             throws InvalidTelephoneNumberException {
         if (defaultRegion.isEmpty() && !telephoneNumber.startsWith("+"))
