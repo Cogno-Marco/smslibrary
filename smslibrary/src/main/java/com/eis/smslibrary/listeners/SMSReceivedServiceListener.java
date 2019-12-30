@@ -1,12 +1,13 @@
 package com.eis.smslibrary.listeners;
 
 import android.content.Intent;
-
-import androidx.annotation.Nullable;
-import androidx.core.app.JobIntentService;
+import android.util.Log;
 
 import com.eis.smslibrary.SMSMessage;
 import com.eis.smslibrary.SMSReceivedBroadcastReceiver;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.JobIntentService;
 
 /**
  * Abstract class to implement in order to wake up the service when a message is received
@@ -30,6 +31,7 @@ public abstract class SMSReceivedServiceListener extends JobIntentService {
      */
     @Override
     protected void onHandleWork(@Nullable Intent intent) {
+        Log.i("SMSRSL", "Listener woke up");
         SMSMessage message = (SMSMessage) intent.getSerializableExtra(SMSReceivedBroadcastReceiver.INTENT_MESSAGE_TAG);
         onMessageReceived(message);
     }

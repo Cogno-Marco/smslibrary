@@ -7,6 +7,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
+
+import androidx.core.app.JobIntentService;
 import it.lucacrema.preferences.PreferencesManager;
 
 /**
@@ -20,6 +22,7 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
 
     public static final String INTENT_MESSAGE_TAG = "SMSMessage";
     public static final String SERVICE_CLASS_PREFERENCES_KEY = "ApplicationServiceClass";
+    private static final int SCHEDULING_JOB_ID = 420;
 
     /**
      * Parses message and calls listener
@@ -45,8 +48,10 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
             if (phoneNumber == null) //could be null
                 return;
 
+            Log.d("SMSRBR", "Received message from " + phoneNumber + ", content: " + smsContent);
             SMSMessage parsedMessage = SMSMessageHandler.getInstance().parseMessage(phoneNumber, smsContent);
             if (parsedMessage != null) {
+                Log.d("SMSRBR", "Parsed message is not null");
                 callApplicationService(context, parsedMessage);
             }
         }
@@ -80,12 +85,17 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
         } catch (ClassNotFoundException e) {
             Log.e("SMSReceiver", "Service class to wake up could not be found: " + preferencesClassName);
         }
-        if (listener == null)
+        if (listener == null) {
+            Log.w("SMSReceiver", "Service listener is null!");
             return;
+        }
 
-        Intent serviceIntent = new Intent(context, listener);
+        Intent serviceIntent = new Intent();
         serviceIntent.putExtra(INTENT_MESSAGE_TAG, message);
-        context.startService(serviceIntent);
+
+        Log.w("SMSReceiver", "Waking up listener");
+
+        JobIntentService.enqueueWork(context, listener, SCHEDULING_JOB_ID, serviceIntent);
 
     }
 }
