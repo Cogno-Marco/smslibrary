@@ -23,7 +23,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * https://en.wikipedia.org/wiki/Concatenated_SMS
      */
     static final int MAX_MSG_TEXT_LEN = 39015;
-    static final int MAX_UTF16_MSG_TEXT_LEN = (MAX_MSG_TEXT_LEN * 7) / 16;
+    static final int MAX_UCS2_MSG_TEXT_LEN = (MAX_MSG_TEXT_LEN * 7) / 16;
     // these regex can be used both on single characters and entire strings
     private static final String GSM_CHARACTERS_STRING_REGEX = "^[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà]*$";
     private static final String GSM_CHARACTERS_EXTENSION_STRING_REGEX = "^[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà\\f^{}\\\\\\[~\\]|€]*$";
@@ -66,7 +66,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
             }
         } else if (!messageText.matches(GSM_CHARACTERS_EXTENSION_STRING_REGEX)) {
             // messageText contains Unicode characters
-            if (messageText.length() <= MAX_UTF16_MSG_TEXT_LEN) {
+            if (messageText.length() <= MAX_UCS2_MSG_TEXT_LEN) {
                 return ContentState.MESSAGE_TEXT_VALID;
             }
         } else {
