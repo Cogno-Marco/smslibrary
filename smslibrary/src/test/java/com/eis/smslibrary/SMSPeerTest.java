@@ -39,12 +39,12 @@ public class SMSPeerTest {
 
     private static final String HIGHER_VALID_ADDR = "3401234568";
 
-    private static PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
     private static String[] randomValidAddresses = new String[VALID_TEST_ITERATIONS];
     private static String randomInvalidAddress;
 
     @BeforeClass
     public static void setup() {
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
         Set<String> availableCountries = phoneNumberUtil.getSupportedRegions();
         String[] countryCodes = availableCountries.toArray(new String[0]);
         int randomIndex = new Random().nextInt(countryCodes.length);
@@ -59,6 +59,7 @@ public class SMSPeerTest {
                     phoneNumberUtil.getExampleNumber(countryCodes[randomIndex]),
                     PhoneNumberUtil.PhoneNumberFormat.E164);
         }
+        SMSPeer.setDefaultRegion("IT");
     }
 
     @Test
@@ -87,7 +88,7 @@ public class SMSPeerTest {
 
     @Test
     public void shortPeer_isNotCreated() {
-        try { new SMSPeer(SHORT_ADDR);}
+        try { new SMSPeer(SHORT_ADDR); }
         catch(InvalidTelephoneNumberException e) {
             assertEquals(InvalidTelephoneNumberException.Type.INVALID_NUMBER, e.getType());
         }
@@ -95,7 +96,7 @@ public class SMSPeerTest {
 
     @Test
     public void longPeer_isNotCreated() {
-        try { new SMSPeer(LONG_ADDR);}
+        try { new SMSPeer(LONG_ADDR); }
         catch(InvalidTelephoneNumberException e) {
             assertEquals(InvalidTelephoneNumberException.Type.INVALID_NUMBER, e.getType());
         }
@@ -103,14 +104,14 @@ public class SMSPeerTest {
 
     @Test
     public void invalidPeer_isNotCreated() {
-        try { new SMSPeer(randomInvalidAddress);}
+        try { new SMSPeer(randomInvalidAddress); }
         catch(InvalidTelephoneNumberException e) {
             assertEquals(InvalidTelephoneNumberException.Type.INVALID_NUMBER, e.getType());
         }
     }
 
     @Test
-    public void validAddressed_areCompared() {
+    public void validAddresses_areCompared() {
         SMSPeer lowerPeer = new SMSPeer(VALID_ADDR);
         SMSPeer higherPeer = new SMSPeer(HIGHER_VALID_ADDR);
         assertTrue(higherPeer.compareTo(lowerPeer) > 0);
