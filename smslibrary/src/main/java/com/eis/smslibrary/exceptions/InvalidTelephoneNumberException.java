@@ -1,35 +1,49 @@
 package com.eis.smslibrary.exceptions;
 
-
-import com.eis.smslibrary.SMSPeer;
-
 /**
- * Exception usually thrown if a Peer has been instantiated without having the telephone number checked for validity
+ * Exception usually thrown if a Peer has been instantiated without having the telephone number checked for validity.
+ *
  * @author Luca Crema, suggested by Marco Cognolato
+ * @author Matteo Carnelos
  */
-public class InvalidTelephoneNumberException extends RuntimeException{
+public class InvalidTelephoneNumberException extends RuntimeException {
+
+    public enum Type {
+        REGION_NEEDED,
+        INVALID_NUMBER,
+        NOT_PARSABLE_NUMBER
+    }
+
+    private Type type;
 
     /**
-     * Invalid state of the telephone number
+     * Constructor of a basic InvalidTelephoneNumberException.
+     *
+     * @param type The {@link Type} of the exception.
+     * @author Matteo Carnelos
      */
-    private SMSPeer.TelephoneNumberState telephoneNumberState;
-
-    /**
-     * @param state Invalid state of telephone number, cannot be {@link SMSPeer.TelephoneNumberState#TELEPHONE_NUMBER_VALID}
-     */
-    public InvalidTelephoneNumberException(SMSPeer.TelephoneNumberState state){
-        if(state == SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
-            throw new IllegalArgumentException("TelephoneNumberState cannot be TELEPHONE_NUMBER_VALID if InvalidTelephoneNumberException is thrown!");
-        this.telephoneNumberState = state;
+    public InvalidTelephoneNumberException(Type type) {
+        this.type = type;
     }
 
     /**
-     * @param state Invalid state of telephone number, cannot be {@link SMSPeer.TelephoneNumberState#TELEPHONE_NUMBER_VALID}
+     * Constructor of a basic InvalidTelephoneNumberException with a message.
+     *
+     * @param type The {@link Type} of the exception.
+     * @param message The message to be thrown with the exception.
+     * @author Matteo Carnelos
      */
-    public InvalidTelephoneNumberException(String message, SMSPeer.TelephoneNumberState state) {
+    public InvalidTelephoneNumberException(Type type, String message) {
         super(message);
-        if(state == SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
-            throw new IllegalArgumentException("TelephoneNumberState cannot be TELEPHONE_NUMBER_VALID if InvalidTelephoneNumberException is thrown!");
-        this.telephoneNumberState = state;
+        this.type = type;
+    }
+
+    /**
+     * Returns the type of this exception.
+     * @return The {@link Type} for this object.
+     * @author Matteo Carnelos
+     */
+    public Type getType() {
+        return this.type;
     }
 }
