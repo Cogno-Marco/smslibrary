@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Broadcast receiver for sent messages, called by Android Library.
@@ -24,8 +23,7 @@ import java.util.Collections;
 public class SMSSentBroadcastReceiver extends BroadcastReceiver {
 
     private final SMSSentListener listener;
-    private final ArrayList<SMSPart> messageParts;
-    private final SMSPeer peer;
+    private final SMSMessage message;
     private short partsToSendCounter;
 
     /**
@@ -35,11 +33,14 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
      * @param listener the listener to be called when the operation is completed.
      * @param peer     the peer to whom the message will be sent.
      */
-    SMSSentBroadcastReceiver(@NonNull final ArrayList<SMSPart> parts,
+    SMSSentBroadcastReceiver(@NonNull final ArrayList<String> parts,
                              @NonNull final SMSSentListener listener, @NonNull final SMSPeer peer) {
+        StringBuilder fullMessageText = new StringBuilder();
+        for (String part : parts) {
+            fullMessageText.append(part);
+        }
         this.listener = listener;
-        this.messageParts = parts;
-        this.peer = peer;
+        this.message = new SMSMessage(peer, fullMessageText.toString());
         this.partsToSendCounter = (short) parts.size(); // they can't be more than 255
     }
 
@@ -74,26 +75,10 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
         }
 
         if (sentState == SMSMessage.SentState.MESSAGE_SENT) {
-            // binary search on messageParts for the SMSPart associated to this intent's action
-            int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
-            if (partIndex >= 0) {
-                partsToSendCounter--;
-            }
-            if (partsToSendCounter > 0) return;
+            if (--partsToSendCounter > 0) return;
         }
-        listener.onSMSSent(reconstructMessage(), sentState);
+        listener.onSMSSent(message, sentState);
         context.unregisterReceiver(this);
-    }
-
-    /**
-     * Reconstructs SMSMessage to pass to listeners, using the messageParts in which it was split.
-     */
-    private SMSMessage reconstructMessage() {
-        StringBuilder text = new StringBuilder();
-        for (SMSPart part : messageParts) {
-            text.append(part.getMessage());
-        }
-        return new SMSMessage(peer, text.toString());
     }
 }
 

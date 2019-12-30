@@ -15,7 +15,6 @@ import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import it.lucacrema.preferences.PreferencesManager;
@@ -157,14 +156,12 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
 
         ArrayList<PendingIntent> intents = new ArrayList<>();
         IntentFilter intentFilter = new IntentFilter();
-        ArrayList<SMSPart> parts = new ArrayList<>();
         for (String text : texts) {
-            String actionName = SENT_MESSAGE_INTENT_ACTION + addPadding(messageCounter++);
+            String actionName = SENT_MESSAGE_INTENT_ACTION + messageCounter++;
             intents.add(PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0));
             intentFilter.addAction(actionName);
-            parts.add(new SMSPart(text, actionName));
         }
-        SMSSentBroadcastReceiver onSentReceiver = new SMSSentBroadcastReceiver(parts, listener, peer);
+        SMSSentBroadcastReceiver onSentReceiver = new SMSSentBroadcastReceiver(texts, listener, peer);
         context.registerReceiver(onSentReceiver, intentFilter);
         return intents;
     }
@@ -186,14 +183,12 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
 
         ArrayList<PendingIntent> intents = new ArrayList<>();
         IntentFilter intentFilter = new IntentFilter();
-        ArrayList<SMSPart> parts = new ArrayList<>();
         for (String text : texts) {
-            String actionName = DELIVERED_MESSAGE_INTENT_ACTION + addPadding(messageCounter++);
+            String actionName = DELIVERED_MESSAGE_INTENT_ACTION + messageCounter++;
             intents.add(PendingIntent.getBroadcast(context, 0, new Intent(actionName), 0));
             intentFilter.addAction(actionName);
-            parts.add(new SMSPart(text, actionName));
         }
-        SMSDeliveredBroadcastReceiver onDeliverReceiver = new SMSDeliveredBroadcastReceiver(parts, listener, peer);
+        SMSDeliveredBroadcastReceiver onDeliverReceiver = new SMSDeliveredBroadcastReceiver(texts, listener, peer);
         context.registerReceiver(onDeliverReceiver, intentFilter);
         return intents;
     }
@@ -227,19 +222,5 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      */
     private String getSMSContent(SMSMessage message) {
         return SMSMessageHandler.getInstance().parseData(message);
-    }
-
-    /**
-     * Adds zeroes to the left of a given integer, if its String representation is shorter than 19
-     * digits (which is the maximum number of digits in a long int, in this case messageCounter).
-     * Needed to correctly compare intent action's names in SMSPart.
-     *
-     * @param i the integer to which to add padding.
-     * @return a 19 characters String containing the integer's decimal representation with padding.
-     */
-    static String addPadding(long i) {
-        final String messageCounterMaxDigits = "0000000000000000000";
-        DecimalFormat df = new DecimalFormat(messageCounterMaxDigits);
-        return df.format(i);
     }
 }

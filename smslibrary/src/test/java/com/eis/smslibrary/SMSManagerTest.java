@@ -99,18 +99,4 @@ public class SMSManagerTest {
         SMSMessage message = new SMSMessage(new SMSPeer(EMPTY_TELEPHONE_NUMBER), VALID_MESSAGE_TEXT);
         managerInstance.sendMessage(message);
     }
-
-    @Test
-    public void addPadding() {
-        int notPadded = 25;
-        String padded = "0000000000000000025";
-        assertEquals(padded, SMSManager.addPadding(notPadded));
-    }
-
-    @Test
-    public void addPadding_maxDigitsNumber() {
-        long notPadded = 4512589235566663025L;
-        String padded = "4512589235566663025";
-        assertEquals(padded, SMSManager.addPadding(notPadded));
-    }
 }
