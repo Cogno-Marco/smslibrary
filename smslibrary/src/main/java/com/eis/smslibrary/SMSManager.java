@@ -127,7 +127,10 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
                             final @Nullable SMSDeliveredListener deliveredListener,
                             Context context) throws InvalidTelephoneNumberException {
         if (message.getPeer().getInvalidityReason() != null) {
-            throw new InvalidTelephoneNumberException(message.getPeer().getInvalidityReason());
+            InvalidTelephoneNumberException.Type invReason =
+                    message.getPeer().getInvalidityReason();
+            String invMessage = message.getPeer().getInvalidityMessage();
+            throw new InvalidTelephoneNumberException(invReason, invMessage);
         }
         ArrayList<String> texts = SmsManager.getDefault().divideMessage(getSMSContent(message));
         ArrayList<PendingIntent> sentPIs =

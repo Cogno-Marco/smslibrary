@@ -40,6 +40,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
     private static String defaultRegion = Locale.getDefault().getCountry();
     private String telephoneNumber;
     private InvalidTelephoneNumberException.Type invalidityReason = null;
+    private String invalidityMessage = null;
 
     /**
      * Set the default country code used when a telephone number without prefix is given.
@@ -72,6 +73,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
         } catch (InvalidTelephoneNumberException e) {
             this.telephoneNumber = telephoneNumber;
             this.invalidityReason = e.getType();
+            this.invalidityMessage = e.getMessage();
         }
     }
 
@@ -176,6 +178,16 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      */
     public InvalidTelephoneNumberException.Type getInvalidityReason() {
         return invalidityReason;
+    }
+
+    /**
+     * Retrieves the message explaining why this peer's telephoneNumber is invalid.
+     *
+     * @return A String containing the reason of the invalidity if telephoneNumber is invalid, null
+     * if telephoneNumber is valid.
+     */
+    public String getInvalidityMessage() {
+        return invalidityMessage;
     }
 
     /**
