@@ -25,6 +25,7 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
     private final SMSDeliveredListener listener;
     private final ArrayList<SMSPart> messageParts;
     private final SMSPeer peer;
+    private short partsToDeliverCounter;
 
     /**
      * Constructor for the custom {@link BroadcastReceiver}.
@@ -39,6 +40,7 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
         this.listener = listener;
         this.messageParts = parts;
         this.peer = peer;
+        this.partsToDeliverCounter = (short) parts.size(); // they can't be more than 255
     }
 
     /**
@@ -62,19 +64,13 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
-        // if delivery of a part failed, gives to the listener its deliveredState containing the
-        // error
-        if (deliveredState != SMSMessage.DeliveredState.MESSAGE_DELIVERED) {
-            listener.onSMSDelivered(reconstructMessage(), deliveredState);
-            context.unregisterReceiver(this);
-            return;
-        }
-        // binary search on messageParts for the SMSPart associated to this intent's action
-        int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
-        if (partIndex >= 0) messageParts.get(partIndex).setReceived();
-        for (SMSPart part : messageParts) {
-            // if we're still waiting to receive intents for some parts, exit
-            if (!part.wasReceived()) return;
+        if (deliveredState == SMSMessage.DeliveredState.MESSAGE_DELIVERED) {
+            // binary search on messageParts for the SMSPart associated to this intent's action
+            int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
+            if (partIndex >= 0) {
+                partsToDeliverCounter--;
+            }
+            if (partsToDeliverCounter > 0) return;
         }
         listener.onSMSDelivered(reconstructMessage(), deliveredState);
         context.unregisterReceiver(this);

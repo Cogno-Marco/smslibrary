@@ -18,6 +18,8 @@ public class SMSMessage implements Message<String, SMSPeer> {
     /**
      * Maximum number of concatenated messages in which an SMS can be split is 255, each containing
      * no more than 153 7-bit GSM characters: 153 * 255 = 39015.
+     * See
+     * https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=747
      * https://en.wikipedia.org/wiki/Concatenated_SMS
      */
     static final int MAX_MSG_TEXT_LEN = 39015;
@@ -73,6 +75,9 @@ public class SMSMessage implements Message<String, SMSPeer> {
             for (int i = 0; i < messageText.length(); i++) {
                 String currentChar = messageText.substring(i, i + 1);
                 if (currentChar.matches(GSM_CHARACTERS_EXTENSION_REGEX)) {
+                    // characters from the GSM extension table are translated to two characters when
+                    // the message is sent: an escape character + the character from the extension
+                    // table
                     charNum += 2;
                 } else {
                     charNum++;

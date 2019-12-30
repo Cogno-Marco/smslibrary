@@ -228,8 +228,9 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
     }
 
     /**
-     * Adds zeroes to the left of a given integer, if its String representation is smaller than 19
-     * digits. Needed to correctly compare intent action's names in SMSPart.
+     * Adds zeroes to the left of a given integer, if its String representation is shorter than 19
+     * digits (which is the maximum number of digits in a long int, in this case messageCounter).
+     * Needed to correctly compare intent action's names in SMSPart.
      *
      * @param i the integer to which to add padding.
      * @return a 19 characters String containing the integer's decimal representation with padding.

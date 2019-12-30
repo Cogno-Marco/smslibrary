@@ -26,6 +26,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
     private final SMSSentListener listener;
     private final ArrayList<SMSPart> messageParts;
     private final SMSPeer peer;
+    private short partsToSendCounter;
 
     /**
      * Constructor for the custom {@link BroadcastReceiver}.
@@ -39,6 +40,7 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
         this.listener = listener;
         this.messageParts = parts;
         this.peer = peer;
+        this.partsToSendCounter = (short) parts.size(); // they can't be more than 255
     }
 
     /**
@@ -71,19 +73,13 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
-        // if sending of a part failed, gives to the listener its sentState containing the error
-        if (sentState != SMSMessage.SentState.MESSAGE_SENT) {
-            listener.onSMSSent(reconstructMessage(), sentState);
-            context.unregisterReceiver(this);
-            return;
-        }
-        // binary search on messageParts for the SMSPart associated to this intent's action
-        // SMSParts are compared on intentAction, other fields don't matter
-        int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
-        if (partIndex >= 0) messageParts.get(partIndex).setReceived();
-        for (SMSPart part : messageParts) {
-            // if we're still waiting to receive intents for some parts, exit
-            if (!part.wasReceived()) return;
+        if (sentState == SMSMessage.SentState.MESSAGE_SENT) {
+            // binary search on messageParts for the SMSPart associated to this intent's action
+            int partIndex = Collections.binarySearch(messageParts, new SMSPart(null, intent.getAction()));
+            if (partIndex >= 0) {
+                partsToSendCounter--;
+            }
+            if (partsToSendCounter > 0) return;
         }
         listener.onSMSSent(reconstructMessage(), sentState);
         context.unregisterReceiver(this);

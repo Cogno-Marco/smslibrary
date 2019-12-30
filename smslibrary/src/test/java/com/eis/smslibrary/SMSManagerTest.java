@@ -4,7 +4,6 @@ import android.telephony.SmsManager;
 
 import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -81,28 +80,24 @@ public class SMSManagerTest {
     public void sendMessage_withShortTelephoneNumber_throwsException() {
         SMSMessage message = new SMSMessage(new SMSPeer(TOO_SHORT_TELEPHONE_NUMBER), VALID_MESSAGE_TEXT);
         managerInstance.sendMessage(message);
-        Assert.fail("Should have thrown an exception");
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void sendMessage_withTooLongTelephoneNumber_throwsException() {
         SMSMessage message = new SMSMessage(new SMSPeer(TOO_LONG_TELEPHONE_NUMBER), VALID_MESSAGE_TEXT);
         managerInstance.sendMessage(message);
-        Assert.fail("Should have thrown an exception");
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void sendMessage_withNoCountryCodeTelephoneNumber_throwsException() {
         SMSMessage message = new SMSMessage(new SMSPeer(NO_COUNTRY_CODE_TELEPHONE_NUMBER), VALID_MESSAGE_TEXT);
         managerInstance.sendMessage(message);
-        Assert.fail("Should have thrown an exception");
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void sendMessage_withEmptyTelephoneNumber_throwsException() {
         SMSMessage message = new SMSMessage(new SMSPeer(EMPTY_TELEPHONE_NUMBER), VALID_MESSAGE_TEXT);
         managerInstance.sendMessage(message);
-        Assert.fail("Should have thrown an exception");
     }
 
     @Test

@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -28,13 +27,6 @@ public class SMSPartTest {
     @Test
     public void getMessage() {
         assertEquals(message, part.getMessage());
-    }
-
-    @Test
-    public void wasReceived_and_setReceived() {
-        assertFalse(part.wasReceived());
-        part.setReceived();
-        assertTrue(part.wasReceived());
     }
 
     @Test

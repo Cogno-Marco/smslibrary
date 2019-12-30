@@ -54,6 +54,9 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
             }
         }
         for (String peer : peerMessageMap.keySet()) {
+            // parseMessage() uses a MessageParseStrategy to check if the message contains a special
+            // String at the beginning of the message. If it does, then this string is removed;
+            // otherwise it returns null.
             SMSMessage parsedMessage =
                     SMSMessageHandler.getInstance().parseMessage(peer, peerMessageMap.get(peer));
             if (parsedMessage != null) callApplicationService(context, parsedMessage);
