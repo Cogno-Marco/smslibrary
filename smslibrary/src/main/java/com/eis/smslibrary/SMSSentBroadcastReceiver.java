@@ -74,8 +74,8 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
-        if (sentState == SMSMessage.SentState.MESSAGE_SENT) {
-            if (--partsToSendCounter > 0) return;
+        if (sentState == SMSMessage.SentState.MESSAGE_SENT && --partsToSendCounter > 0) {
+            return;
         }
         listener.onSMSSent(message, sentState);
         context.unregisterReceiver(this);
