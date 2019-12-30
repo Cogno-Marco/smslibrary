@@ -14,7 +14,7 @@ import java.util.Locale;
 /**
  * Implementation of {@link Peer} for SMS communication channel.
  *
- * @author Luca Crema, Marco Mariotto. Reviewed by Marco Cognolato and Mattia Fanan
+ * @author Luca Crema, Marco Mariotto, Giovanni Velludo. Reviewed by Marco Cognolato and Mattia Fanan
  * @author Matteo Carnelos
  */
 public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Serializable {
@@ -39,6 +39,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
 
     private static String defaultRegion = Locale.getDefault().getCountry();
     private String telephoneNumber;
+    private InvalidTelephoneNumberException.Type invalidityReason = null;
 
     /**
      * Set the default country code used when a telephone number without prefix is given.
@@ -48,7 +49,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * @author Matteo Carnelos
      */
     public static void setDefaultRegion(@NonNull String defaultRegion) {
-        if(!Arrays.asList(Locale.getISOCountries()).contains(defaultRegion))
+        if (!Arrays.asList(Locale.getISOCountries()).contains(defaultRegion))
             throw new IllegalArgumentException(INVALID_ISO_EXC_MSG);
         SMSPeer.defaultRegion = defaultRegion;
     }
@@ -60,25 +61,33 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * phone is moving between countries. To set a custom one use the method {@link #setDefaultRegion(String)}.
      *
      * @param telephoneNumber Address for the peer.
-     * @throws InvalidTelephoneNumberException If telephoneNumber is not valid or not parsable.
      * @author Matteo Carnelos
      */
     public SMSPeer(@NonNull String telephoneNumber) {
         // If the given number is an emulator number, skip the validity checks
-        if(adjustForEmulator(telephoneNumber)) return;
+        if (adjustForEmulator(telephoneNumber)) return;
+        try {
+            Phonenumber.PhoneNumber validTelephoneNumber = checkValidity(telephoneNumber);
+            this.telephoneNumber = formatE164(validTelephoneNumber);
+        } catch (InvalidTelephoneNumberException e) {
+            this.telephoneNumber = telephoneNumber;
+            this.invalidityReason = e.getType();
+        }
+    }
 
-        if(defaultRegion.isEmpty() && !telephoneNumber.startsWith("+"))
+    private Phonenumber.PhoneNumber checkValidity(@NonNull String telephoneNumber)
+            throws InvalidTelephoneNumberException {
+        if (defaultRegion.isEmpty() && !telephoneNumber.startsWith("+"))
             throw new InvalidTelephoneNumberException(
                     InvalidTelephoneNumberException.Type.REGION_NEEDED,
                     REGION_NEEDED_EXC_MSG);
 
         Phonenumber.PhoneNumber phoneNumber = parseNumber(telephoneNumber);
-        if(!PhoneNumberUtil.getInstance().isValidNumber(phoneNumber))
+        if (!PhoneNumberUtil.getInstance().isValidNumber(phoneNumber))
             throw new InvalidTelephoneNumberException(
                     InvalidTelephoneNumberException.Type.INVALID_NUMBER,
                     String.format(INVALID_NUMBER_EXC_MSG, telephoneNumber, defaultRegion));
-
-        this.telephoneNumber = formatE164(phoneNumber);
+        return phoneNumber;
     }
 
     /**
@@ -89,10 +98,12 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * @throws InvalidTelephoneNumberException If the given destination is not parsable.
      * @author Matteo Carnelos
      */
-    private Phonenumber.PhoneNumber parseNumber(String number) {
+    private Phonenumber.PhoneNumber parseNumber(String number)
+            throws InvalidTelephoneNumberException {
         Phonenumber.PhoneNumber phoneNumber;
-        try { phoneNumber = PhoneNumberUtil.getInstance().parse(number, defaultRegion); }
-        catch(NumberParseException e) {
+        try {
+            phoneNumber = PhoneNumberUtil.getInstance().parse(number, defaultRegion);
+        } catch (NumberParseException e) {
             throw new InvalidTelephoneNumberException(
                     InvalidTelephoneNumberException.Type.NOT_PARSABLE_NUMBER,
                     String.format(NOT_PARSABLE_EXC_MSG, number));
@@ -122,8 +133,8 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * @author Matteo Carnelos
      */
     private boolean adjustForEmulator(String address) {
-        if(address.matches(EMU_DETECTION_REGEX)) {
-            this.telephoneNumber = "+1555521555" + address.charAt(address.length()-1);
+        if (address.matches(EMU_DETECTION_REGEX)) {
+            this.telephoneNumber = "+1555521555" + address.charAt(address.length() - 1);
             return true;
         }
         return false;
@@ -131,6 +142,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
 
     /**
      * Compares this object with the specified object for order.
+     *
      * @param o The object to be compared.
      * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
      */
@@ -141,6 +153,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
 
     /**
      * Retrieves the peer's address.
+     *
      * @return Peer's address.
      */
     @Override
@@ -149,13 +162,24 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
     }
 
     /**
+     * Retrieves the reason why this peer's telephoneNumber is invalid.
+     *
+     * @return An InvalidTelephoneNumberException.Type containing the reason of the invalidity if
+     * telephoneNumber is invalid, null if telephoneNumber is valid.
+     */
+    public InvalidTelephoneNumberException.Type getInvalidityReason() {
+        return invalidityReason;
+    }
+
+    /**
      * Indicates whether some other object is "equal to" this one
+     *
      * @param o The reference object with which to compare.
      * @return True if this object is the same as the obj argument; false otherwise.
      */
     @Override
     public boolean equals(Object o) {
-        if(this == o)
+        if (this == o)
             return true;
         if (!(o instanceof SMSPeer))
             return false;
@@ -178,7 +202,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * @return A string representation of the peer
      */
     @NonNull
-    public String toString(){
+    public String toString() {
         return telephoneNumber;
     }
 }
