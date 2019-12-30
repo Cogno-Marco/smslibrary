@@ -74,10 +74,11 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
      */
     private void callApplicationService(Context context, SMSMessage message) {
         Class<?> listener = null;
+        String preferencesClassName = PreferencesManager.getString(context, SERVICE_CLASS_PREFERENCES_KEY);
         try {
-            listener = Class.forName(PreferencesManager.getString(context, SERVICE_CLASS_PREFERENCES_KEY));
+            listener = Class.forName(preferencesClassName);
         } catch (ClassNotFoundException e) {
-            Log.e("SMSReceiver", "Service class to wake up could not be found");
+            Log.e("SMSReceiver", "Service class to wake up could not be found: " + preferencesClassName);
         }
         if (listener == null)
             return;
