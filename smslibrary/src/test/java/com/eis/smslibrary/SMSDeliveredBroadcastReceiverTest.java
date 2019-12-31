@@ -9,12 +9,16 @@ import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+/**
+ * @author Marco Cognolato
+ */
 public class SMSDeliveredBroadcastReceiverTest {
     private SMSDeliveredBroadcastReceiver receiver;
     private SMSDeliveredListener listenerMock = mock(SMSDeliveredListener.class);
@@ -24,18 +28,23 @@ public class SMSDeliveredBroadcastReceiverTest {
     private final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, VALID_TEXT);
 
     @Before
-    public void setup(){
+    public void setup() {
         receiver = spy(new SMSDeliveredBroadcastReceiver(VALID_MESSAGE, listenerMock));
     }
 
     @Test
-    public void constructor_doesntThrow(){
-        new SMSDeliveredBroadcastReceiver(VALID_MESSAGE, listenerMock);
+    public void constructor_doesntThrow() {
+        try {
+            new SMSDeliveredBroadcastReceiver(VALID_MESSAGE, listenerMock);
+            //Success
+        } catch (Exception e) {
+            fail();
+        }
     }
 
     @Test
-    public void receive_success_correctListener(){
-        doReturn(Activity.RESULT_OK).when((BroadcastReceiver)receiver).getResultCode();
+    public void receive_success_correctListener() {
+        doReturn(Activity.RESULT_OK).when((BroadcastReceiver) receiver).getResultCode();
         receiver.onReceive(contextMock, null);
         verify(listenerMock, times(1))
                 .onSMSDelivered(VALID_MESSAGE, SMSMessage.DeliveredState.MESSAGE_DELIVERED);
@@ -43,9 +52,9 @@ public class SMSDeliveredBroadcastReceiverTest {
     }
 
     @Test
-    public void receive_radioOff_correctListener(){
+    public void receive_radioOff_correctListener() {
         doReturn(Activity.RESULT_CANCELED)
-                .when((BroadcastReceiver)receiver).getResultCode();
+                .when((BroadcastReceiver) receiver).getResultCode();
         receiver.onReceive(contextMock, null);
         verify(listenerMock, times(1))
                 .onSMSDelivered(VALID_MESSAGE, SMSMessage.DeliveredState.DELIVERY_ERROR);
@@ -53,9 +62,9 @@ public class SMSDeliveredBroadcastReceiverTest {
     }
 
     @Test
-    public void receive_nullPdu_correctListener(){
+    public void receive_nullPdu_correctListener() {
         doReturn(666)
-                .when((BroadcastReceiver)receiver).getResultCode();
+                .when((BroadcastReceiver) receiver).getResultCode();
         receiver.onReceive(contextMock, null);
         verify(listenerMock, times(1))
                 .onSMSDelivered(VALID_MESSAGE, SMSMessage.DeliveredState.ERROR_GENERIC_FAILURE);

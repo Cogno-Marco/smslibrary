@@ -5,7 +5,6 @@ import android.telephony.SmsManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -31,7 +30,7 @@ public class SMSManagerTest {
     private final String SENT_TEXT = (char) 0x02 + MESSAGE_TEXT;
     private final SMSPeer VALID_PEER = new SMSPeer(PEER_TEXT);
     private final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, MESSAGE_TEXT);
-    private SMSManager instance = SMSManager.getInstance();
+    private SMSManager smsManager = SMSManager.getInstance();
 
     @Before
     public void setup(){
@@ -46,12 +45,12 @@ public class SMSManagerTest {
 
     @Test()
     public void validMessage_isSent() {
-        instance.sendMessage(VALID_MESSAGE);
+        smsManager.sendMessage(VALID_MESSAGE);
         verify(managerMock).sendTextMessage(PEER_TEXT, null, SENT_TEXT, null, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void nullMessage_throws() {
-        instance.sendMessage(null);
+        smsManager.sendMessage(null);
     }
 }
