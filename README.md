@@ -19,7 +19,7 @@ In the single module `build.gradle` add:
 ```java
 dependencies {
     ...
-    implementation 'com.github.Cogno-IDU:smslibrary:v-1.0'
+    implementation 'com.github.Cogno-IDU:smslibrary:v2.1'
 }
 ```
 ## Usage
@@ -65,7 +65,7 @@ SMSManager.getInstance().sendMessage(msg, new SMSSentListener() {
 ```
 If you are planning to use SMS delivery reports, you can have a callback for those too:
 ```java
-SMSHandler.getInstance().sendMessage(msg, new SMSDeliveredListener() {
+SMSManager.getInstance().sendMessage(msg, new SMSDeliveredListener() {
     @Override
     public void onSMSDelivered(SMSMessage message, SMSMessage.DeliveredState deliveredState) {
         // Do something
@@ -79,8 +79,16 @@ In order to register the application to be called on message reception you have
  to register a custom listener service that extends `SMSReceivedServiceListener`.
  To do so you have to receive a class (not an instance):
  ```java
- SMSHandler.getInstance().setReceivedListener(MyCustomReceiver.class);
+ SMSManager.getInstance().setReceivedListener(MyCustomReceiver.class);
  ```
+ This service must be registered in the manifest inside the `<application>` tags like this:
+ ```java
+ <service
+            android:name=".MyCustomReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+```
  When a message arrives the overridden method `onMessageReceived` will be called.
  
 ### Using your own message format

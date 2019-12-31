@@ -5,14 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.eis.communication.CommunicationManager;
 import com.eis.smslibrary.listeners.SMSDeliveredListener;
 import com.eis.smslibrary.listeners.SMSReceivedServiceListener;
 import com.eis.smslibrary.listeners.SMSSentListener;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import it.lucacrema.preferences.PreferencesManager;
 
 /**
@@ -171,7 +170,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @param context                   the context used to set the listener
      */
     public <T extends SMSReceivedServiceListener> void setReceivedListener(Class<T> receivedListenerClassName, Context context) {
-        PreferencesManager.setString(context, SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.toString());
+        PreferencesManager.setString(context, SMSReceivedBroadcastReceiver.SERVICE_CLASS_PREFERENCES_KEY, receivedListenerClassName.getName());
     }
 
     /**
