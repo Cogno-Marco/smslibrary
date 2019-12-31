@@ -26,6 +26,8 @@ import android.os.Build;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
+import androidx.core.app.JobIntentService;
+
 import it.lucacrema.preferences.PreferencesManager;
 
 /**
@@ -39,6 +41,7 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
     public static final String TAG = "SMSReceivedReceiver";
     public static final String INTENT_MESSAGE_TAG = "SMSMessage";
     public static final String SERVICE_CLASS_PREFERENCES_KEY = "ApplicationServiceClass";
+    private static final int SCHEDULING_JOB_ID = 420;
 
     /**
      * Parses message and calls listener
@@ -144,16 +147,17 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
      */
     private void callApplicationService(Context context, SMSMessage message) {
         Class<?> listener = null;
+        String preferencesClassName = PreferencesManager.getString(context, SERVICE_CLASS_PREFERENCES_KEY);
         try {
-            listener = Class.forName(PreferencesManager.getString(context, SERVICE_CLASS_PREFERENCES_KEY));
+            listener = Class.forName(preferencesClassName);
         } catch (ClassNotFoundException e) {
-            Log.e("SMSReceiver", "Service class to wake up could not be found");
+            Log.e("SMSReceiver", "Service class to wake up could not be found: " + preferencesClassName);
         }
         if (listener == null)
             return;
 
-        Intent serviceIntent = new Intent(context, listener);
+        Intent serviceIntent = new Intent();
         serviceIntent.putExtra(INTENT_MESSAGE_TAG, message);
-        context.startService(serviceIntent);
+        JobIntentService.enqueueWork(context, listener, SCHEDULING_JOB_ID, serviceIntent);
     }
 }
