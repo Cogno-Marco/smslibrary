@@ -73,7 +73,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * Requires {@link android.Manifest.permission#SEND_SMS}
      *
      * @param message to be sent in the channel to a peer
-     * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
+     * @throws InvalidTelephoneNumberException If message.peer.invalidityReason is not null.
      */
     @Override
     public void sendMessage(final @NonNull SMSMessage message)
@@ -88,7 +88,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @param message      to be sent in the channel to a peer
      * @param sentListener called on message sent or on error, can be null
      * @param context      The context of the application used to setup the listener
-     * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
+     * @throws InvalidTelephoneNumberException If message.peer.invalidityReason is not null.
      */
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSSentListener sentListener,
@@ -103,7 +103,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @param message           to be sent in the channel to a peer
      * @param deliveredListener called on message delivered or on error, can be null
      * @param context           The context of the application used to setup the listener
-     * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
+     * @throws InvalidTelephoneNumberException If message.peer.invalidityReason is not null.
      */
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSDeliveredListener deliveredListener,
@@ -119,7 +119,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @param sentListener      called on message sent or on error, can be null
      * @param deliveredListener called on message delivered or on error, can be null
      * @param context           The context of the application used to setup the listener
-     * @throws InvalidTelephoneNumberException If message.peer.state is not TELEPHONE_NUMBER_VALID.
+     * @throws InvalidTelephoneNumberException If message.peer.invalidityReason is not null.
      */
     public void sendMessage(final @NonNull SMSMessage message,
                             final @Nullable SMSSentListener sentListener,
