@@ -95,7 +95,7 @@ public class SMSSentBroadcastReceiverTest {
 
     @Test
     public void receive_genericFailure_correctListener() {
-        doReturn(666)
+        doReturn(666) //an int targeting the default case
                 .when((BroadcastReceiver) receiver).getResultCode();
         receiver.onReceive(contextMock, null);
         verify(listenerMock, times(1))

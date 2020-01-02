@@ -17,7 +17,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 /**
  * Class used to test SMSManager using Mocks
  *
- * @author Marco Cognolato
+ * @author Marco Cognolato, Giovanni Velludo
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SmsManager.class)
