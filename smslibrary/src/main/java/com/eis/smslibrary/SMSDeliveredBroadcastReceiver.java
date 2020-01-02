@@ -66,9 +66,7 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
         }
 
         if (deliveredState == SMSMessage.DeliveredState.MESSAGE_DELIVERED &&
-                --partsToDeliverCounter > 0) {
-            return;
-        }
+                --partsToDeliverCounter > 0) return;
         listener.onSMSDelivered(message, deliveredState);
         context.unregisterReceiver(this);
     }
