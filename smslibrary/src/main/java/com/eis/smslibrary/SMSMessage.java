@@ -5,19 +5,29 @@ import androidx.annotation.NonNull;
 import com.eis.communication.Message;
 import com.eis.smslibrary.exceptions.InvalidSMSMessageException;
 
+import java.util.Objects;
+
 /**
  * Representation of a single sms message
  * This class does NOT parse SMSMessages into sms-ready strings and back!
  *
- * @author Luca Crema, Marco Mariotto, Alberto Ursino
+ * @author Luca Crema, Marco Mariotto, Alberto Ursino, Giovanni Velludo
  */
 public class SMSMessage implements Message<String, SMSPeer> {
 
     /**
-     * Kind of a magic number, should be around 160 but doesn't work all the times.
-     * (suggestions accepted)
+     * Maximum number of concatenated messages in which an SMS can be split is 255, each containing
+     * no more than 153 7-bit GSM characters: 153 * 255 = 39015.
+     * See
+     * https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=747
+     * https://en.wikipedia.org/wiki/Concatenated_SMS
      */
-    public static final int MAX_MSG_TEXT_LEN = 155;
+    static final int MAX_MSG_TEXT_LEN = 39015;
+    static final int MAX_UCS2_MSG_TEXT_LEN = (MAX_MSG_TEXT_LEN * 7) / 16;
+    // these regex can be used both on single characters and entire strings
+    private static final String GSM_CHARACTERS_STRING_REGEX = "^[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà]*$";
+    private static final String GSM_CHARACTERS_EXTENSION_STRING_REGEX = "^[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà\\f^{}\\\\\\[~\\]|€]*$";
+    private static final String GSM_CHARACTERS_EXTENSION_REGEX = "[\\f^{}\\\\\\[~\\]|€]";
     private String messageContent;
     private SMSPeer peer;
 
@@ -38,16 +48,46 @@ public class SMSMessage implements Message<String, SMSPeer> {
     }
 
     /**
-     * Checks if the message content could be valid.
+     * Checks if the message content is valid.
      *
      * @param messageText to be checked.
-     * @return The state of the message after the validity tests.
+     * @return The state of the message after validity tests.
      */
-    public static ContentState checkMessageText(@NonNull String messageText) {
-        if (messageText.length() > SMSMessage.MAX_MSG_TEXT_LEN) {
-            return ContentState.MESSAGE_TEXT_TOO_LONG;
+    static ContentState checkMessageText(@NonNull String messageText) {
+        /* Since applications using this library will probably try to avoid wasting characters,
+         * they'll mostly stick to using the regular GSM character set, so we perform pattern
+         * matching on the whole message first, to avoid multiple checks on single characters
+         * when not necessary.
+         */
+        if (messageText.matches(GSM_CHARACTERS_STRING_REGEX)) {
+            // messageText contains only GSM characters
+            if (messageText.length() <= MAX_MSG_TEXT_LEN) {
+                return ContentState.MESSAGE_TEXT_VALID;
+            }
+        } else if (!messageText.matches(GSM_CHARACTERS_EXTENSION_STRING_REGEX)) {
+            // messageText contains Unicode characters
+            if (messageText.length() <= MAX_UCS2_MSG_TEXT_LEN) {
+                return ContentState.MESSAGE_TEXT_VALID;
+            }
+        } else {
+            // messageText contains only chars from both the GSM charset and its extension table
+            int charNum = 0;
+            for (int i = 0; i < messageText.length(); i++) {
+                String currentChar = messageText.substring(i, i + 1);
+                if (currentChar.matches(GSM_CHARACTERS_EXTENSION_REGEX)) {
+                    // characters from the GSM extension table are translated to two characters when
+                    // the message is sent: an escape character + the character from the extension
+                    // table
+                    charNum += 2;
+                } else {
+                    charNum++;
+                }
+            }
+            if (charNum <= MAX_MSG_TEXT_LEN) {
+                return ContentState.MESSAGE_TEXT_VALID;
+            }
         }
-        return ContentState.MESSAGE_TEXT_VALID;
+        return ContentState.MESSAGE_TEXT_TOO_LONG;
     }
 
     /**
@@ -68,6 +108,32 @@ public class SMSMessage implements Message<String, SMSPeer> {
     @Override
     public SMSPeer getPeer() {
         return peer;
+    }
+
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     *
+     * @param o the reference object with which to compare.
+     * @return {@code true} if this object is the same as the o argument; {@code false} otherwise.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SMSMessage that = (SMSMessage) o;
+        return messageContent.equals(that.messageContent) &&
+                peer.equals(that.peer);
+    }
+
+    /**
+     * Returns a hash code value for the object. This method is supported for the benefit of hash
+     * tables such as those provided by {@link java.util.HashMap}.
+     *
+     * @return a hash code value for this object.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(messageContent, peer);
     }
 
     /**
@@ -103,7 +169,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      * These are given by Android library as an int, they have been put in an enum so
      * that one can see al the possible values without having to look
      * at the official Android documentation
-     *
+     * <p>
      * These are used in {@link com.eis.smslibrary.listeners.SMSDeliveredListener}
      */
     public enum DeliveredState {

@@ -11,7 +11,7 @@ import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
  * Uses a strategy to parse messages, so that any user can update it to its preferred parser
  * By defaults it uses a default strategy, defined by the library
  *
- * @author Luca Crema, Alberto Ursino, Marco Mariotto
+ * @author Luca Crema, Alberto Ursino, Marco Mariotto, Giovanni Velludo
  */
 public class SMSMessageHandler implements MessageHandler<String, String, SMSMessage> {
 
@@ -21,24 +21,25 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
     /**
      * Private constructor
      */
-    private SMSMessageHandler(){
+    private SMSMessageHandler() {
         parseStrategy = new DefaultSMSMessageParseStrategy();
     }
 
     /**
      * @return Singleton instance of this class
      */
-    public static SMSMessageHandler getInstance(){
-        if(instance == null)
+    public static SMSMessageHandler getInstance() {
+        if (instance == null)
             instance = new SMSMessageHandler();
         return instance;
     }
 
     /**
      * Update the parse strategy to a custom one
+     *
      * @param parseStrategy custom message parsing
      */
-    public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String,SMSPeer,SMSMessage> parseStrategy){
+    public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String, SMSPeer, SMSMessage> parseStrategy) {
         this.parseStrategy = parseStrategy;
     }
 
@@ -64,22 +65,23 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
      * @param message to be translated/parsed
      * @return the string to send
      */
-    public String parseData(@NonNull final SMSMessage message){
+    public String parseData(@NonNull final SMSMessage message) {
         return parseStrategy.parseData(message);
     }
 
-    public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage>{
+    public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage> {
 
-        protected static final String HIDDEN_CHARACTER = (char) 0x02 + "";
+        static final String HIDDEN_CHARACTER = "\r";
 
         /**
          * Parses sms data into a SMSMessage if possible
+         *
          * @param channelData read from the channel
          * @param channelPeer that sent the data
          * @return the parsed SMSMessage if the string was correct, null otherwise
          */
         @Override
-        public SMSMessage parseMessage(@NonNull final String channelData,@NonNull final SMSPeer channelPeer) {
+        public SMSMessage parseMessage(@NonNull final String channelData, @NonNull final SMSPeer channelPeer) {
             //First character of the content must be the hidden char
             if (!channelData.startsWith(HIDDEN_CHARACTER))
                 return null;
@@ -89,6 +91,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
 
         /**
          * Parses SMSMessage into sms content data
+         *
          * @param message from library
          * @return the parsed sms content data ready to be sent
          */
