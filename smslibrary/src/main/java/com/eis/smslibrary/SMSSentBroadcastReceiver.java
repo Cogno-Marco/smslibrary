@@ -10,28 +10,38 @@ import androidx.annotation.NonNull;
 
 import com.eis.smslibrary.listeners.SMSSentListener;
 
+import java.util.ArrayList;
+
 /**
  * Broadcast receiver for sent messages, called by Android Library.
  * Must be instantiated and set as receiver with context.registerReceiver(...).
  * There has to be one different SentBroadcastReceiver per message sent,
  * so every IntentFilter name has to be different
  *
- * @author Luca Crema, Marco Mariotto
+ * @author Luca Crema, Marco Mariotto, Giovanni Velludo
  */
 public class SMSSentBroadcastReceiver extends BroadcastReceiver {
 
-    private SMSSentListener listener;
-    private SMSMessage message;
+    private final SMSSentListener listener;
+    private final SMSMessage message;
+    private short partsToSendCounter;
 
     /**
      * Constructor for the custom {@link BroadcastReceiver}.
      *
-     * @param message  that will be sent.
-     * @param listener to be called when the operation is completed.
+     * @param parts    the parts of the message that will be sent.
+     * @param listener the listener to be called when the operation is completed.
+     * @param peer     the peer to whom the message will be sent.
      */
-    SMSSentBroadcastReceiver(@NonNull final SMSMessage message, @NonNull final SMSSentListener listener) {
+    SMSSentBroadcastReceiver(@NonNull final ArrayList<String> parts,
+                             @NonNull final SMSSentListener listener, @NonNull final SMSPeer peer) {
+        StringBuilder fullMessageText = new StringBuilder();
+        for (String part : parts) {
+            fullMessageText.append(part);
+        }
         this.listener = listener;
-        this.message = message;
+        this.message = new SMSMessage(peer, fullMessageText.toString());
+        this.partsToSendCounter = (short) parts.size(); // they can't be more than 255
     }
 
     /**
@@ -64,9 +74,9 @@ public class SMSSentBroadcastReceiver extends BroadcastReceiver {
                 break;
         }
 
-        if (listener != null) //extra check, even though listener should never be null
-            listener.onSMSSent(message, sentState);
-
+        if (sentState == SMSMessage.SentState.MESSAGE_SENT && --partsToSendCounter > 0) return;
+        listener.onSMSSent(message, sentState);
         context.unregisterReceiver(this);
     }
 }
+

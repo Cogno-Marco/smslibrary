@@ -16,8 +16,6 @@ import java.util.ArrayList;
  */
 final class SMSCore {
 
-    static SmsManager manager;
-
     /**
      * Calls the library method to send a single message
      *
