@@ -10,6 +10,8 @@ import com.eis.smslibrary.listeners.SMSSentListener;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -27,17 +29,19 @@ public class SMSSentBroadcastReceiverTest {
     private Context contextMock = mock(Context.class);
     private final SMSPeer VALID_PEER = new SMSPeer("+393423541601");
     private final String VALID_TEXT = "Some random text to send";
+    private final ArrayList<String> MESSAGE_TO_SEND = new ArrayList<>();
     private final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, VALID_TEXT);
 
     @Before
     public void setup() {
-        receiver = spy(new SMSSentBroadcastReceiver(VALID_MESSAGE, listenerMock));
+        MESSAGE_TO_SEND.add(VALID_TEXT);
+        receiver = spy(new SMSSentBroadcastReceiver(MESSAGE_TO_SEND, listenerMock, VALID_PEER));
     }
 
     @Test
     public void constructor_doesntThrow() {
         try {
-            new SMSSentBroadcastReceiver(VALID_MESSAGE, listenerMock);
+            new SMSSentBroadcastReceiver(MESSAGE_TO_SEND, listenerMock, VALID_PEER);
             //Success
         } catch (Exception e) {
             fail();
