@@ -52,11 +52,11 @@ public class SMSReceivedBroadcastReceiver extends BroadcastReceiver {
         if (pdus == null) return;
         String phoneNumber = pdus[0].getDisplayOriginatingAddress();
         String messageBody = buildMessageBodyFromPdus(pdus);
-        // parseMessage() uses a MessageParseStrategy to check if the message contains a special
+        // parseData() uses a MessageParsingStrategy to check if the message contains a special
         // String at the beginning of the message. If it does, then this string is removed;
         // otherwise it returns null.
         SMSMessage parsedMessage =
-                SMSMessageHandler.getInstance().parseMessage(phoneNumber, messageBody);
+                SMSMessageHandler.getInstance(null).parseData(phoneNumber, messageBody);
         if (parsedMessage != null) callApplicationService(context, parsedMessage);
     }
 

@@ -17,7 +17,7 @@ public interface MessageHandler<D,P,M extends Message> {
      * @param data from the communication channel
      * @return the message if the data has been parsed correctly, null otherwise
      */
-    M parseMessage(P peerData, D data);
+    M parseData(P peerData, D data);
 
     /**
      * Translates a message into data that can be sent via communication channel
@@ -25,5 +25,5 @@ public interface MessageHandler<D,P,M extends Message> {
      * @param message to be translated
      * @return the data to send
      */
-    D parseData (M message);
+    D parseMessage(M message);
 }
