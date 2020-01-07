@@ -37,10 +37,15 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
      * The strategy must be set before calling any other methods from classes in
      * {@link com.eis.smslibrary}, otherwise {@link DefaultSMSMessageParsingStrategy} will be used
      * and there will be no way to change it.
+     * It's possible to set a custom {@link MessageParsingStrategy} only the first time this method
+     * is called. Passing a {@link MessageParsingStrategy} in calls made after the first one won't
+     * replace the strategy that was set the first time.
      *
      * @param parseStrategy the {@link MessageParsingStrategy} to use. If {@code null}, the
      *                      {@link DefaultSMSMessageParsingStrategy} will be used, unless this
      *                      method was already called and passed a {@link MessageParsingStrategy}.
+     *                      Passing a {@link MessageParsingStrategy} in calls made after the first
+     *                      one won't replace the strategy that was set the first time.
      * @return Singleton instance of this class.
      */
     public static SMSMessageHandler getInstance(@Nullable final MessageParsingStrategy<String, SMSPeer, SMSMessage> parseStrategy) {

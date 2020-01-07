@@ -12,8 +12,9 @@ import org.junit.Test;
 public class SMSMessageTest {
 
     private SMSMessage smsMessage;
-    private static final int MAX_MSG_TEXT_LEN = SMSMessage.MAX_MSG_TEXT_LEN;
-    private static final int MAX_UCS2_MSG_TEXT_LEN = SMSMessage.MAX_UCS2_MSG_TEXT_LEN;
+    private static final int HIDDEN_CHAR_LEN = SMSMessageHandler.DefaultSMSMessageParsingStrategy.HIDDEN_CHARACTER.length();
+    private static final int MAX_MSG_TEXT_LEN = SMSMessage.MAX_MSG_TEXT_LEN - HIDDEN_CHAR_LEN;
+    private static final int MAX_UCS2_MSG_TEXT_LEN = SMSMessage.MAX_UCS2_MSG_TEXT_LEN - HIDDEN_CHAR_LEN;
 
     private static final String VALID_TEXT_MESSAGE = "Test message";
     private static final String TOO_LONG_TEXT_MESSAGE = new String(new char[MAX_MSG_TEXT_LEN * 2]).replace('\0', ' ');
