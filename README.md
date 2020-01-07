@@ -38,9 +38,9 @@ sent from another source. You can override this way of differentiating SMSs by p
 ```java
 SMSMessageHandler.getInstance(customStrategy);
 ```
-This must be done before using any other constructors or methods from the library. If this is not
-done, or if the argument of `getInstance()` is `null`, `DefaultSMSMessageParsingStrategy` will be
-used.
+This can be done only once, and before using any other constructors or methods from the library.
+If this is not done at the beginning, or if the argument of `getInstance()` is `null`,
+`DefaultSMSMessageParsingStrategy` will be used.
 
 ### Creating a new message
 When you want to send a message you should create it first to make sure it's valid:
