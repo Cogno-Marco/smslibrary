@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import it.lucacrema.preferences.PreferencesManager;
 
 /**
- * Communication handler for SMSs. It's a Singleton, you should
- * access it with {@link #getInstance}
+ * Communication handler for SMSs. It's a Singleton, you should access it with
+ * {@link SMSManager#getInstance(Context)}. When the application component using this class is
+ * destroyed, you must call {@link SMSManager#onDestroy(Context)}.
  *
  * @author Luca Crema, Marco Mariotto, Alberto Ursino, Marco Tommasini, Marco Cognolato, Giovanni Velludo
  * @since 29/11/2019
@@ -31,7 +32,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
     public static final String DELIVERED_MESSAGE_INTENT_ACTION = "SMS_DELIVERED";
-    public static final int RANDOM_STARTING_COUNTER_VALUE_RANGE = 100000;
+    private static final String MESSAGECOUNTER_KEY = "SMSManager.messageCounter";
 
     /**
      * Singleton instance
@@ -47,24 +48,30 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * This message counter is used so that we can have a different action name
      * for pending intent (that will call broadcastReceiver). If we were to use the
      * same action name for every message we would have a conflict and we wouldn't
-     * know what message has been sent
+     * know what message has been sent. Its default value is -1.
      */
     private long messageCounter;
 
     /**
-     * Private constructor for Singleton
+     * Private constructor for the Singleton.
+     *
+     * @param context The context of the application requesting an instance of this class.
      */
-    private SMSManager() {
-        //Random because if we close and open the app the value probably differs
-        messageCounter = (int) (Math.random() * RANDOM_STARTING_COUNTER_VALUE_RANGE);
+    private SMSManager(Context context) {
+        messageCounter = PreferencesManager.getLong(context, MESSAGECOUNTER_KEY);
     }
 
     /**
-     * @return the current instance of this class
+     * Gets the only instance of SMSManager.
+     *
+     * @param context The context of the application component requesting an instance of SMSManager.
+     *                It will be used only the first time this method is called.
+     * @return The only instance of this class.
      */
-    public static SMSManager getInstance() {
-        if (instance == null)
-            instance = new SMSManager();
+    public static SMSManager getInstance(Context context) {
+        if (instance == null) {
+            instance = new SMSManager(context.getApplicationContext());
+        }
         return instance;
     }
 
@@ -222,5 +229,14 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      */
     private String getSMSContent(SMSMessage message) {
         return SMSMessageHandler.getInstance().parseData(message);
+    }
+
+    /**
+     * Method to be called when the application component using this class is destroyed.
+     *
+     * @param context The context of the application component using this class.
+     */
+    private void onDestroy(Context context) {
+        PreferencesManager.setLong(context.getApplicationContext(), MESSAGECOUNTER_KEY, messageCounter);
     }
 }
