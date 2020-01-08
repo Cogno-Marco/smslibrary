@@ -31,6 +31,11 @@ In order to send and receive SMSs you need to be granted two permissions. From A
 requestPermissions(new String[]{Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS}, SMS_PERMISSIONS_CUSTOM_CODE);
 ```
 
+### Cleanup
+When Activities or Services using `SMSManager` are destroyed, you must call
+`SMSManager.onDestroy(Context)`, otherwise sent and delivery confirmation of SMS you sent might not
+work properly.
+
 ### Creating a new message
 When you want to send a message you should create it first to make sure it's valid:
 ```java
@@ -52,11 +57,11 @@ try {
 ### Sending a message
 When the message is created you are ready to send it with:
 ```java
-SMSManager.getInstance().sendMessage(msg);
+SMSManager.getInstance(context).sendMessage(msg);
 ```
 If you need a callback to know if the message has been sent or not you can use:
 ```java
-SMSManager.getInstance().sendMessage(msg, new SMSSentListener() {
+SMSManager.getInstance(context).sendMessage(msg, new SMSSentListener() {
     @Override
     public void onSMSSent(SMSMessage message, SMSMessage.SentState sentState) {
         // Do something
@@ -65,7 +70,7 @@ SMSManager.getInstance().sendMessage(msg, new SMSSentListener() {
 ```
 If you are planning to use SMS delivery reports, you can have a callback for those too:
 ```java
-SMSManager.getInstance().sendMessage(msg, new SMSDeliveredListener() {
+SMSManager.getInstance(context).sendMessage(msg, new SMSDeliveredListener() {
     @Override
     public void onSMSDelivered(SMSMessage message, SMSMessage.DeliveredState deliveredState) {
         // Do something
@@ -79,7 +84,7 @@ In order to register the application to be called on message reception you have
  to register a custom listener service that extends `SMSReceivedServiceListener`.
  To do so you have to receive a class (not an instance):
  ```java
- SMSManager.getInstance().setReceivedListener(MyCustomReceiver.class);
+ SMSManager.getInstance(context).setReceivedListener(MyCustomReceiver.class);
  ```
  This service must be registered in the manifest inside the `<application>` tags like this:
  ```java
