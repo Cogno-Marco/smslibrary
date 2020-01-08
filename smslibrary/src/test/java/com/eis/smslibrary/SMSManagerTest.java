@@ -1,9 +1,11 @@
 package com.eis.smslibrary;
 
+import android.content.Context;
 import android.telephony.SmsManager;
 
 import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -14,8 +16,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 
+import it.lucacrema.preferences.PreferencesManager;
+
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -27,7 +33,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @author Marco Cognolato, Giovanni Velludo
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest(SmsManager.class)
+@PrepareForTest({SmsManager.class, PreferencesManager.class})
 public class SMSManagerTest {
 
     @Captor
@@ -40,15 +46,22 @@ public class SMSManagerTest {
     private final String VALID_MESSAGE_TEXT = "valid text";
     private final SMSPeer VALID_PEER = new SMSPeer(VALID_PEER_NUMBER);
     private final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, VALID_MESSAGE_TEXT);
-    private final SMSManager managerInstance = SMSManager.getInstance();
+    private SMSManager managerInstance;
     private static final String EMPTY_TELEPHONE_NUMBER = "";
     private static final String TOO_SHORT_TELEPHONE_NUMBER = "+39";
     private static final String TOO_LONG_TELEPHONE_NUMBER = "+39111111111111111111";
     private static final String NO_COUNTRY_CODE_TELEPHONE_NUMBER = "1111111111";
 
+    @Before
+    public void setup() {
+        PowerMockito.mockStatic(PreferencesManager.class);
+        when(PreferencesManager.getLong(any(Context.class), eq(SMSManager.MESSAGECOUNTER_KEY))).thenReturn(-1L);
+        managerInstance = SMSManager.getInstance(mock(Context.class));
+    }
+
     @Test
     public void singletonInstance() {
-        assertEquals(SMSManager.getInstance(), SMSManager.getInstance());
+        assertEquals(SMSManager.getInstance(mock(Context.class)), SMSManager.getInstance(mock(Context.class)));
     }
 
     @Test()

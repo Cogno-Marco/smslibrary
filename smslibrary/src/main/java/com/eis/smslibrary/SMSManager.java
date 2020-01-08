@@ -32,7 +32,7 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
 
     public static final String SENT_MESSAGE_INTENT_ACTION = "SMS_SENT";
     public static final String DELIVERED_MESSAGE_INTENT_ACTION = "SMS_DELIVERED";
-    private static final String MESSAGECOUNTER_KEY = "SMSManager.messageCounter";
+    static final String MESSAGECOUNTER_KEY = "SMSManager.messageCounter";
 
     /**
      * Singleton instance
