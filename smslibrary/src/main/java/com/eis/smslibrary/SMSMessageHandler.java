@@ -72,7 +72,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
 
     public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage> {
 
-        static final String SIGNATURE = " ";
+        static final String HIDDEN_CHARACTER = " ";
 
         /**
          * Parses sms data into a SMSMessage if possible
@@ -84,7 +84,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
         @Override
         public SMSMessage parseMessage(@NonNull final String channelData, @NonNull final SMSPeer channelPeer) {
             //First character of the content must be the hidden char
-            if (!channelData.startsWith(SIGNATURE))
+            if (!channelData.startsWith(HIDDEN_CHARACTER))
                 return null;
             String messageData = channelData.substring(1);
             return new SMSMessage(channelPeer, messageData);
@@ -98,7 +98,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
          */
         @Override
         public String parseData(@NonNull final SMSMessage message) {
-            return SIGNATURE + message.getData();
+            return HIDDEN_CHARACTER + message.getData();
         }
     }
 
