@@ -72,7 +72,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
 
     public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage> {
 
-        static final String SIGNATURE = "_by smslib_\n";
+        static final String SIGNATURE = " ";
 
         /**
          * Parses sms data into a SMSMessage if possible
