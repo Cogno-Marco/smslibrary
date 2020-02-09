@@ -57,7 +57,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
                                    @NonNull final String messageData) {
         try {
             SMSPeer peer = new SMSPeer(peerData);
-            return parseStrategy.parseMessage(peer, messageData);
+            return parseStrategy.parseMessage(messageData, peer);
         } catch (InvalidTelephoneNumberException | IllegalArgumentException e) {
             return null;
         }
@@ -86,8 +86,8 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
          * @return the parsed SMSMessage if the string was correct, null otherwise
          */
         @Override
-        public SMSMessage parseMessage(@NonNull final SMSPeer channelPeer,
-                                       @NonNull final String channelData) {
+        public SMSMessage parseMessage(@NonNull final String channelData,
+                                       @NonNull final SMSPeer channelPeer) {
             //First character of the content must be the hidden char
             if (!channelData.startsWith(HIDDEN_CHARACTER))
                 return null;
