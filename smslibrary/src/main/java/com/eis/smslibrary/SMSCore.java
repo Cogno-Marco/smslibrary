@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * Wrapper for the {@link android.telephony} library.
  * This class is only used to interface with the core sms library of Android.
  *
- * @author Luca Crema
+ * @author Luca Crema, Marco Cognolato, Giovanni Velludo
  */
 final class SMSCore {
 

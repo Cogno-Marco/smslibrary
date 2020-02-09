@@ -4,13 +4,14 @@ import androidx.annotation.NonNull;
 
 import com.eis.communication.MessageHandler;
 import com.eis.communication.MessageParseStrategy;
+import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
 
 /**
  * Singleton class used to parse String to SMSMessage and back
  * Uses a strategy to parse messages, so that any user can update it to its preferred parser
  * By defaults it uses a default strategy, defined by the library
  *
- * @author Luca Crema, Alberto Ursino, Marco Mariotto
+ * @author Luca Crema, Alberto Ursino, Marco Mariotto, Giovanni Velludo
  */
 public class SMSMessageHandler implements MessageHandler<String, String, SMSMessage> {
 
@@ -38,22 +39,28 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
      *
      * @param parseStrategy custom message parsing
      */
-    public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String, SMSPeer, SMSMessage> parseStrategy) {
+    public void setMessageParseStrategy(@NonNull final MessageParseStrategy<String, SMSPeer,
+            SMSMessage> parseStrategy) {
         this.parseStrategy = parseStrategy;
     }
 
     /**
-     * Interprets a string arrived via the communication channel and parses it to a library {@link SMSMessage}
+     * Interprets a string arrived via the communication channel and parses it to a library
+     * {@link SMSMessage}.
      *
-     * @param peerData    from the sms pdus
-     * @param messageData from the sms pdus
-     * @return the message if the string has been parsed correctly, null otherwise
+     * @param peerData    Data about the peer coming from the sms pdus.
+     * @param messageData Data about the message coming from the sms pdus.
+     * @return The message if the string has been parsed correctly, null otherwise.
+     * @author Matteo Carnelos
      */
-    public SMSMessage parseMessage(@NonNull final String peerData, @NonNull final String messageData) {
-        if (SMSPeer.checkPhoneNumber(peerData) != SMSPeer.TelephoneNumberState.TELEPHONE_NUMBER_VALID)
+    public SMSMessage parseMessage(@NonNull final String peerData,
+                                   @NonNull final String messageData) {
+        try {
+            SMSPeer peer = new SMSPeer(peerData);
+            return parseStrategy.parseMessage(peer, messageData);
+        } catch (InvalidTelephoneNumberException | IllegalArgumentException e) {
             return null;
-
-        return parseStrategy.parseMessage(new SMSPeer(peerData), messageData);
+        }
     }
 
     /**
@@ -66,9 +73,10 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
         return parseStrategy.parseData(message);
     }
 
-    public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage> {
+    public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer,
+            SMSMessage> {
 
-        protected static final String HIDDEN_CHARACTER = (char) 0x02 + "";
+        static final String HIDDEN_CHARACTER = "\r";
 
         /**
          * Parses sms data into a SMSMessage if possible
@@ -78,7 +86,8 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
          * @return the parsed SMSMessage if the string was correct, null otherwise
          */
         @Override
-        public SMSMessage parseMessage(@NonNull final SMSPeer channelPeer, @NonNull final String channelData) {
+        public SMSMessage parseMessage(@NonNull final SMSPeer channelPeer,
+                                       @NonNull final String channelData) {
             //First character of the content must be the hidden char
             if (!channelData.startsWith(HIDDEN_CHARACTER))
                 return null;

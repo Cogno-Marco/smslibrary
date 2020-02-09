@@ -9,37 +9,49 @@ import androidx.annotation.NonNull;
 
 import com.eis.smslibrary.listeners.SMSDeliveredListener;
 
+import java.util.ArrayList;
+
 /**
  * Broadcast receiver for delivered messages, called by Android Library.
  * Must be instantiated and set as receiver with context.registerReceiver(...).
  * There has to be one different DeliveredBroadcastReceiver per message sent,
  * so every IntentFilter name has to be different
  *
- * @author Marco Cognolato
+ * @author Marco Cognolato, Giovanni Velludo
  */
 public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
-    private SMSDeliveredListener listener;
-    private SMSMessage message;
+
+    private final SMSDeliveredListener listener;
+    private final SMSMessage message;
+    private short partsToDeliverCounter;
 
     /**
      * Constructor for the custom {@link BroadcastReceiver}.
      *
-     * @param message  that will be sent.
-     * @param listener to be called when the operation is completed.
+     * @param parts    the parts of the message to be delivered.
+     * @param listener the listener to be called when the operation is completed
+     * @param peer     the peer to whom the message will be delivered.
      */
-    SMSDeliveredBroadcastReceiver(@NonNull final SMSMessage message, @NonNull final SMSDeliveredListener listener) {
+    SMSDeliveredBroadcastReceiver(@NonNull final ArrayList<String> parts,
+                                  @NonNull final SMSDeliveredListener listener,
+                                  @NonNull final SMSPeer peer) {
+        StringBuilder fullMessageText = new StringBuilder();
+        for (String part : parts) {
+            fullMessageText.append(part);
+        }
         this.listener = listener;
-        this.message = message;
+        this.message = new SMSMessage(peer, fullMessageText.toString());
+        this.partsToDeliverCounter = (short) parts.size(); // they can't be more than 255
     }
 
     /**
      * This method is subscribed to the intent of a message delivered, and will be called whenever a message is delivered using this library.
-     * It interprets the state of the message delivering: {@link SMSMessage.DeliveredState#MESSAGE_DELIVERED} if it has been correctly sent,
+     * It interprets the state of the message delivering: {@link SMSMessage.DeliveredState#MESSAGE_DELIVERED} if it has been correctly delivered,
      * some other state otherwise; then calls the listener and unregisters itself.
      */
     @Override
     public void onReceive(Context context, Intent intent) {
-        SMSMessage.DeliveredState deliveredState = SMSMessage.DeliveredState.ERROR_GENERIC_FAILURE;
+        SMSMessage.DeliveredState deliveredState;
 
         switch (getResultCode()) {
             case Activity.RESULT_OK:
@@ -48,11 +60,14 @@ public class SMSDeliveredBroadcastReceiver extends BroadcastReceiver {
             case Activity.RESULT_CANCELED:
                 deliveredState = SMSMessage.DeliveredState.DELIVERY_ERROR;
                 break;
+            default:
+                deliveredState = SMSMessage.DeliveredState.ERROR_GENERIC_FAILURE;
+                break;
         }
 
-        if (listener != null) //extra check, even though listener should never be null
-            listener.onSMSDelivered(message, deliveredState);
-
+        if (deliveredState == SMSMessage.DeliveredState.MESSAGE_DELIVERED &&
+                --partsToDeliverCounter > 0) return;
+        listener.onSMSDelivered(message, deliveredState);
         context.unregisterReceiver(this);
     }
 }
