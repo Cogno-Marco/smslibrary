@@ -88,7 +88,6 @@ public class RandomSMSPeerGenerator implements RandomPeerGenerator<String, SMSPe
      * @return a randomized phone number. Only keeps country code intact, may or may not be valid.
      */
     private Phonenumber.PhoneNumber randomPhoneNumber(String region) {
-        int countryCode = utils.getCountryCodeForRegion(region);
         Phonenumber.PhoneNumber number = utils.getExampleNumber(region);
         number.setNationalNumber(
                 number.getNationalNumber() + Math.abs(random.nextLong() % 1000)

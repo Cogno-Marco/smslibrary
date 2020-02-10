@@ -23,8 +23,6 @@ import static org.junit.Assert.assertNull;
 @RunWith(Parameterized.class)
 public class RandomSMSPeerGeneratorTest {
 
-    private static final String DEFAULT_REGION = SMSPeer.getDefaultRegion();
-    private static final PhoneNumberUtil UTIL = PhoneNumberUtil.getInstance();
     private static final RandomSMSPeerGenerator GENERATOR = new RandomSMSPeerGenerator();
 
     private final String testedRegion;
