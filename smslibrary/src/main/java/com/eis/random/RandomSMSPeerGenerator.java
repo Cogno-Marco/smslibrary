@@ -17,11 +17,6 @@ public class RandomSMSPeerGenerator implements RandomPeerGenerator<String, SMSPe
 
     private static final String REGION_ERR = "This region's country code is not supported: ";
     private static final String INVALID_ADDRESS_HEADER = "#";
-    /**
-     * See <a href="https://en.wikipedia.org/wiki/E.164">this page</a>
-     * for details on E164 standards.
-     */
-    private static final int MAX_ADDRESS_LENGTH = 14;
 
     private static final Random random = new Random();
     private static final PhoneNumberUtil utils = PhoneNumberUtil.getInstance();
