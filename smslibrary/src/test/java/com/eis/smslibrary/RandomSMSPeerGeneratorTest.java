@@ -3,7 +3,9 @@ package com.eis.smslibrary;
 import com.eis.random.RandomSMSPeerGenerator;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -26,6 +28,12 @@ public class RandomSMSPeerGeneratorTest {
     private static final RandomSMSPeerGenerator GENERATOR = new RandomSMSPeerGenerator();
 
     private final String testedRegion;
+
+    /**
+     * Rule for getting test name.
+     */
+    @Rule
+    public TestName name = new TestName();
 
     /**
      * @return parameters for the test:
@@ -56,7 +64,8 @@ public class RandomSMSPeerGeneratorTest {
     @Test
     public void canCreateDefaultRegionValidAddress() {
         SMSPeer peer = new SMSPeer(GENERATOR.generateValidAddress());
-        System.out.println(peer.getInvalidityReason() + "\n" + peer.getInvalidityMessage());
+        System.out.println(name.getMethodName() + peer.getInvalidityReason());
+        System.out.println(name.getMethodName() + peer.getInvalidityMessage());
         assertNull(peer.getInvalidityReason());
     }
 
@@ -67,7 +76,8 @@ public class RandomSMSPeerGeneratorTest {
     @Test
     public void canCreateInvalidAddress() {
         SMSPeer peer = new SMSPeer(GENERATOR.generateInvalidAddress());
-        System.out.println(peer.getInvalidityReason() + "\n" + peer.getInvalidityMessage());
+        System.out.println(name.getMethodName() + peer.getInvalidityReason());
+        System.out.println(name.getMethodName() + peer.getInvalidityMessage());
         assertNotNull(peer.getInvalidityReason());
     }
 
@@ -79,7 +89,8 @@ public class RandomSMSPeerGeneratorTest {
     @Test
     public void canCreateValidAddress() {
         SMSPeer peer = new SMSPeer(GENERATOR.generateValidAddress(testedRegion));
-        System.out.println(peer.getInvalidityReason() + "\n" + peer.getInvalidityMessage());
+        System.out.println(name.getMethodName() + peer.getInvalidityReason());
+        System.out.println(name.getMethodName() + peer.getInvalidityMessage());
         assertNull(peer.getInvalidityReason());
     }
 
@@ -92,14 +103,16 @@ public class RandomSMSPeerGeneratorTest {
     @Test
     public void canCreateDefaultRegionValidPeer() {
         SMSPeer peer = GENERATOR.generateValidPeer();
-        System.out.println(peer.getInvalidityReason() + "\n" + peer.getInvalidityMessage());
+        System.out.println(name.getMethodName() + peer.getInvalidityReason());
+        System.out.println(name.getMethodName() + peer.getInvalidityMessage());
         assertNull(peer.getInvalidityReason());
     }
 
     @Test
     public void canCreateValidPeer() {
         SMSPeer peer = GENERATOR.generateValidPeer(testedRegion);
-        System.out.println(peer.getInvalidityReason() + "\n" + peer.getInvalidityMessage());
+        System.out.println(name.getMethodName() + peer.getInvalidityReason());
+        System.out.println(name.getMethodName() + peer.getInvalidityMessage());
         assertNull(peer.getInvalidityReason());
     }
 }
