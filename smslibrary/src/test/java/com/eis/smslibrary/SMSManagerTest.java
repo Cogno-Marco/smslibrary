@@ -36,13 +36,13 @@ public class SMSManagerTest {
     @Captor
     private ArgumentCaptor<String> peerNumberCaptor;
 
-    private final SmsManager MANAGER_MOCK = mock(SmsManager.class);
+    private static final SmsManager MANAGER_MOCK = mock(SmsManager.class);
 
-    private final String VALID_PEER_NUMBER = "+393423541601";
-    private final String VALID_MESSAGE_TEXT = "valid text";
-    private final SMSPeer VALID_PEER = new SMSPeer(VALID_PEER_NUMBER);
-    private final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, VALID_MESSAGE_TEXT);
-    private final SMSManager MANAGER_INSTANCE = SMSManager.getInstance();
+    private static final String VALID_PEER_NUMBER = "+393423541601";
+    private static final String VALID_MESSAGE_TEXT = "valid text";
+    private static final SMSPeer VALID_PEER = new SMSPeer(VALID_PEER_NUMBER);
+    private static final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, VALID_MESSAGE_TEXT);
+    private static final SMSManager MANAGER_INSTANCE = SMSManager.getInstance();
 
     private static final String EMPTY_TELEPHONE_NUMBER = "";
     private static final String TOO_SHORT_TELEPHONE_NUMBER = "+39";
