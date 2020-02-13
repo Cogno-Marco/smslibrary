@@ -27,13 +27,14 @@ public class SMSSentBroadcastReceiverTest {
     private SMSSentBroadcastReceiver receiver;
     private SMSSentListener listenerMock = mock(SMSSentListener.class);
     private Context contextMock = mock(Context.class);
-    private final SMSPeer VALID_PEER = new SMSPeer("+393423541601");
-    private final String VALID_TEXT = "Some random text to send";
-    private final ArrayList<String> MESSAGE_TO_SEND = new ArrayList<>();
-    private final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, VALID_TEXT);
+    private static final SMSPeer VALID_PEER = new SMSPeer("+393423541601");
+    private static final String VALID_TEXT = "Some random text to send";
+    private static final ArrayList<String> MESSAGE_TO_SEND = new ArrayList<>();
+    private static final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, VALID_TEXT);
 
     @Before
     public void setup() {
+        MESSAGE_TO_SEND.clear();
         MESSAGE_TO_SEND.add(VALID_TEXT);
         receiver = spy(new SMSSentBroadcastReceiver(MESSAGE_TO_SEND, listenerMock, VALID_PEER));
     }
