@@ -1,4 +1,4 @@
-package com.eis.random;
+package com.eis.smslibrary.random;
 
 import com.eis.communication.Peer;
 

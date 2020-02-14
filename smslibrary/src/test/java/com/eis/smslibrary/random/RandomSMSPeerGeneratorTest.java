@@ -1,6 +1,6 @@
-package com.eis.smslibrary;
+package com.eis.smslibrary.random;
 
-import com.eis.random.RandomSMSPeerGenerator;
+import com.eis.smslibrary.SMSPeer;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 
 import org.junit.Rule;
@@ -23,7 +23,14 @@ import static org.junit.Assert.assertNull;
 @RunWith(Parameterized.class)
 public class RandomSMSPeerGeneratorTest {
 
-    private static final RandomSMSPeerGenerator GENERATOR = new RandomSMSPeerGenerator();
+    /**
+     * Whether {@link RandomSMSPeerGeneratorTest#logValidity(SMSPeer)} should print out the
+     * validity of the generated peers to help with test clarity or not.
+     */
+    private static final boolean LOGGING_ENABLED = true;
+    private static final String LOG_MESSAGE_TEMPLATE = "The peer is %s\nMessage: %s";
+
+    private static final RandomSMSPeerGenerator testedGenerator = new RandomSMSPeerGenerator();
 
     private final String testedRegion;
 
@@ -61,9 +68,8 @@ public class RandomSMSPeerGeneratorTest {
      */
     @Test
     public void canCreateDefaultRegionValidAddress() {
-        SMSPeer peer = new SMSPeer(GENERATOR.generateValidAddress());
-        System.out.println(name.getMethodName() + peer.getInvalidityReason());
-        System.out.println(name.getMethodName() + peer.getInvalidityMessage());
+        SMSPeer peer = new SMSPeer(testedGenerator.generateValidAddress());
+        logValidity(peer);
         assertNull(peer.getInvalidityReason());
     }
 
@@ -73,9 +79,8 @@ public class RandomSMSPeerGeneratorTest {
      */
     @Test
     public void canCreateInvalidAddress() {
-        SMSPeer peer = new SMSPeer(GENERATOR.generateInvalidAddress());
-        System.out.println(name.getMethodName() + peer.getInvalidityReason());
-        System.out.println(name.getMethodName() + peer.getInvalidityMessage());
+        SMSPeer peer = new SMSPeer(testedGenerator.generateInvalidAddress());
+        logValidity(peer);
         assertNotNull(peer.getInvalidityReason());
     }
 
@@ -86,9 +91,8 @@ public class RandomSMSPeerGeneratorTest {
      */
     @Test
     public void canCreateValidAddress() {
-        SMSPeer peer = new SMSPeer(GENERATOR.generateValidAddress(testedRegion));
-        System.out.println(name.getMethodName() + peer.getInvalidityReason());
-        System.out.println(name.getMethodName() + peer.getInvalidityMessage());
+        SMSPeer peer = new SMSPeer(testedGenerator.generateValidAddress(testedRegion));
+        logValidity(peer);
         assertNull(peer.getInvalidityReason());
     }
 
@@ -100,17 +104,35 @@ public class RandomSMSPeerGeneratorTest {
      */
     @Test
     public void canCreateDefaultRegionValidPeer() {
-        SMSPeer peer = GENERATOR.generateValidPeer();
-        System.out.println(name.getMethodName() + peer.getInvalidityReason());
-        System.out.println(name.getMethodName() + peer.getInvalidityMessage());
+        SMSPeer peer = testedGenerator.generateValidPeer();
+        logValidity(peer);
         assertNull(peer.getInvalidityReason());
     }
 
     @Test
     public void canCreateValidPeer() {
-        SMSPeer peer = GENERATOR.generateValidPeer(testedRegion);
-        System.out.println(name.getMethodName() + peer.getInvalidityReason());
-        System.out.println(name.getMethodName() + peer.getInvalidityMessage());
+        SMSPeer peer = testedGenerator.generateValidPeer(testedRegion);
+        logValidity(peer);
         assertNull(peer.getInvalidityReason());
+    }
+
+    /**
+     * Method printing the validity of a {@link SMSPeer} if
+     * {@link RandomSMSPeerGeneratorTest#LOGGING_ENABLED} is {@code true}.
+     *
+     * @param peer The {@link SMSPeer} whose validity we want to print.
+     */
+    private static void logValidity(SMSPeer peer) {
+        if (!LOGGING_ENABLED) return;
+        final String
+                valid = "valid.",
+                invalid = "invalid, with reason: %s";
+
+        String validity = (peer.getInvalidityReason() == null) ?
+                valid :
+                String.format(invalid, peer.getInvalidityReason());
+
+        String message = String.format(LOG_MESSAGE_TEMPLATE, validity, peer.getInvalidityMessage());
+        System.out.println(message);
     }
 }

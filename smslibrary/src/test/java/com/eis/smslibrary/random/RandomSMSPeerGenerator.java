@@ -1,4 +1,4 @@
-package com.eis.random;
+package com.eis.smslibrary.random;
 
 import androidx.annotation.NonNull;
 
@@ -60,7 +60,7 @@ public class RandomSMSPeerGenerator implements RandomPeerGenerator<String, SMSPe
         String address;
         SMSPeer peer;
         do {
-            Phonenumber.PhoneNumber number = randomPhoneNumber(region);
+            Phonenumber.PhoneNumber number = getRandomPhoneNumber(region);
             address = utils.format(number, PhoneNumberUtil.PhoneNumberFormat.E164);
             peer = new SMSPeer(address);
         } while (peer.getInvalidityReason() != null);
@@ -68,15 +68,16 @@ public class RandomSMSPeerGenerator implements RandomPeerGenerator<String, SMSPe
     }
 
     /**
-     * Method to generate an invalid address. As a simple invalidity criteria, a random String is
-     * returned.
+     * Method to generate an invalid address. As a simple invalidity criteria, a partially random
+     * String is returned.
      *
      * @return an invalid address for an {@code SMSPeer}.
+     * @see RandomSMSPeerGenerator#getInvalidRandomString() for details on the Strings returned.
      */
     @NonNull
     @Override
     public String generateInvalidAddress() {
-        return randomString();
+        return getInvalidRandomString();
     }
 
     /**
@@ -87,7 +88,7 @@ public class RandomSMSPeerGenerator implements RandomPeerGenerator<String, SMSPe
      *               supported region.
      * @return a randomized phone number. Only keeps country code intact, may or may not be valid.
      */
-    private Phonenumber.PhoneNumber randomPhoneNumber(String region) {
+    private Phonenumber.PhoneNumber getRandomPhoneNumber(String region) {
         Phonenumber.PhoneNumber number = utils.getExampleNumber(region);
         number.setNationalNumber(
                 number.getNationalNumber() + Math.abs(random.nextLong() % 1000)
@@ -96,15 +97,15 @@ public class RandomSMSPeerGenerator implements RandomPeerGenerator<String, SMSPe
     }
 
     /**
-     * @return a random String, made of between 1 and 16 characters. The String always starts
-     * with {@link RandomSMSPeerGenerator#INVALID_ADDRESS_HEADER}.
+     * @return a partially random String, made of between 1 and 16 characters. The String always
+     * starts with {@link RandomSMSPeerGenerator#INVALID_ADDRESS_HEADER}.
      */
-    private String randomString() {
+    private String getInvalidRandomString() {
         final int
                 maxDigits = 15,
                 minDigits = 2,
                 maxCharValue = 255;
-        int digits = Math.abs(random.nextInt() % maxDigits) + minDigits;
+        int digits = Math.abs(random.nextInt(maxDigits - minDigits + 1)) + minDigits;
         StringBuilder result = new StringBuilder(INVALID_ADDRESS_HEADER);
         while (result.length() < digits)
             result.append((char) random.nextInt(maxCharValue));
