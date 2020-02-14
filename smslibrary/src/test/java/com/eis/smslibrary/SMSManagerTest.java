@@ -36,13 +36,13 @@ public class SMSManagerTest {
     @Captor
     private ArgumentCaptor<String> peerNumberCaptor;
 
-    private static final SmsManager MANAGER_MOCK = mock(SmsManager.class);
+    private SmsManager managerMock = mock(SmsManager.class);
+    private SMSManager managerInstance = SMSManager.getInstance();
 
     private static final String VALID_PEER_NUMBER = "+393423541601";
     private static final String VALID_MESSAGE_TEXT = "valid text";
     private static final SMSPeer VALID_PEER = new SMSPeer(VALID_PEER_NUMBER);
     private static final SMSMessage VALID_MESSAGE = new SMSMessage(VALID_PEER, VALID_MESSAGE_TEXT);
-    private static final SMSManager MANAGER_INSTANCE = SMSManager.getInstance();
 
     private static final String EMPTY_TELEPHONE_NUMBER = "";
     private static final String TOO_SHORT_TELEPHONE_NUMBER = "+39";
@@ -52,7 +52,7 @@ public class SMSManagerTest {
     @Before
     public void setup(){
         PowerMockito.mockStatic(SmsManager.class);
-        when(SmsManager.getDefault()).thenReturn(MANAGER_MOCK);
+        when(SmsManager.getDefault()).thenReturn(managerMock);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class SMSManagerTest {
         PowerMockito.mockStatic(SmsManager.class);
         when(SmsManager.getDefault()).thenReturn(managerMock);
 
-        MANAGER_INSTANCE.sendMessage(VALID_MESSAGE);
+        managerInstance.sendMessage(VALID_MESSAGE);
 
         verify(managerMock).sendMultipartTextMessage(peerNumberCaptor.capture(),
                 isNull(String.class), messageTextCaptor.capture(), isNull(ArrayList.class),
@@ -82,30 +82,30 @@ public class SMSManagerTest {
 
     @Test(expected = NullPointerException.class)
     public void nullMessage_throws() {
-        MANAGER_INSTANCE.sendMessage(null);
+        managerInstance.sendMessage(null);
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void sendMessage_withShortTelephoneNumber_throwsException() {
         SMSMessage message = new SMSMessage(new SMSPeer(TOO_SHORT_TELEPHONE_NUMBER), VALID_MESSAGE_TEXT);
-        MANAGER_INSTANCE.sendMessage(message);
+        managerInstance.sendMessage(message);
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void sendMessage_withTooLongTelephoneNumber_throwsException() {
         SMSMessage message = new SMSMessage(new SMSPeer(TOO_LONG_TELEPHONE_NUMBER), VALID_MESSAGE_TEXT);
-        MANAGER_INSTANCE.sendMessage(message);
+        managerInstance.sendMessage(message);
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void sendMessage_withNoCountryCodeTelephoneNumber_throwsException() {
         SMSMessage message = new SMSMessage(new SMSPeer(NO_COUNTRY_CODE_TELEPHONE_NUMBER), VALID_MESSAGE_TEXT);
-        MANAGER_INSTANCE.sendMessage(message);
+        managerInstance.sendMessage(message);
     }
 
     @Test(expected = InvalidTelephoneNumberException.class)
     public void sendMessage_withEmptyTelephoneNumber_throwsException() {
         SMSMessage message = new SMSMessage(new SMSPeer(EMPTY_TELEPHONE_NUMBER), VALID_MESSAGE_TEXT);
-        MANAGER_INSTANCE.sendMessage(message);
+        managerInstance.sendMessage(message);
     }
 }
