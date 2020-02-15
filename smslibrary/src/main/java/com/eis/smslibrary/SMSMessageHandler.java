@@ -46,7 +46,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
     /**
      * Interprets a string arrived via the communication channel and parses it to a library {@link SMSMessage}.
      *
-     * @param peerData Data about the peer coming from the sms pdus.
+     * @param peerData    Data about the peer coming from the sms pdus.
      * @param messageData Data about the message coming from the sms pdus.
      * @return The message if the string has been parsed correctly, null otherwise.
      * @author Matteo Carnelos
@@ -55,8 +55,9 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
         try {
             SMSPeer peer = new SMSPeer(peerData);
             return parseStrategy.parseMessage(messageData, peer);
+        } catch (InvalidTelephoneNumberException | IllegalArgumentException e) {
+            return null;
         }
-        catch(InvalidTelephoneNumberException | IllegalArgumentException e) { return null; }
     }
 
     /**
@@ -71,7 +72,7 @@ public class SMSMessageHandler implements MessageHandler<String, String, SMSMess
 
     public class DefaultSMSMessageParseStrategy implements MessageParseStrategy<String, SMSPeer, SMSMessage> {
 
-        static final String HIDDEN_CHARACTER = "\r";
+        static final String HIDDEN_CHARACTER = " ";
 
         /**
          * Parses sms data into a SMSMessage if possible
