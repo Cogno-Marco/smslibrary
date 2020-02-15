@@ -31,6 +31,17 @@ In order to send and receive SMSs you need to be granted two permissions. From A
 requestPermissions(new String[]{Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS}, SMS_PERMISSIONS_CUSTOM_CODE);
 ```
 
+### Setup
+By default, the library uses an hidden character to differentiate SMSs sent from library and SMSs
+sent from another source. You can override this way of differentiating SMSs by passing a custom
+`MessageParseStrategy<String, SMSPeer, SMSMessage>` to the `SMSMessageHandler` class:
+```java
+SMSMessageHandler.getInstance(customStrategy);
+```
+This can be done only once, and before using any other constructors or methods from the library.
+If this is not done at the beginning, or if the argument of `getInstance()` is `null`,
+`DefaultSMSMessageParsingStrategy` will be used.
+
 ### Creating a new message
 When you want to send a message you should create it first to make sure it's valid:
 ```java
@@ -90,12 +101,3 @@ In order to register the application to be called on message reception you have
             android:permission="android.permission.BIND_JOB_SERVICE" />
 ```
  When a message arrives the overridden method `onMessageReceived` will be called.
- 
-### Using your own message format
-The default library format uses an hidden character to differentiate SMSs
-sent from library and SMSs sent from another source. You can override this
-format by passing a custom `MessageParseStrategy<String, SMSPeer, SMSMessage>`
-to the `SMSMessageHandler` class:
-```java
-SMSMessageHandler.getInstance().setMessageParseStrategy(customStrategy);
-```

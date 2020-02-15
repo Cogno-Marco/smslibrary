@@ -9,23 +9,23 @@ package com.eis.communication;
  * @param <M> The type of message to parse and output
  * @author Luca Crema (thanks to Marco Cognolato for design pattern reference)
  */
-public interface MessageParseStrategy<D, P extends Peer, M extends Message> {
+public interface MessageParsingStrategy<D, P extends Peer, M extends Message> {
 
     /**
-     * Parse channel data into a library message
+     * Parse channel data into a {@link Message}.
      *
-     * @param channelData read from the channel
      * @param channelPeer the sender of the channel message
+     * @param channelData read from the channel
      * @return library message
      */
-    M parseMessage(D channelData, P channelPeer);
+    M parseData(P channelPeer, D channelData);
 
     /**
-     * Parse library message into channel data
+     * Parse a {@link Message} into channel data
      *
      * @param message from library
      * @return channel data
      */
-    D parseData(M message);
+    D parseMessage(M message);
 
 }

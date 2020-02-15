@@ -28,7 +28,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
     private static final String GSM_CHARACTERS_STRING_REGEX = "^[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà]*$";
     private static final String GSM_CHARACTERS_EXTENSION_STRING_REGEX = "^[@£$¥èéùìòÇ\\nØø\\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#¤%&‘()*+,\\-./0-9:;<=>?¡A-ZÄÖÑÜ§¿a-zäöñüà\\f^{}\\\\\\[~\\]|€]*$";
     private static final String GSM_CHARACTERS_EXTENSION_REGEX = "[\\f^{}\\\\\\[~\\]|€]";
-    private String messageContent;
+    private String text;
     private SMSPeer peer;
 
     /**
@@ -43,8 +43,18 @@ public class SMSMessage implements Message<String, SMSPeer> {
         ContentState contentState = checkMessageText(messageText);
         if (contentState != ContentState.MESSAGE_TEXT_VALID)
             throw new InvalidSMSMessageException("Message text length exceeds maximum allowed", contentState);
-        this.messageContent = messageText;
+        this.text = messageText;
         this.peer = peer;
+    }
+
+    /**
+     * Private constructor needed only in {@link SMSMessage#checkMessageText(String)}, to get a
+     * String with the parsed message text.
+     *
+     * @param messageText the message content, can be empty but not null
+     */
+    private SMSMessage(@NonNull String messageText) {
+        this.text = messageText;
     }
 
     /**
@@ -59,18 +69,20 @@ public class SMSMessage implements Message<String, SMSPeer> {
          * matching on the whole message first, to avoid multiple checks on single characters
          * when not necessary.
          */
+        messageText = SMSMessageHandler.getInstance(null).parseMessage(new SMSMessage(messageText));
         if (messageText.matches(GSM_CHARACTERS_STRING_REGEX)) {
             // messageText contains only GSM characters
             if (messageText.length() <= MAX_MSG_TEXT_LEN) {
                 return ContentState.MESSAGE_TEXT_VALID;
             }
         } else if (!messageText.matches(GSM_CHARACTERS_EXTENSION_STRING_REGEX)) {
-            // messageText contains Unicode characters
+            // messageText contains characters not present in the GSM charset nor its extension
+            // table, it'll be encoded in UCS-2
             if (messageText.length() <= MAX_UCS2_MSG_TEXT_LEN) {
                 return ContentState.MESSAGE_TEXT_VALID;
             }
         } else {
-            // messageText contains only chars from both the GSM charset and its extension table
+            // messageText contains only chars from the GSM charset and its extension table
             int charNum = 0;
             for (int i = 0; i < messageText.length(); i++) {
                 String currentChar = messageText.substring(i, i + 1);
@@ -91,13 +103,13 @@ public class SMSMessage implements Message<String, SMSPeer> {
     }
 
     /**
-     * Retrieves the data received by or to be sent in the network.
+     * Retrieves the message text.
      *
-     * @return data contained in this message or to put in an sms
+     * @return The text contained in this {@link SMSMessage}.
      */
     @Override
     public String getData() {
-        return messageContent;
+        return text;
     }
 
     /**
@@ -121,7 +133,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SMSMessage that = (SMSMessage) o;
-        return messageContent.equals(that.messageContent) &&
+        return text.equals(that.text) &&
                 peer.equals(that.peer);
     }
 
@@ -133,7 +145,7 @@ public class SMSMessage implements Message<String, SMSPeer> {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(messageContent, peer);
+        return Objects.hash(text, peer);
     }
 
     /**

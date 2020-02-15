@@ -221,6 +221,6 @@ public class SMSManager implements CommunicationManager<SMSMessage> {
      * @return the data parsed from the message
      */
     private String getSMSContent(SMSMessage message) {
-        return SMSMessageHandler.getInstance().parseData(message);
+        return SMSMessageHandler.getInstance(null).parseMessage(message);
     }
 }
