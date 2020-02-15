@@ -1,6 +1,7 @@
 package com.eis.smslibrary;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.eis.communication.Peer;
 import com.eis.smslibrary.exceptions.InvalidTelephoneNumberException;
@@ -14,7 +15,8 @@ import java.util.Locale;
 /**
  * Implementation of {@link Peer} for SMS communication channel.
  *
- * @author Luca Crema, Marco Mariotto, Giovanni Velludo. Reviewed by Marco Cognolato and Mattia Fanan
+ * @author Luca Crema, Marco Mariotto, Giovanni Velludo. Reviewed by Marco Cognolato and Mattia
+ * Fanan
  * @author Matteo Carnelos
  */
 public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Serializable {
@@ -22,12 +24,15 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
     private static final String REGION_NEEDED_EXC_MSG = "The given number does not explicitly " +
             "contain the prefix and the default region is not obtainable. Please use the method " +
             "SMSPeer.setDefaultRegion() in order to set a valid one.";
-    private static final String INVALID_NUMBER_EXC_MSG = "Invalid telephone number: '%s'. Note that " +
+    private static final String INVALID_NUMBER_EXC_MSG = "Invalid telephone number: '%s'. Note " +
+            "that " +
             "a telephone number pointing outside the currently set default region (%s) should " +
             "be passed with also the prefix or it might be considered invalid.";
-    private static final String NOT_PARSABLE_EXC_MSG = "Not parsable telephone number: '%s'. Please " +
+    private static final String NOT_PARSABLE_EXC_MSG = "Not parsable telephone number: '%s'. " +
+            "Please " +
             "retry with a different String.";
-    private static final String INVALID_ISO_EXC_MSG = "The given string is not a valid ISO country code.";
+    private static final String INVALID_ISO_EXC_MSG = "The given string is not a valid ISO " +
+            "country code.";
 
     // The following regex checks if the given string is one of the following types:
     // +1#555521555*     [* = any decimal number]
@@ -56,10 +61,20 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
     }
 
     /**
+     * Get the default region used when setting the country code.
+     *
+     * @return {@link SMSPeer#defaultRegion}.
+     */
+    public static String getDefaultRegion() {
+        return defaultRegion;
+    }
+
+    /**
      * Create a new SMSPeer object. If the given number does not explicitly contains the prefix
      * will be added the default one.
      * Note: It is not always possible to obtain the correct default country code, especially if the
-     * phone is moving between countries. To set a custom one use the method {@link #setDefaultRegion(String)}.
+     * phone is moving between countries. To set a custom one use the method
+     * {@link #setDefaultRegion(String)}.
      *
      * @param telephoneNumber Address for the peer.
      * @author Matteo Carnelos
@@ -129,7 +144,8 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * @author Matteo Carnelos
      */
     private String formatE164(Phonenumber.PhoneNumber phoneNumber) {
-        return PhoneNumberUtil.getInstance().format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164);
+        return PhoneNumberUtil.getInstance().format(phoneNumber,
+                PhoneNumberUtil.PhoneNumberFormat.E164);
     }
 
     /**
@@ -153,7 +169,8 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * Compares this object with the specified object for order.
      *
      * @param o The object to be compared.
-     * @return A negative integer, zero, or a positive integer as this object is less than, equal to, or greater than the specified object.
+     * @return A negative integer, zero, or a positive integer as this object is less than, equal
+     * to, or greater than the specified object.
      */
     @Override
     public int compareTo(SMSPeer o) {
@@ -176,6 +193,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * @return An InvalidTelephoneNumberException.Type containing the reason of the invalidity if
      * telephoneNumber is invalid, null if telephoneNumber is valid.
      */
+    @Nullable
     public InvalidTelephoneNumberException.Type getInvalidityReason() {
         return invalidityReason;
     }
@@ -186,6 +204,7 @@ public class SMSPeer implements Peer<String>, Comparable<SMSPeer>, java.io.Seria
      * @return A String containing the reason of the invalidity if telephoneNumber is invalid, null
      * if telephoneNumber is valid.
      */
+    @Nullable
     public String getInvalidityMessage() {
         return invalidityMessage;
     }
